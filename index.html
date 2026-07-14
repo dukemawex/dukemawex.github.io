@@ -121,6 +121,16 @@
   ::selection{background:rgba(94,179,246,.32)}
   .reveal{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease}
   .reveal.in{opacity:1;transform:none}
+
+  .timeline{display:grid;gap:2px;position:relative}
+  .tl{display:flex;gap:18px;padding:0 0 22px 4px;position:relative}
+  .tl .dot{width:12px;height:12px;border-radius:50%;background:var(--accent);margin-top:6px;flex-shrink:0;box-shadow:0 0 0 4px rgba(94,179,246,.14)}
+  .tl:not(:last-child)::before{content:"";position:absolute;left:9px;top:18px;bottom:0;width:2px;background:var(--line)}
+  .tl-b h3{margin:0 0 3px;font-size:16.5px;font-weight:700}
+  .tl-b .role{color:var(--accent-2);font-size:13.5px;font-weight:600;margin:0 0 2px}
+  .tl-b .when{color:var(--faint);font-size:12.5px;font-variant-numeric:tabular-nums;margin:0 0 6px}
+  .tl-b p{margin:0;color:var(--dim);font-size:14px;max-width:640px}
+  .subh{font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);margin:26px 0 14px;font-weight:600}
 </style>
 </head>
 <body>
@@ -130,9 +140,11 @@
     <a class="brand" href="#top">Emmanuel <span>Duke</span></a>
     <div class="navlinks">
       <a href="#about">About</a>
+      <a href="#experience">Experience</a>
       <a href="#leadership">Leadership</a>
       <a href="#projects">Projects</a>
       <a href="#publications">Research</a>
+      <a href="#credentials">Credentials</a>
       <a href="#contact">Contact</a>
     </div>
   </div>
@@ -160,7 +172,7 @@
     <div class="stat"><b>6+</b><span>Publications</span></div>
     <div class="stat"><b>80+</b><span>GitHub repos</span></div>
     <div class="stat"><b>4th</b><span>Interswitch × Enyata Hackathon</span></div>
-    <div class="stat"><b>3</b><span>Fellowships &amp; alumni networks</span></div>
+    <div class="stat"><b>10+</b><span>Awards &amp; certifications</span></div>
   </div>
 </div>
 </div>
@@ -172,6 +184,27 @@
     <div class="h2">Interdisciplinary by design.</div>
     <p>I'm <strong>Emmanuel Effiom Duke</strong>, an interdisciplinary researcher focused on <strong>energy systems and air quality</strong>, a full-stack developer, and a growth leader. My research spans CFD modeling of power-plant components, machine-learning-driven energy optimization, and open digital platforms for climate and citizen science.</p>
     <p>Alongside research, I build software — fintech, AI agents, geospatial tools, and platforms for agriculture, security, and career development — and I help others grow through mentorship and community programs across Nigeria and Africa.</p>
+  </section>
+
+  <section class="reveal" id="experience">
+    <p class="kicker">Experience</p>
+    <div class="h2">Where I've worked.</div>
+    <div class="timeline">
+      <div class="tl"><div class="dot"></div><div class="tl-b"><h3>Head of Market Research &amp; Growth</h3><p class="role">The Upskill Space [Your Digital Skill Academy] · Part-time · Enugu State, Nigeria</p><p class="when">Jun 2026 – Present</p><p>Leads market research and growth strategy — monitoring student behavior, competitor activity, and educational trends to shape the platform.</p></div></div>
+      <div class="tl"><div class="dot"></div><div class="tl-b"><h3>TEF Flagship Mentor</h3><p class="role">The Tony Elumelu Foundation · Part-time</p><p class="when">Mar 2025 – Present</p><p>Professional mentoring for entrepreneurs across Africa.</p></div></div>
+      <div class="tl"><div class="dot"></div><div class="tl-b"><h3>Member</h3><p class="role">Engineering for Change (E4C) · Part-time · Remote</p><p class="when">Apr 2020 – Present</p><p>Contributing to a global engineering community solving development challenges.</p></div></div>
+      <div class="tl"><div class="dot"></div><div class="tl-b"><h3>CTG Participant</h3><p class="role">EU Erasmus+ AirforAll · Seasonal</p><p class="when">Feb 2023 – Feb 2024</p><p>Part of an international citizens-testing group advancing air-quality knowledge and toolkit usability.</p></div></div>
+      <div class="tl"><div class="dot"></div><div class="tl-b"><h3>Student Maintenance Intern</h3><p class="role">Transcorp Hotels Plc · Internship · Calabar, Nigeria</p><p class="when">Jan 2022 – Jan 2023</p><p>Trained in maintenance/operations of MEP systems &amp; HVAC equipment (air-cooled chillers, boilers, elevators).</p></div></div>
+    </div>
+  </section>
+
+  <section class="reveal" id="education">
+    <p class="kicker">Education</p>
+    <div class="h2">Learning &amp; training.</div>
+    <div class="grid">
+      <div class="card"><span class="tag">Summer School</span><h3>Politecnico di Torino</h3><p>The Earth Summer School — innovative hybrid technologies for CO₂ conversion into added-value commercial products (2024).</p></div>
+      <div class="card"><span class="tag">Course</span><h3>Introduction to Air Quality</h3><p>Understanding the health effects of air pollution in urban areas and mitigation approaches (ICL CPD).</p></div>
+    </div>
   </section>
 
   <section class="reveal" id="leadership">
@@ -240,6 +273,28 @@
       <div class="meta">Air For All platform</div>
       <div class="auth">E. E. Duke</div></div></div>
     <p class="muted">Full list on <a href="https://scholar.google.com/citations?user=Y8si5ZgAAAAJ&hl=en">Google Scholar</a>.</p>
+  </section>
+
+  <section class="reveal" id="credentials">
+    <p class="kicker">Recognition</p>
+    <div class="h2">Honors &amp; certifications.</div>
+    <h3 class="subh">Honors &amp; awards</h3>
+    <div class="grid">
+      <div class="card"><span class="tag">2023</span><h3>Award of Active Service</h3><p>Street Priests Inc. — certificate of recognition.</p></div>
+      <div class="card"><span class="tag">2018</span><h3>Agbami Medical &amp; Engineering Scholarship</h3><p>NNPC/Chevron Joint Venture.</p></div>
+      <div class="card"><span class="tag">2011</span><h3>NNPC/STAN Science Competition</h3><p>State-level winner, Science Competition for Primary Schools.</p></div>
+      <div class="card"><span class="tag">2010</span><h3>Nigeria Turkish Mathematics Olympiad</h3><p>Participant (NTS).</p></div>
+    </div>
+    <h3 class="subh">Licenses &amp; certifications</h3>
+    <div class="grid">
+      <div class="card"><span class="tag">Politecnico di Milano</span><h3>Off-Grid Energy Systems Modelling</h3><p>MICROGRIDSPY — energy systems modelling (2025).</p></div>
+      <div class="card"><span class="tag">Strathmore University</span><h3>Data for Renewable Energy Systems</h3><p>Data analysis &amp; collection for renewables (2025).</p></div>
+      <div class="card"><span class="tag">AI Safety Hungary</span><h3>AGI Safety Fundamentals</h3><p>Technical course + policy track (2024).</p></div>
+      <div class="card"><span class="tag">Common Purpose</span><h3>Social Impact — Common Purpose Legacy</h3><p>Leadership, relationship building &amp; collaboration (2020).</p></div>
+      <div class="card"><span class="tag">Cisco</span><h3>IT Essentials</h3><p>UNITeS Cisco Networking Academy.</p></div>
+      <div class="card"><span class="tag">HP LIFE</span><h3>Energy Efficiency &amp; Inventory Management</h3><p>Business and operations foundations.</p></div>
+    </div>
+    <p class="muted">Full profile on <a href="https://www.linkedin.com/in/emmanuel-duke-a5723320b/">LinkedIn</a>.</p>
   </section>
 </div>
 
