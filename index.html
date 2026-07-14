@@ -54,11 +54,19 @@
   footer a{color:var(--dim)}
   .links{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-bottom:16px}
   ::selection{background:rgba(94,179,246,.3)}
+
+  .hero{display:flex;align-items:center;gap:34px;flex-wrap:wrap}
+  .hero-text{flex:1;min-width:280px}
+  .avatar{width:168px;height:168px;border-radius:50%;object-fit:cover;border:3px solid var(--line);
+    box-shadow:0 12px 40px rgba(0,0,0,.45);flex-shrink:0}
+  @media(max-width:560px){.avatar{width:120px;height:120px}}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header>
+  <header class="hero">
+    <img class="avatar" src="assets/emmanuel.png" alt="Emmanuel Effiom Duke" />
+    <div class="hero-text">
     <p class="eyebrow">Emmanuel Effiom Duke</p>
     <h1>Interdisciplinary researcher &amp; full-stack developer.</h1>
     <p class="lede">I work at the intersection of energy, air quality, and applied AI — from CFD studies and machine-learning energy optimization to building software that solves real problems.</p>
@@ -67,12 +75,13 @@
       <a class="btn" href="#publications">Publications</a>
       <a class="btn" href="mailto:duke.emmanueleffiom@gmail.com">Get in touch</a>
     </div>
+    </div>
   </header>
 
   <section class="about" id="about">
     <h2>About</h2>
     <p>I'm <strong>Emmanuel Effiom Duke</strong>, an interdisciplinary researcher focused on <strong>energy systems and air quality</strong>, and a full-stack developer. My research spans CFD modeling of power-plant components, machine-learning-driven energy optimization, and open digital platforms for climate and citizen science.</p>
-    <p>Alongside research, I build software — AI agents, geospatial tools, and platforms for agriculture, security, and career development. My work as a finalist essay entrant reflects an ongoing interest in higher-education and development challenges across Nigeria and Africa.</p>
+    <p>Alongside research, I build software — AI agents, geospatial tools, and platforms for agriculture, security, and career development, with an ongoing interest in development challenges across Nigeria and Africa.</p>
   </section>
 
   <section id="publications">
@@ -127,6 +136,7 @@
 <script>
   document.getElementById('yr').textContent = new Date().getFullYear();
   const projects = [
+    {name:"Motion-Sensing Alarm System",desc:"Arduino-based motion-sensing alarm using a PIR sensor and buzzer to detect movement and trigger an alert.",lang:"Arduino / C++",url:"https://github.com/dukemawex"},
     {name:"mechinterp-phishing-probe",desc:"Applying mechanistic interpretability to detect social-engineering circuits in LLMs.",lang:"Python",url:"https://github.com/dukemawex/mechinterp-phishing-probe"},
     {name:"LandChain Africa",desc:"Blockchain-secured land registry with GIS boundary dispute resolution.",lang:"Python",url:"https://github.com/dukemawex/-LandChain-Africa"},
     {name:"FarmVoice-AI",desc:"Agricultural extension AI agent for farmers.",lang:"TypeScript",url:"https://github.com/dukemawex/FarmVoice-AI"},
