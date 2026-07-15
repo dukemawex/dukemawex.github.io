@@ -309,7 +309,7 @@
     <div class="grid">
       <div class="card"><span class="tag">Politecnico di Milano</span><h3>Off-Grid Energy Systems Modelling</h3><p>MICROGRIDSPY — energy systems modelling (2025).</p></div>
       <div class="card"><span class="tag">Strathmore University</span><h3>Data for Renewable Energy Systems</h3><p>Data analysis &amp; collection for renewables (2025).</p></div>
-      <div class="card"><span class="tag">AI Safety Hungary</span><h3>AGI Safety Fundamentals</h3><p>Technical course + policy track (2024).</p></div>
+      <div class="card"><span class="tag">AI Safety Hungary</span><h3>AI Safety Fundamentals &amp; Technical AI Safety</h3><p>Introductory AI Safety Fundamentals course and the Technical AI Safety / Alignment track.</p></div>
       <div class="card"><span class="tag">Common Purpose</span><h3>Social Impact — Common Purpose Legacy</h3><p>Leadership, relationship building &amp; collaboration (2020).</p></div>
       <div class="card"><span class="tag">Cisco</span><h3>IT Essentials</h3><p>UNITeS Cisco Networking Academy.</p></div>
       <div class="card"><span class="tag">HP LIFE</span><h3>Energy Efficiency &amp; Inventory Management</h3><p>Business and operations foundations.</p></div>
@@ -335,6 +335,9 @@
 <script>
   document.getElementById('yr').textContent = new Date().getFullYear();
   const projects = [
+    {name:"SPD Mechanism Clustering",desc:"Mechanistic-interpretability research: the first systematic empirical study of automated mechanism clustering for Stochastic Parameter Decomposition (SPD). Seven experiments from toy models to a real grokked transformer, showing component specialization — not clustering-signal choice — is the binding constraint. Paper + reproducible code.",lang:"AI Safety · Python",url:"https://github.com/dukemawex"},
+    {name:"Reward-Generalization Early Warning",desc:"Reproduces unintended reward generalization (the OpenAI 'goblin' dynamic) in a controlled model and tests whether internal signals can flag reward spread before it surfaces in outputs — a follow-up to OpenAI's alignment research.",lang:"AI Safety · Python",url:"https://github.com/dukemawex"},
+    {name:"Deception Feature Universality",desc:"Cross-architecture interpretability study finding statistically significant representational universality (CKA 0.56 vs null 0.26, p=0.024) for deception cues — evidence that different models represent phishing/social-engineering concepts similarly.",lang:"AI Safety · Python",url:"https://github.com/dukemawex"},
     {name:"AxiosPay",desc:"Cross-border FX for African travelers — swap NGN, KES, UGX, GHS & ZAR at live mid-market rates with a 1.5% flat fee and instant settlement. 4th place, Interswitch × Enyata Developer Hackathon.",lang:"Fintech · Web",url:"https://axioslast-web.vercel.app/"},
     {name:"GeoDrill",desc:"AI-powered geological drilling intelligence platform — scores drilling probability across a region and renders a live risk heatmap.",lang:"TypeScript",url:"https://github.com/dukemawex/Geodrill"},
     {name:"Motion-Sensing Alarm System",desc:"Arduino-based motion-sensing alarm using a PIR sensor and buzzer to detect movement and trigger an alert.",lang:"Arduino · C++",url:"https://github.com/dukemawex"},
