@@ -13,137 +13,285 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Newsreader:ital,opsz@0,6..72;1,6..72&display=swap" rel="stylesheet" />
+<script>
+  /* Runs before paint: enables reveal motion, flags local previews (shows photo-slot filenames),
+     and defines the photo slot handlers used by the inline onload/onerror attributes below. */
+  (function(d){
+    d.classList.add('js');
+    var h = location.hostname;
+    if (location.protocol === 'file:' || h === 'localhost' || h === '' || /^(127\.|0\.0\.0\.0|\[::1\])/.test(h)) d.classList.add('is-local');
+  })(document.documentElement);
+  function photoOk(img){ var m = img.closest('.media'); m && m.classList.add('ok'); var f = img.closest('figure'); f && f.classList.add('ok'); }
+  function photoMissing(img){ var p = img.closest('picture') || img; p.remove(); }
+</script>
 <style>
   :root{
     --bg:#0b0f16; --elev:#141b26; --card:#131a25; --card-hi:#182231; --line:#232d3c;
-    --text:#eaf0f7; --dim:#9fadbe; --faint:#6b7b8e; --accent:#5eb3f6; --accent-2:#7ee0c0; --accent-3:#b79cff;
-    --radius:16px; --max:1040px;
+    --text:#eaf0f7; --dim:#9fadbe; --faint:#7a8a9e; --accent:#5eb3f6; --accent-2:#7ee0c0; --accent-3:#b79cff;
+    --radius:16px; --max:1120px; --gutter:24px; --nav-h:60px;
+    --serif:Newsreader,Georgia,serif;
   }
+  @media(max-width:480px){:root{--gutter:18px;--nav-h:56px}}
   *{box-sizing:border-box}
-  html{scroll-behavior:smooth}
+  @media(prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
   body{margin:0;background:var(--bg);color:var(--text);
     font-family:Inter,system-ui,-apple-system,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
   a{color:var(--accent);text-decoration:none}
   a:hover{color:#8cc9fb}
-  .wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
-
-  /* Nav */
-  nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(12px);
-    background:rgba(11,15,22,.72);border-bottom:1px solid var(--line)}
-  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
-  .brand{font-weight:800;letter-spacing:-.02em;font-size:16px;color:var(--text)}
-  .brand span{color:var(--accent)}
-  .navlinks{display:flex;gap:26px}
-  .navlinks a{color:var(--dim);font-size:14px;font-weight:500}
-  .navlinks a:hover{color:var(--text)}
-  @media(max-width:640px){.navlinks{display:none}}
-
-  /* Hero */
-  .hero-bg{position:relative}
-  .hero-bg::before{content:"";position:absolute;inset:0;z-index:-1;
-    background:
-      radial-gradient(50% 60% at 82% 8%,rgba(94,179,246,.18),transparent 60%),
-      radial-gradient(45% 55% at 12% 20%,rgba(183,156,255,.14),transparent 60%),
-      radial-gradient(60% 70% at 50% 120%,rgba(126,224,192,.10),transparent 60%);}
-  header.hero{display:grid;grid-template-columns:1.4fr .9fr;gap:46px;align-items:center;padding:74px 0 60px}
-  @media(max-width:760px){header.hero{grid-template-columns:1fr;text-align:center;padding:52px 0 42px}}
-  .eyebrow{color:var(--accent-2);font-weight:600;font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;margin:0 0 16px}
-  h1{font-size:clamp(36px,6.2vw,62px);line-height:1.02;letter-spacing:-.03em;margin:0 0 18px;font-weight:900}
-  h1 .grad{background:linear-gradient(100deg,var(--accent),var(--accent-2));-webkit-background-clip:text;background-clip:text;color:transparent}
-  .lede{font-size:clamp(16.5px,2.2vw,19px);color:var(--dim);max-width:560px;margin:0 0 28px}
-  @media(max-width:760px){.lede{margin-left:auto;margin-right:auto}}
-  .actions{display:flex;flex-wrap:wrap;gap:11px}
-  @media(max-width:760px){.actions{justify-content:center}}
-  .btn{display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:11px;font-weight:600;font-size:14px;
-    border:1px solid var(--line);background:var(--elev);color:var(--text);transition:.16s}
-  .btn:hover{border-color:var(--accent);transform:translateY(-2px);color:var(--text)}
-  .btn.primary{background:linear-gradient(100deg,var(--accent),#4aa3ee);color:#06121f;border-color:transparent}
-  .btn.primary:hover{box-shadow:0 10px 30px rgba(94,179,246,.3)}
-  .portrait{justify-self:center;position:relative}
-  .portrait img{width:280px;height:280px;border-radius:24px;object-fit:cover;
-    border:1px solid var(--line);box-shadow:0 30px 70px rgba(0,0,0,.55)}
-  .portrait::after{content:"";position:absolute;inset:-2px;border-radius:26px;z-index:-1;
-    background:linear-gradient(140deg,var(--accent),var(--accent-3));opacity:.5;filter:blur(14px)}
-  @media(max-width:760px){.portrait img{width:200px;height:200px}}
-
-  /* Stat strip */
-  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;padding:26px 0 6px}
-  @media(max-width:640px){.stats{grid-template-columns:repeat(2,1fr)}}
-  .stat{border:1px solid var(--line);border-radius:14px;padding:16px 18px;background:var(--card)}
-  .stat b{display:block;font-size:26px;font-weight:800;letter-spacing:-.02em;background:linear-gradient(100deg,var(--accent),var(--accent-2));-webkit-background-clip:text;background-clip:text;color:transparent}
-  .stat span{font-size:12.5px;color:var(--faint)}
-
-  section{padding:52px 0;border-top:1px solid var(--line)}
-  .kicker{color:var(--accent);font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;margin:0 0 8px}
-  .h2{font-size:clamp(22px,3.4vw,30px);font-weight:800;letter-spacing:-.02em;margin:0 0 26px}
-  .about p{color:var(--dim);max-width:720px;margin:0 0 15px;font-size:16.5px}
-  .about strong{color:var(--text);font-weight:600}
-
-  /* Cards grid */
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;transition:.16s;
-    display:flex;flex-direction:column;gap:10px;position:relative;overflow:hidden}
-  .card::before{content:"";position:absolute;left:0;top:0;height:3px;width:100%;
-    background:linear-gradient(90deg,var(--accent),var(--accent-2));opacity:0;transition:.16s}
-  .card:hover{border-color:#33465c;transform:translateY(-3px);background:var(--card-hi)}
-  .card:hover::before{opacity:1}
-  .card h3{margin:0;font-size:16.5px;font-weight:700}
-  .card p{margin:0;color:var(--dim);font-size:14px;flex:1}
-  .tag{align-self:flex-start;font-size:11px;font-weight:700;letter-spacing:.03em;color:var(--accent-2);background:rgba(126,224,192,.1);
-    padding:3px 10px;border-radius:999px;text-transform:uppercase}
-  .card .arrow{color:var(--faint);font-size:13px;font-weight:600}
-  .card:hover .arrow{color:var(--accent)}
-
-  /* Leadership list */
-  .lead{display:grid;gap:14px}
-  .lead .item{display:flex;gap:16px;align-items:flex-start;padding:18px 20px;border:1px solid var(--line);border-radius:14px;background:var(--card)}
-  .lead .item:hover{background:var(--card-hi);border-color:#33465c}
-  .lead .ic{flex-shrink:0;width:42px;height:42px;border-radius:11px;display:grid;place-items:center;
-    background:rgba(94,179,246,.12);color:var(--accent)}
-  .lead h3{margin:0 0 3px;font-size:16px;font-weight:700}
-  .lead .role{color:var(--accent-2);font-size:13px;font-weight:600;margin:0 0 5px}
-  .lead p{margin:0;color:var(--dim);font-size:14px}
-
-  /* Publications */
-  .pub{display:flex;gap:18px;padding:18px 0;border-bottom:1px solid var(--line)}
-  .pub:last-child{border-bottom:none}
-  .pub .yr{color:var(--accent);font-weight:800;font-variant-numeric:tabular-nums;min-width:50px;font-size:15px}
-  .pub .body h3{margin:0 0 5px;font-size:16.5px;font-weight:600;font-family:Newsreader,serif;line-height:1.35}
-  .pub .body .meta{color:var(--faint);font-size:13.5px}
-  .pub .body .auth{color:var(--dim);font-size:13.5px}
-
-  footer{padding:48px 0 74px;color:var(--faint);font-size:14px;text-align:center;border-top:1px solid var(--line)}
-  .links{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:20px}
-  .links a{display:inline-flex;align-items:center;gap:7px;padding:9px 15px;border:1px solid var(--line);border-radius:10px;color:var(--dim);font-weight:500;font-size:13.5px;transition:.16s}
-  .links a:hover{border-color:var(--accent);color:var(--text);transform:translateY(-2px)}
-  svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-  .muted{color:var(--faint);font-size:13.5px;margin-top:20px}
+  a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:6px}
+  img{display:block;max-width:100%;height:auto}
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 var(--gutter)}
+  section,footer{scroll-margin-top:calc(var(--nav-h) + 8px)}
   ::selection{background:rgba(94,179,246,.32)}
-  .reveal{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease}
-  .reveal.in{opacity:1;transform:none}
+  svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 
-  .timeline{display:grid;gap:2px;position:relative}
-  .tl{display:flex;gap:18px;padding:0 0 22px 4px;position:relative}
-  .tl .dot{width:12px;height:12px;border-radius:50%;background:var(--accent);margin-top:6px;flex-shrink:0;box-shadow:0 0 0 4px rgba(94,179,246,.14)}
-  .tl:not(:last-child)::before{content:"";position:absolute;left:9px;top:18px;bottom:0;width:2px;background:var(--line)}
-  .tl-b h3{margin:0 0 3px;font-size:16.5px;font-weight:700}
-  .tl-b .role{color:var(--accent-2);font-size:13.5px;font-weight:600;margin:0 0 2px}
-  .tl-b .when{color:var(--faint);font-size:12.5px;font-variant-numeric:tabular-nums;margin:0 0 6px}
-  .tl-b p{margin:0;color:var(--dim);font-size:14px;max-width:640px}
-  .subh{font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);margin:26px 0 14px;font-weight:600}
+  /* ---------- Nav ---------- */
+  nav{position:sticky;top:0;z-index:50;-webkit-backdrop-filter:blur(14px) saturate(140%);backdrop-filter:blur(14px) saturate(140%);
+    background:rgba(11,15,22,.74);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:20px;height:var(--nav-h)}
+  .brand{font-weight:800;letter-spacing:-.02em;font-size:16px;color:var(--text);white-space:nowrap;flex:none}
+  .brand span{color:var(--accent)}
+  .brand:hover{color:var(--text)}
+  .navlinks{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;min-width:0}
+  .navlinks::-webkit-scrollbar{display:none}
+  .navlinks a{position:relative;color:var(--dim);font-size:14px;font-weight:500;padding:8px 10px;white-space:nowrap;border-radius:8px}
+  .navlinks a:hover{color:var(--text)}
+  .navlinks a::after{content:"";position:absolute;left:10px;right:10px;bottom:2px;height:2px;border-radius:2px;background:var(--accent);
+    transform:scaleX(0);transition:transform .25s ease}
+  .navlinks a[aria-current="true"]{color:var(--text)}
+  .navlinks a[aria-current="true"]::after{transform:scaleX(1)}
+  @media(max-width:720px){
+    .navlinks{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 14px,#000 calc(100% - 22px),transparent);
+      mask-image:linear-gradient(90deg,transparent 0,#000 14px,#000 calc(100% - 22px),transparent);padding:0 14px}
+    .navlinks a{font-size:13.5px;padding:8px 8px}
+    .navlinks a::after{left:8px;right:8px}
+  }
+
+  /* ---------- Shared type ---------- */
+  .kicker{font-family:var(--serif);font-style:italic;font-weight:400;color:var(--accent-2);font-size:19px;line-height:1.3;margin:0 0 6px;letter-spacing:0}
+  .h2{font-size:clamp(26px,3.6vw,38px);line-height:1.12;font-weight:750;letter-spacing:-.025em;margin:0 0 clamp(28px,4vw,44px);max-width:22ch}
+  .muted{color:var(--faint);font-size:14px;margin:28px 0 0}
+  .quiet-link{color:var(--dim);border-bottom:1px solid var(--line);padding-bottom:1px;transition:color .2s,border-color .2s}
+  .quiet-link:hover{color:var(--text);border-color:var(--accent)}
+  .tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--accent-2);text-transform:uppercase;line-height:1.4}
+
+  /* ---------- Buttons ---------- */
+  .actions{display:flex;flex-wrap:wrap;gap:12px}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:11px;font-weight:600;font-size:14.5px;
+    border:1px solid var(--line);background:var(--elev);color:var(--text);transition:border-color .2s,transform .2s,box-shadow .2s}
+  .btn:hover{border-color:var(--accent);color:var(--text)}
+  .btn.primary{background:var(--accent);color:#06121f;border-color:transparent}
+  .btn.primary:hover{box-shadow:0 10px 30px rgba(94,179,246,.3);color:#06121f}
+  .btn.outline{background:transparent;border-color:rgba(94,179,246,.5)}
+  @media(prefers-reduced-motion:no-preference){.btn:hover{transform:translateY(-2px)}}
+
+  /* ---------- Hero ---------- */
+  .hero-bg{position:relative;isolation:isolate}
+  .hero-bg::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+    background:
+      radial-gradient(50% 60% at 82% 8%,rgba(94,179,246,.16),transparent 60%),
+      radial-gradient(45% 55% at 12% 20%,rgba(183,156,255,.11),transparent 60%),
+      radial-gradient(60% 70% at 50% 120%,rgba(126,224,192,.08),transparent 60%);}
+  header.hero{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,.85fr);grid-template-areas:"text fig";
+    gap:clamp(32px,6vw,80px);align-items:center;padding:clamp(56px,8vw,104px) 0 clamp(56px,7vw,96px)}
+  .hero-text{grid-area:text}
+  .eyebrow{font-family:var(--serif);font-style:italic;color:var(--accent-2);font-size:20px;margin:0 0 14px}
+  h1{font-size:clamp(34px,5.4vw,60px);line-height:1.04;letter-spacing:-.03em;margin:0 0 20px;font-weight:850}
+  h1 em{font-family:var(--serif);font-style:italic;font-weight:500;letter-spacing:-.01em}
+  .lede{font-size:clamp(17px,1.8vw,19.5px);color:var(--dim);max-width:34em;margin:0 0 8px;line-height:1.55}
+  .lede-tail{font-family:var(--serif);font-style:italic;color:var(--dim);font-size:clamp(16px,1.6vw,18px);margin:0 0 30px}
+  .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin:0 0 32px;padding:0;list-style:none;
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .stat{padding:16px 16px 16px 0}
+  .stat + .stat{padding-left:16px;border-left:1px solid var(--line)}
+  .stat b{display:block;font-size:clamp(22px,2.4vw,28px);font-weight:800;letter-spacing:-.02em;color:var(--text);line-height:1.15}
+  .stat span{display:block;font-size:12.5px;color:var(--faint);line-height:1.35;margin-top:4px}
+
+  .portrait{grid-area:fig;margin:0;justify-self:end;width:100%;max-width:360px}
+  .portrait .frame{position:relative;border-radius:22px;padding:6px;
+    background:linear-gradient(150deg,rgba(94,179,246,.55),rgba(126,224,192,.18) 45%,rgba(183,156,255,.35));
+    box-shadow:0 30px 80px -20px rgba(0,0,0,.65),0 0 60px -10px rgba(94,179,246,.25)}
+  .portrait img{width:100%;height:auto;aspect-ratio:4/5;object-fit:cover;object-position:50% 20%;border-radius:17px;background:var(--elev)}
+  .portrait figcaption{margin-top:14px;font-size:13px;color:var(--faint);display:flex;flex-direction:column;gap:2px;padding-left:4px}
+  .portrait figcaption b{color:var(--dim);font-weight:600;font-size:13.5px}
+
+  @media(max-width:719px){
+    header.hero{grid-template-columns:1fr;grid-template-areas:"fig" "text";gap:22px;padding:24px 0 48px}
+    .portrait{justify-self:start;max-width:none;display:grid;grid-template-columns:104px 1fr;gap:16px;align-items:end}
+    .portrait .frame{padding:3px;border-radius:16px}
+    .portrait img{border-radius:13px}
+    .portrait figcaption{margin:0 0 4px}
+    .eyebrow{font-size:18px;margin-bottom:8px}
+    h1{margin-bottom:14px}
+    .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .stat:nth-child(3){padding-left:0;border-left:0}
+    .stat:nth-child(n+3){border-top:1px solid var(--line)}
+  }
+
+  /* ---------- Sections ---------- */
+  main > section{padding:clamp(72px,10vw,120px) 0;border-top:1px solid var(--line)}
+  main > section:first-child{border-top:0;padding-top:clamp(24px,4vw,48px)}
+
+  /* ---------- Media slots (photos + placeholders) ---------- */
+  .media{position:relative;overflow:hidden;background:
+      radial-gradient(120% 90% at 0% 0%,rgba(94,179,246,.20),transparent 55%),
+      radial-gradient(100% 80% at 100% 100%,rgba(126,224,192,.12),transparent 60%),var(--elev)}
+  .r1610{aspect-ratio:16/10} .r32{aspect-ratio:3/2}
+  .media picture,.media > img{position:absolute;inset:0;width:100%;height:100%}
+  .media img{width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .4s ease}
+  .media.ok img{opacity:1}
+  .media.ok .cover,.media.ok .ph,.media.ok .dev-hint{visibility:hidden}
+  .ph{position:absolute;inset:0;display:flex;align-items:flex-end;padding:16px 18px;
+    background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.025) 0 1px,transparent 1px 14px)}
+  .ph span{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);font-weight:600}
+  .dev-hint{display:none}
+  html.is-local .dev-hint{display:block;position:absolute;top:10px;right:10px;z-index:2;font:11px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;
+    color:var(--accent-2);background:rgba(11,15,22,.8);border:1px dashed rgba(126,224,192,.5);padding:3px 7px;border-radius:6px}
+  .cover{position:absolute;inset:0;display:grid;place-items:center}
+  .cover .ini{font-family:var(--serif);font-style:italic;font-weight:400;line-height:1;font-size:clamp(72px,9vw,120px);color:var(--accent);opacity:.85}
+  .cover .lbl{position:absolute;left:16px;bottom:12px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);font-weight:600}
+  .pcard:nth-child(3n+2) .cover .ini{color:var(--accent-2)}
+  .pcard:nth-child(3n+3) .cover .ini{color:var(--accent-3)}
+  .pcard:nth-child(3n+2) .media{background:radial-gradient(120% 90% at 100% 0%,rgba(126,224,192,.18),transparent 55%),radial-gradient(100% 80% at 0% 100%,rgba(94,179,246,.10),transparent 60%),var(--elev)}
+  .pcard:nth-child(3n+3) .media{background:radial-gradient(120% 90% at 50% 0%,rgba(183,156,255,.18),transparent 55%),radial-gradient(100% 80% at 100% 100%,rgba(94,179,246,.10),transparent 60%),var(--elev)}
+
+  /* ---------- Selected work ---------- */
+  .work{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+  .work-more{margin-top:24px;gap:16px}
+  @media(max-width:719px){.work{grid-template-columns:1fr}}
+  .pcard{position:relative;display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    overflow:hidden;transition:border-color .2s,background .2s,transform .2s}
+  .pcard:hover{border-color:#33465c;background:var(--card-hi)}
+  .pcard:focus-within{border-color:var(--accent)}
+  @media(prefers-reduced-motion:no-preference){.pcard:hover{transform:translateY(-3px)}}
+  .pc-body{display:flex;flex-direction:column;gap:8px;padding:20px 22px 22px;flex:1;min-width:0}
+  .pcard h3{margin:0;font-size:19px;font-weight:700;letter-spacing:-.01em;line-height:1.3}
+  .pcard h3 a{color:var(--text)}
+  .pcard h3 a::after{content:"";position:absolute;inset:0;z-index:1}
+  .pcard h3 a:focus-visible{outline:none}
+  .pcard p{margin:0;color:var(--dim);font-size:14.5px;line-height:1.55}
+  .pcard .go{margin-top:auto;padding-top:6px;color:var(--faint);font-size:13.5px;font-weight:600}
+  .pcard:hover .go{color:var(--accent)}
+  .pcard.compact{flex-direction:row;align-items:flex-start}
+  .pcard.compact .media{flex:none;width:clamp(96px,22%,148px);margin:18px 0 18px 18px;border-radius:10px}
+  .pcard.compact .cover .ini{font-size:44px}
+  .pcard.compact .pc-body{padding:16px 20px 18px 18px;gap:5px}
+  .pcard.compact h3{font-size:16.5px}
+  .pcard.compact p{font-size:14px}
+
+  /* clamp: visual only, full text stays in the DOM */
+  .clamp{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:var(--lines,3);overflow:hidden}
+  .clamp.l2{--lines:2}
+  .clamp.open{display:block;-webkit-line-clamp:unset;overflow:visible}
+  .more{display:none;margin-top:6px;padding:0;background:none;border:0;color:var(--accent);font:600 13px/1.4 Inter,system-ui,sans-serif;cursor:pointer}
+  .more.on{display:inline-block}
+
+  /* ---------- About ---------- */
+  .about-grid{display:grid;grid-template-columns:minmax(0,.75fr) minmax(0,1.4fr);gap:clamp(28px,6vw,80px)}
+  .about-grid .h2{margin-bottom:0}
+  .about-copy p{color:var(--dim);margin:0 0 18px;font-size:17px;max-width:62ch}
+  .about-copy p:first-child{font-family:var(--serif);font-size:clamp(20px,2.2vw,24px);line-height:1.5;color:var(--text);margin-bottom:24px}
+  .about-copy p:first-child strong{font-weight:600;color:var(--text)}
+  .about-copy strong{color:var(--text);font-weight:600}
+  @media(max-width:819px){.about-grid{grid-template-columns:1fr;gap:0}.about-grid .h2{margin-bottom:28px}}
+
+  /* ---------- Field band ---------- */
+  .band{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;padding:0 0 clamp(72px,10vw,120px)}
+  .band figure,.talk{margin:0}
+  .band .media,.talk .media{border-radius:var(--radius);border:1px solid var(--line)}
+  .band figcaption,.talk figcaption{display:none;margin-top:10px;font-size:13px;color:var(--faint)}
+  .band figure.ok figcaption,.talk.ok figcaption{display:block}
+  @media(max-width:599px){.band{grid-template-columns:1fr}}
+
+  /* ---------- Timeline (experience + leadership) ---------- */
+  .tline{list-style:none;margin:0;padding:0}
+  .tl{display:grid;grid-template-columns:76px minmax(0,1fr);gap:0 28px}
+  .tl-yr{font-family:var(--serif);font-size:21px;line-height:1.3;color:var(--dim);text-align:right;font-variant-numeric:tabular-nums;padding-top:1px}
+  .tl-b{position:relative;padding:0 0 40px 30px;border-left:1px solid var(--line);max-width:700px}
+  .tl:last-child .tl-b{padding-bottom:4px}
+  .tl-b::before{content:"";position:absolute;left:-5px;top:9px;width:9px;height:9px;border-radius:50%;background:var(--bg);border:1px solid var(--accent)}
+  .tl.now .tl-b::before{background:var(--accent);box-shadow:0 0 0 4px rgba(94,179,246,.14)}
+  .tl-b h3{margin:0 0 4px;font-size:18px;font-weight:700;letter-spacing:-.01em;line-height:1.35}
+  .tl-b .role{color:var(--accent-2);font-size:14px;font-weight:600;margin:0 0 2px}
+  .tl-b .when{color:var(--faint);font-size:13px;font-variant-numeric:tabular-nums;margin:0 0 8px}
+  .tl-b .desc{margin:0;color:var(--dim);font-size:15px;line-height:1.6}
+  @media(max-width:599px){
+    .tl{grid-template-columns:44px minmax(0,1fr);gap:0 16px}
+    .tl-yr{font-size:16px}
+    .tl-b{padding-left:20px;padding-bottom:32px}
+  }
+  .lead-wrap{display:grid;grid-template-columns:1fr;gap:clamp(28px,5vw,64px);align-items:start}
+  .lead-wrap.has-fig,html.is-local .lead-wrap{grid-template-columns:minmax(0,1.35fr) minmax(0,.85fr)}
+  html.is-local .talk[hidden]{display:block}
+  @media(max-width:819px){.lead-wrap.has-fig,html.is-local .lead-wrap{grid-template-columns:1fr}}
+
+  /* ---------- Ruled lists (education, help, credentials) ---------- */
+  .ruled{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 clamp(24px,4vw,48px)}
+  .ruled.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .ruled > div{border-top:1px solid var(--line);padding:20px 0 28px;display:flex;flex-direction:column;gap:6px}
+  .ruled h3{margin:0;font-size:17px;font-weight:700;letter-spacing:-.01em;line-height:1.35}
+  .ruled p{margin:0;color:var(--dim);font-size:14.5px}
+  @media(max-width:899px){.ruled{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:599px){.ruled,.ruled.two{grid-template-columns:1fr}.ruled > div{padding:18px 0 22px}}
+  .subh{font-family:var(--serif);font-style:italic;font-weight:400;font-size:21px;color:var(--text);margin:0 0 14px}
+  .subh + .ruled{margin-bottom:44px}
+
+  .help-intro{max-width:62ch;color:var(--dim);margin:-16px 0 32px;font-size:17px}
+  .cta-band{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-top:28px;padding:20px 22px;border:1px solid var(--line);border-radius:18px;
+    background:linear-gradient(120deg,rgba(94,179,246,.08),rgba(126,224,192,.04) 60%,transparent),var(--elev)}
+  .cta-band picture{flex:none}
+  .cta-band .actions{flex:1;min-width:0}
+  @media(max-width:479px){.cta-band{flex-wrap:nowrap;align-items:flex-start;gap:16px;padding:18px}.cta-band img{width:52px;height:52px}.cta-band .btn{padding:10px 14px;font-size:14px}}
+  .cta-band img{width:64px;height:64px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 2px var(--bg),0 0 0 3px rgba(94,179,246,.55)}
+
+  /* ---------- Publications ---------- */
+  .pubs{display:grid;gap:0}
+  .pub-year{display:grid;grid-template-columns:96px minmax(0,1fr);gap:0 28px}
+  .pub-year > .yr{font-family:var(--serif);font-size:30px;line-height:1.1;color:var(--text);font-variant-numeric:tabular-nums;text-align:right;
+    padding-top:18px;align-self:start;position:sticky;top:calc(var(--nav-h) + 20px)}
+  .pub-list{border-left:1px solid var(--line);padding-left:30px}
+  .pub{padding:18px 0 22px;border-bottom:1px solid rgba(35,45,60,.6)}
+  .pub-year:last-child .pub:last-child{border-bottom:0}
+  .pub h3{margin:0 0 6px;font-size:clamp(17px,1.9vw,19.5px);font-weight:500;font-family:var(--serif);line-height:1.35;max-width:52ch}
+  .pub .meta{color:var(--faint);font-size:13.5px}
+  .pub .auth{color:var(--dim);font-size:13.5px}
+  a.doi{display:inline-block;font:12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--dim);border:1px solid var(--line);
+    border-radius:6px;padding:1px 7px;word-break:break-all;transition:color .2s,border-color .2s}
+  a.doi:hover{color:var(--accent);border-color:rgba(94,179,246,.5)}
+  @media(max-width:599px){
+    .pub-year{grid-template-columns:1fr}
+    .pub-year > .yr{position:static;text-align:left;font-size:24px;padding:20px 0 4px}
+    .pub-list{padding-left:18px}
+  }
+
+  /* ---------- Footer ---------- */
+  footer{padding:clamp(72px,10vw,112px) 0 72px;color:var(--faint);font-size:14px;text-align:center;border-top:1px solid var(--line)}
+  footer .kicker{margin-bottom:22px}
+  .links{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:28px}
+  .links a{display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border:1px solid var(--line);border-radius:10px;color:var(--dim);font-weight:500;font-size:14px;transition:border-color .2s,color .2s,transform .2s}
+  .links a:hover{border-color:var(--accent);color:var(--text)}
+  @media(prefers-reduced-motion:no-preference){.links a:hover{transform:translateY(-2px)}}
+
+  /* ---------- Reveal: opacity + 8px, 400ms; JS-only so no-JS still shows everything ---------- */
+  .js .reveal{opacity:0;transform:translateY(8px);transition:opacity .4s ease,transform .4s ease}
+  .js .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){
+    .js .reveal{opacity:1;transform:none;transition:none}
+    .media img,.navlinks a::after{transition:none}
+  }
 </style>
 </head>
 <body>
 
-<nav>
+<nav aria-label="Primary">
   <div class="wrap">
     <a class="brand" href="#top">Emmanuel <span>Duke</span></a>
     <div class="navlinks">
+      <a href="#projects">Projects</a>
       <a href="#about">About</a>
       <a href="#experience">Experience</a>
       <a href="#leadership">Leadership</a>
       <a href="#help">How I help</a>
-      <a href="#projects">Projects</a>
       <a href="#publications">Research</a>
       <a href="#credentials">Credentials</a>
       <a href="#contact">Contact</a>
@@ -156,177 +304,406 @@
   <header class="hero">
     <div class="hero-text">
       <p class="eyebrow">Emmanuel Effiom Duke</p>
-      <h1>Researcher, developer &amp; <span class="grad">growth leader</span>.</h1>
-      <p class="lede">I work where research, engineering, and impact meet — publishing on energy &amp; air quality, building products that ship, and growing the communities and founders around me. From CFD models to fintech to youth upskilling.</p>
+      <h1>Researcher, developer &amp; <em>growth leader</em>.</h1>
+      <p class="lede">I work where research, engineering, and impact meet — publishing on energy &amp; air quality, building products that ship, and growing the communities and founders around me.</p>
+      <p class="lede-tail">From CFD models to fintech to youth upskilling.</p>
+      <ul class="stats">
+        <li class="stat"><b>6+</b><span>Publications</span></li>
+        <li class="stat"><b>80+</b><span>GitHub repos</span></li>
+        <li class="stat"><b>4th</b><span>Interswitch × Enyata Hackathon</span></li>
+        <li class="stat"><b>10+</b><span>Awards &amp; certifications</span></li>
+      </ul>
       <div class="actions">
-        <a class="btn primary" href="#projects">View projects</a>
-        <a class="btn" href="#publications">Research</a>
-        <a class="btn" href="#contact">Get in touch</a>
+        <a class="btn primary" href="#contact">Get in touch</a>
+        <a class="btn" href="#projects">View projects</a>
       </div>
     </div>
-    <div class="portrait">
-      <img src="assets/emmanuel.png" alt="Emmanuel Effiom Duke" />
-    </div>
+    <!-- Hero portrait: assets/photos/portrait.webp (+ @2x, .jpg fallback), 4:5 crop of the studio photo supplied Oct 2026 -->
+    <figure class="portrait">
+      <div class="frame">
+        <picture>
+          <source type="image/webp" srcset="assets/photos/portrait.webp 360w, assets/photos/portrait@2x.webp 720w" sizes="(max-width: 719px) 104px, 360px" />
+          <img src="assets/photos/portrait.jpg" width="720" height="900" fetchpriority="high" decoding="async"
+               alt="Studio portrait of Emmanuel Effiom Duke in a light grey blazer over a navy collared shirt, against a blue-grey backdrop" />
+        </picture>
+      </div>
+      <figcaption><b>Researcher · Developer · Growth leader</b><span>Enugu State, Nigeria</span></figcaption>
+    </figure>
   </header>
-
-  <div class="stats">
-    <div class="stat"><b>6+</b><span>Publications</span></div>
-    <div class="stat"><b>80+</b><span>GitHub repos</span></div>
-    <div class="stat"><b>4th</b><span>Interswitch × Enyata Hackathon</span></div>
-    <div class="stat"><b>10+</b><span>Awards &amp; certifications</span></div>
-  </div>
 </div>
 </div>
 
-<div class="wrap">
+<main class="wrap">
+
+  <section class="reveal" id="projects">
+    <p class="kicker">Selected work</p>
+    <h2 class="h2">Products &amp; projects.</h2>
+
+    <!-- Featured cards. Screenshot slots map by position, not by product:
+         work-01.webp → card 1 (SPD Mechanism Clustering)
+         work-02.webp → card 2 (Reward-Generalization Early Warning)
+         work-03.webp → card 3 (Deception Feature Universality)
+         work-04.webp → card 4 (AxiosPay)
+         To reassign a screenshot, move its <picture> block to another card. -->
+    <div class="work">
+      <article class="pcard">
+        <!-- work-01.webp -->
+        <div class="media r1610">
+          <div class="cover" aria-hidden="true"><span class="ini">S</span></div>
+          <picture>
+            <source type="image/webp" srcset="assets/photos/work-01.webp" />
+            <img src="assets/photos/work-01.jpg" width="1600" height="1000" loading="lazy" decoding="async" onload="photoOk(this)" onerror="photoMissing(this)"
+                 alt="Screenshot of the SPD Mechanism Clustering project" />
+          </picture>
+          <span class="dev-hint">work-01.webp · 16:10</span>
+        </div>
+        <div class="pc-body">
+          <span class="tag">AI Safety · Python</span>
+          <h3><a href="https://github.com/dukemawex/spd-mechanism-clustering">SPD Mechanism Clustering</a></h3>
+          <p class="clamp">Mechanistic-interpretability research: the first systematic empirical study of automated mechanism clustering for Stochastic Parameter Decomposition (SPD). Seven experiments from toy models to a real grokked transformer, showing component specialization — not clustering-signal choice — is the binding constraint. Paper + reproducible code.</p>
+          <span class="go" aria-hidden="true">View →</span>
+        </div>
+      </article>
+
+      <article class="pcard">
+        <!-- work-02.webp -->
+        <div class="media r1610">
+          <div class="cover" aria-hidden="true"><span class="ini">R</span></div>
+          <picture>
+            <source type="image/webp" srcset="assets/photos/work-02.webp" />
+            <img src="assets/photos/work-02.jpg" width="1600" height="1000" loading="lazy" decoding="async" onload="photoOk(this)" onerror="photoMissing(this)"
+                 alt="Screenshot of the Reward-Generalization Early Warning project" />
+          </picture>
+          <span class="dev-hint">work-02.webp · 16:10</span>
+        </div>
+        <div class="pc-body">
+          <span class="tag">AI Safety · Python</span>
+          <h3><a href="https://github.com/dukemawex/reward-generalization-earlywarning">Reward-Generalization Early Warning</a></h3>
+          <p class="clamp">Reproduces unintended reward generalization (the OpenAI 'goblin' dynamic) in a controlled model and tests whether internal signals can flag reward spread before it surfaces in outputs — a follow-up to OpenAI's alignment research.</p>
+          <span class="go" aria-hidden="true">View →</span>
+        </div>
+      </article>
+
+      <article class="pcard">
+        <!-- work-03.webp -->
+        <div class="media r1610">
+          <div class="cover" aria-hidden="true"><span class="ini">D</span></div>
+          <picture>
+            <source type="image/webp" srcset="assets/photos/work-03.webp" />
+            <img src="assets/photos/work-03.jpg" width="1600" height="1000" loading="lazy" decoding="async" onload="photoOk(this)" onerror="photoMissing(this)"
+                 alt="Screenshot of the Deception Feature Universality project" />
+          </picture>
+          <span class="dev-hint">work-03.webp · 16:10</span>
+        </div>
+        <div class="pc-body">
+          <span class="tag">AI Safety · Python</span>
+          <h3><a href="https://github.com/dukemawex/deception-feature-universality">Deception Feature Universality</a></h3>
+          <p class="clamp">Cross-architecture interpretability study finding statistically significant representational universality (CKA 0.56 vs null 0.26, p=0.024) for deception cues — evidence that different models represent phishing/social-engineering concepts similarly.</p>
+          <span class="go" aria-hidden="true">View →</span>
+        </div>
+      </article>
+
+      <article class="pcard">
+        <!-- work-04.webp -->
+        <div class="media r1610">
+          <div class="cover" aria-hidden="true"><span class="ini">A</span></div>
+          <picture>
+            <source type="image/webp" srcset="assets/photos/work-04.webp" />
+            <img src="assets/photos/work-04.jpg" width="1600" height="1000" loading="lazy" decoding="async" onload="photoOk(this)" onerror="photoMissing(this)"
+                 alt="Screenshot of the AxiosPay cross-border FX web app" />
+          </picture>
+          <span class="dev-hint">work-04.webp · 16:10</span>
+        </div>
+        <div class="pc-body">
+          <span class="tag">Fintech · Web</span>
+          <h3><a href="https://axioslast-web.vercel.app/">AxiosPay</a></h3>
+          <p class="clamp">Cross-border FX for African travelers — swap NGN, KES, UGX, GHS &amp; ZAR at live mid-market rates with a 1.5% flat fee and instant settlement. 4th place, Interswitch × Enyata Developer Hackathon.</p>
+          <span class="go" aria-hidden="true">View →</span>
+        </div>
+      </article>
+    </div>
+
+    <!-- More projects: typographic covers only (no screenshot slots). -->
+    <div class="work work-more">
+      <article class="pcard compact">
+        <div class="media r1610" aria-hidden="true"><div class="cover"><span class="ini">G</span></div></div>
+        <div class="pc-body">
+          <span class="tag">TypeScript</span>
+          <h3><a href="https://github.com/dukemawex/Geodrill">GeoDrill</a></h3>
+          <p class="clamp l2">AI-powered geological drilling intelligence platform — scores drilling probability across a region and renders a live risk heatmap.</p>
+        </div>
+      </article>
+      <article class="pcard compact">
+        <div class="media r1610" aria-hidden="true"><div class="cover"><span class="ini">M</span></div></div>
+        <div class="pc-body">
+          <span class="tag">Arduino · C++</span>
+          <h3><a href="https://github.com/dukemawex">Motion-Sensing Alarm System</a></h3>
+          <p class="clamp l2">Arduino-based motion-sensing alarm using a PIR sensor and buzzer to detect movement and trigger an alert.</p>
+        </div>
+      </article>
+      <article class="pcard compact">
+        <div class="media r1610" aria-hidden="true"><div class="cover"><span class="ini">L</span></div></div>
+        <div class="pc-body">
+          <span class="tag">Python</span>
+          <h3><a href="https://github.com/dukemawex/-LandChain-Africa">LandChain Africa</a></h3>
+          <p class="clamp l2">Blockchain-secured land registry with GIS boundary dispute resolution.</p>
+        </div>
+      </article>
+      <article class="pcard compact">
+        <div class="media r1610" aria-hidden="true"><div class="cover"><span class="ini">F</span></div></div>
+        <div class="pc-body">
+          <span class="tag">TypeScript</span>
+          <h3><a href="https://github.com/dukemawex/FarmVoice-AI">FarmVoice-AI</a></h3>
+          <p class="clamp l2">Agricultural extension AI agent for farmers.</p>
+        </div>
+      </article>
+      <article class="pcard compact">
+        <div class="media r1610" aria-hidden="true"><div class="cover"><span class="ini">S</span></div></div>
+        <div class="pc-body">
+          <span class="tag">TypeScript</span>
+          <h3><a href="https://github.com/dukemawex/SoilIQ">SoilIQ</a></h3>
+          <p class="clamp l2">Soil health intelligence platform.</p>
+        </div>
+      </article>
+      <article class="pcard compact">
+        <div class="media r1610" aria-hidden="true"><div class="cover"><span class="ini">C</span></div></div>
+        <div class="pc-body">
+          <span class="tag">TypeScript</span>
+          <h3><a href="https://github.com/dukemawex/Cropie">Cropie</a></h3>
+          <p class="clamp l2">Crop disease early-warning system.</p>
+        </div>
+      </article>
+      <article class="pcard compact">
+        <div class="media r1610" aria-hidden="true"><div class="cover"><span class="ini">m</span></div></div>
+        <div class="pc-body">
+          <span class="tag">Python</span>
+          <h3><a href="https://github.com/dukemawex/mechinterp-phishing-probe">mechinterp-phishing-probe</a></h3>
+          <p class="clamp l2">Mechanistic interpretability to detect social-engineering circuits in LLMs.</p>
+        </div>
+      </article>
+      <article class="pcard compact">
+        <div class="media r1610" aria-hidden="true"><div class="cover"><span class="ini">T</span></div></div>
+        <div class="pc-body">
+          <span class="tag">JavaScript</span>
+          <h3><a href="https://github.com/dukemawex/Teger-ai">Teger-ai</a></h3>
+          <p class="clamp l2">Unmasking psychological manipulation using AI.</p>
+        </div>
+      </article>
+    </div>
+    <p class="muted">More on <a class="quiet-link" href="https://github.com/dukemawex">GitHub</a>.</p>
+  </section>
 
   <section class="about reveal" id="about">
-    <p class="kicker">About</p>
-    <div class="h2">Interdisciplinary by design.</div>
-    <p>I'm <strong>Emmanuel Effiom Duke</strong>, an interdisciplinary researcher focused on <strong>energy systems and air quality</strong>, a full-stack developer, and a growth leader. My research spans CFD modeling of power-plant components, machine-learning-driven energy optimization, and open digital platforms for climate and citizen science.</p>
-    <p>Beyond research, I ship software that solves real problems — fintech, AI agents, geospatial tools, and platforms across agriculture, security, and career development — and I invest in people, mentoring founders and driving growth for community programmes across Africa.</p>
+    <div class="about-grid">
+      <div>
+        <p class="kicker">About</p>
+        <h2 class="h2">Interdisciplinary by design.</h2>
+      </div>
+      <div class="about-copy">
+        <p>I'm <strong>Emmanuel Effiom Duke</strong>, an interdisciplinary researcher focused on <strong>energy systems and air quality</strong>, a full-stack developer, and a growth leader. My research spans CFD modeling of power-plant components, machine-learning-driven energy optimization, and open digital platforms for climate and citizen science.</p>
+        <p>Beyond research, I ship software that solves real problems — fintech, AI agents, geospatial tools, and platforms across agriculture, security, and career development — and I invest in people, mentoring founders and driving growth for community programmes across Africa.</p>
+      </div>
+    </div>
   </section>
+
+  <!-- Field band: assets/photos/field-01.webp, field-02.webp (3:2). Update alt + figcaption when you add them. -->
+  <div class="band reveal">
+    <figure>
+      <div class="media r32">
+        <div class="ph"><span>Field work · energy &amp; air quality</span></div>
+        <picture>
+          <source type="image/webp" srcset="assets/photos/field-01.webp" />
+          <img src="assets/photos/field-01.jpg" width="1500" height="1000" loading="lazy" decoding="async" onload="photoOk(this)" onerror="photoMissing(this)"
+               alt="Emmanuel Effiom Duke at a research site working on energy and air-quality measurements" />
+        </picture>
+        <span class="dev-hint">field-01.webp · 3:2</span>
+      </div>
+      <figcaption>In the field — energy &amp; air-quality research.</figcaption>
+    </figure>
+    <figure>
+      <div class="media r32">
+        <div class="ph"><span>Lab &amp; site · research context</span></div>
+        <picture>
+          <source type="image/webp" srcset="assets/photos/field-02.webp" />
+          <img src="assets/photos/field-02.jpg" width="1500" height="1000" loading="lazy" decoding="async" onload="photoOk(this)" onerror="photoMissing(this)"
+               alt="Emmanuel Effiom Duke in a lab or plant setting during engineering research" />
+        </picture>
+        <span class="dev-hint">field-02.webp · 3:2</span>
+      </div>
+      <figcaption>Lab and site work behind the research.</figcaption>
+    </figure>
+  </div>
 
   <section class="reveal" id="experience">
     <p class="kicker">Experience</p>
-    <div class="h2">Where I've worked.</div>
-    <div class="timeline">
-      <div class="tl"><div class="dot"></div><div class="tl-b"><h3>Head of Market Research &amp; Growth</h3><p class="role">The Upskill Space [Your Digital Skill Academy] · Part-time · Enugu State, Nigeria</p><p class="when">Jun 2026 – Present</p><p>Drives growth strategy for a fast-scaling upskilling academy — turning student behavior, competitor moves, and market trends into decisions that grow reach and retention.</p></div></div>
-      <div class="tl"><div class="dot"></div><div class="tl-b"><h3>TEF Flagship Mentor</h3><p class="role">The Tony Elumelu Foundation · Part-time</p><p class="when">Mar 2025 – Present</p><p>Mentors early-stage founders across Africa through the continent's flagship entrepreneurship programme, helping them sharpen ideas into fundable, resilient businesses.</p></div></div>
-      <div class="tl"><div class="dot"></div><div class="tl-b"><h3>Member</h3><p class="role">Engineering for Change (E4C) · Part-time · Remote</p><p class="when">Apr 2020 – Present</p><p>An active member of a global engineering community applying technology to real-world development challenges in underserved regions.</p></div></div>
-      <div class="tl"><div class="dot"></div><div class="tl-b"><h3>CTG Participant</h3><p class="role">EU Erasmus+ AirforAll · Seasonal</p><p class="when">Feb 2023 – Feb 2024</p><p>Joined an international citizen-testing group to grow public air-quality knowledge and stress-test the usability of an open environmental toolkit under the EU Erasmus+ AirForAll project.</p></div></div>
-      <div class="tl"><div class="dot"></div><div class="tl-b"><h3>Student Maintenance Intern</h3><p class="role">Transcorp Hotels Plc · Internship · Calabar, Nigeria</p><p class="when">Jan 2022 – Jan 2023</p><p>Hands-on training in the operation and maintenance of MEP and HVAC systems — air-cooled chillers, boilers, and elevators — in a live hospitality environment.</p></div></div>
-    </div>
+    <h2 class="h2">Where I've worked.</h2>
+    <ol class="tline">
+      <li class="tl now"><div class="tl-yr">2026</div><div class="tl-b"><h3>Head of Market Research &amp; Growth</h3><p class="role">The Upskill Space [Your Digital Skill Academy] · Part-time · Enugu State, Nigeria</p><p class="when">Jun 2026 – Present</p><p class="desc clamp">Drives growth strategy for a fast-scaling upskilling academy — turning student behavior, competitor moves, and market trends into decisions that grow reach and retention.</p></div></li>
+      <li class="tl now"><div class="tl-yr">2025</div><div class="tl-b"><h3>TEF Flagship Mentor</h3><p class="role">The Tony Elumelu Foundation · Part-time</p><p class="when">Mar 2025 – Present</p><p class="desc clamp">Mentors early-stage founders across Africa through the continent's flagship entrepreneurship programme, helping them sharpen ideas into fundable, resilient businesses.</p></div></li>
+      <li class="tl now"><div class="tl-yr">2020</div><div class="tl-b"><h3>Member</h3><p class="role">Engineering for Change (E4C) · Part-time · Remote</p><p class="when">Apr 2020 – Present</p><p class="desc clamp">An active member of a global engineering community applying technology to real-world development challenges in underserved regions.</p></div></li>
+      <li class="tl"><div class="tl-yr">2023</div><div class="tl-b"><h3>CTG Participant</h3><p class="role">EU Erasmus+ AirforAll · Seasonal</p><p class="when">Feb 2023 – Feb 2024</p><p class="desc clamp">Joined an international citizen-testing group to grow public air-quality knowledge and stress-test the usability of an open environmental toolkit under the EU Erasmus+ AirForAll project.</p></div></li>
+      <li class="tl"><div class="tl-yr">2022</div><div class="tl-b"><h3>Student Maintenance Intern</h3><p class="role">Transcorp Hotels Plc · Internship · Calabar, Nigeria</p><p class="when">Jan 2022 – Jan 2023</p><p class="desc clamp">Hands-on training in the operation and maintenance of MEP and HVAC systems — air-cooled chillers, boilers, and elevators — in a live hospitality environment.</p></div></li>
+    </ol>
   </section>
 
   <section class="reveal" id="education">
     <p class="kicker">Education</p>
-    <div class="h2">Learning &amp; training.</div>
-    <div class="grid">
-      <div class="card"><span class="tag">Degree · 2024</span><h3>University of Nigeria, Nsukka</h3><p>B.Eng, Mechanical Engineering — foundation in thermodynamics, energy systems, and applied engineering that underpins my research.</p></div>
-      <div class="card"><span class="tag">Summer School</span><h3>Politecnico di Torino</h3><p>Selected for the Earth Summer School, exploring hybrid technologies that convert CO₂ into commercially valuable products (2024).</p></div>
-      <div class="card"><span class="tag">Imperial College London</span><h3>Introduction to Air Quality</h3><p>Examined the health impacts of urban air pollution and the science-led strategies used to measure and reduce it.</p></div>
+    <h2 class="h2">Learning &amp; training.</h2>
+    <div class="ruled">
+      <div><span class="tag">Degree · 2024</span><h3>University of Nigeria, Nsukka</h3><p>B.Eng, Mechanical Engineering — foundation in thermodynamics, energy systems, and applied engineering that underpins my research.</p></div>
+      <div><span class="tag">Summer School</span><h3>Politecnico di Torino</h3><p>Selected for the Earth Summer School, exploring hybrid technologies that convert CO₂ into commercially valuable products (2024).</p></div>
+      <div><span class="tag">Imperial College London</span><h3>Introduction to Air Quality</h3><p>Examined the health impacts of urban air pollution and the science-led strategies used to measure and reduce it.</p></div>
     </div>
   </section>
 
   <section class="reveal" id="leadership">
     <p class="kicker">Impact &amp; Leadership</p>
-    <div class="h2">Building people and communities.</div>
-    <div class="lead">
-      <div class="item">
-        <div class="ic"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
-        <div>
+    <h2 class="h2">Building people and communities.</h2>
+    <div class="lead-wrap">
+      <ol class="tline">
+        <li class="tl now"><div class="tl-yr">2026</div><div class="tl-b">
           <h3>The Upskill Space Enterprise</h3>
           <p class="role">Head of Market Research &amp; Growth (Volunteer) · Jerry Eze Foundation Grantee</p>
-          <p>Volunteer growth lead for a youth-focused upskilling enterprise backed by the Jerry Eze Foundation — shaping the strategy that widens access to digital skills.</p>
-        </div>
-      </div>
-      <div class="item">
-        <div class="ic"><svg viewBox="0 0 24 24"><path d="M12 2 3 7v6c0 5 3.8 8.4 9 9 5.2-.6 9-4 9-9V7l-9-5Z"/><path d="m9 12 2 2 4-4"/></svg></div>
-        <div>
+          <p class="desc clamp">Volunteer growth lead for a youth-focused upskilling enterprise backed by the Jerry Eze Foundation — shaping the strategy that widens access to digital skills.</p>
+        </div></li>
+        <li class="tl now"><div class="tl-yr">2025</div><div class="tl-b">
           <h3>Tony Elumelu Foundation</h3>
           <p class="role">Mentor</p>
-          <p>One of the mentors guiding African entrepreneurs through the Tony Elumelu Foundation — the continent's largest philanthropic entrepreneurship platform.</p>
-        </div>
-      </div>
-      <div class="item">
-        <div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5 17 22l-5-3-5 3 1.5-8.5"/></svg></div>
-        <div>
+          <p class="desc clamp">One of the mentors guiding African entrepreneurs through the Tony Elumelu Foundation — the continent's largest philanthropic entrepreneurship platform.</p>
+        </div></li>
+        <li class="tl"><div class="tl-yr" aria-label="Alumnus">Alum.</div><div class="tl-b">
           <h3>Common Purpose UK</h3>
           <p class="role">Leadership Alumnus</p>
-          <p>Graduate of Common Purpose UK's leadership programme, trained to lead across cultures, sectors, and boundaries.</p>
+          <p class="desc clamp">Graduate of Common Purpose UK's leadership programme, trained to lead across cultures, sectors, and boundaries.</p>
+        </div></li>
+      </ol>
+      <!-- Optional: assets/photos/talk-01.webp (3:2). Remove `hidden` below once the file exists; update alt + caption. -->
+      <figure class="talk" hidden>
+        <div class="media r32">
+          <div class="ph"><span>Speaking &amp; mentoring</span></div>
+          <picture>
+            <source type="image/webp" srcset="assets/photos/talk-01.webp" />
+            <img src="assets/photos/talk-01.jpg" width="1500" height="1000" loading="lazy" decoding="async" onload="photoOk(this)" onerror="photoMissing(this)"
+                 alt="Emmanuel Effiom Duke speaking to or mentoring a group" />
+          </picture>
+          <span class="dev-hint">talk-01.webp · 3:2 · optional</span>
         </div>
-      </div>
+        <figcaption>Speaking and mentoring.</figcaption>
+      </figure>
     </div>
-  </section>
-
-  <section class="reveal" id="projects">
-    <p class="kicker">Selected work</p>
-    <div class="h2">Products &amp; projects.</div>
-    <div class="grid" id="proj-grid"></div>
-    <p class="muted">More on <a href="https://github.com/dukemawex">GitHub</a>.</p>
   </section>
 
   <section class="reveal" id="help">
     <p class="kicker">How I can help</p>
-    <div class="h2">What I bring to your team or organization.</div>
-    <p class="about" style="max-width:720px;color:var(--dim);margin:0 0 22px">Whether you're a research group, a startup, a climate/energy programme, or a mission-driven organization, here's where I can add value — grounded in real research and shipped work.</p>
-    <div class="grid">
-      <div class="card"><span class="tag">Research</span><h3>Energy &amp; air-quality research</h3><p>CFD modeling, energy-systems analysis, ML-driven optimization, and citizen-science air-quality platforms — from study design to publication.</p></div>
-      <div class="card"><span class="tag">Engineering</span><h3>Full-stack product development</h3><p>Ship real products end to end — fintech, AI agents, geospatial dashboards, and data platforms across web and backend.</p></div>
-      <div class="card"><span class="tag">Growth</span><h3>Market research &amp; growth strategy</h3><p>Turn user behavior, competitor analysis, and market trends into growth decisions that expand reach and retention.</p></div>
-      <div class="card"><span class="tag">Data &amp; ML</span><h3>Data science &amp; modeling</h3><p>Data collection, analysis, and machine-learning modeling for energy, climate, and operational efficiency problems.</p></div>
-      <div class="card"><span class="tag">Mentorship</span><h3>Mentorship &amp; capacity building</h3><p>Mentor founders and students (Tony Elumelu Foundation, The Upskill Space) and lead community upskilling programmes.</p></div>
-      <div class="card"><span class="tag">Collaboration</span><h3>Cross-boundary partnerships</h3><p>Common Purpose-trained to work across cultures, sectors, and disciplines — bridging research, industry, and community.</p></div>
+    <h2 class="h2">What I bring to your team or organization.</h2>
+    <p class="help-intro">Whether you're a research group, a startup, a climate/energy programme, or a mission-driven organization, here's where I can add value — grounded in real research and shipped work.</p>
+    <div class="ruled">
+      <div><span class="tag">Research</span><h3>Energy &amp; air-quality research</h3><p>CFD modeling, energy-systems analysis, ML-driven optimization, and citizen-science air-quality platforms — from study design to publication.</p></div>
+      <div><span class="tag">Engineering</span><h3>Full-stack product development</h3><p>Ship real products end to end — fintech, AI agents, geospatial dashboards, and data platforms across web and backend.</p></div>
+      <div><span class="tag">Growth</span><h3>Market research &amp; growth strategy</h3><p>Turn user behavior, competitor analysis, and market trends into growth decisions that expand reach and retention.</p></div>
+      <div><span class="tag">Data &amp; ML</span><h3>Data science &amp; modeling</h3><p>Data collection, analysis, and machine-learning modeling for energy, climate, and operational efficiency problems.</p></div>
+      <div><span class="tag">Mentorship</span><h3>Mentorship &amp; capacity building</h3><p>Mentor founders and students (Tony Elumelu Foundation, The Upskill Space) and lead community upskilling programmes.</p></div>
+      <div><span class="tag">Collaboration</span><h3>Cross-boundary partnerships</h3><p>Common Purpose-trained to work across cultures, sectors, and disciplines — bridging research, industry, and community.</p></div>
     </div>
-    <div class="actions" style="margin-top:24px">
-      <a class="btn primary" href="mailto:duke.emmanueleffiom@gmail.com">Work with me</a>
-      <a class="btn" href="https://github.com/dukemawex/duke-outreach">Partnership kit</a>
+    <div class="cta-band">
+      <picture>
+        <source type="image/webp" srcset="assets/photos/portrait-sm.webp" />
+        <img src="assets/photos/portrait-sm.jpg" width="192" height="192" loading="lazy" decoding="async"
+             alt="Headshot of Emmanuel Effiom Duke smiling, in a light grey collared shirt" />
+      </picture>
+      <div class="actions">
+        <a class="btn outline" href="mailto:duke.emmanueleffiom@gmail.com">Work with me</a>
+        <a class="btn" href="https://github.com/dukemawex/duke-outreach">Partnership kit</a>
+      </div>
     </div>
   </section>
 
   <section class="reveal" id="publications">
     <p class="kicker">Research</p>
-    <div class="h2">Publications.</div>
-    <div class="pub"><div class="yr">2026</div><div class="body">
-      <h3>The Quadaq Framework: A Multi-Level Partnership Model for Sustainable Air Quality Management</h3>
-      <div class="meta">3rd Conference on Future Challenges in Sustainable Urban Planning, 2026</div>
-      <div class="auth">E. E. Duke</div></div></div>
-    <div class="pub"><div class="yr">2025</div><div class="body">
-      <h3>Experimental Study of Fouling Effect on Feed Water Heaters: A CFD Modeling Approach in Steam Power Plants</h3>
-      <div class="meta">10th Virtual International Conference on Science, Technology and Management, 2025</div>
-      <div class="auth">M. N. Eke, E. E. Duke, I. A. Agunbiade</div></div></div>
-    <div class="pub"><div class="yr">2025</div><div class="body">
-      <h3>CFD Simulation of Fouling Effect on Feedwater Heater Outlet Temperature</h3>
-      <div class="meta"><a href="https://doi.org/10.6084/m9.figshare.28280789.v1">doi.org/10.6084/m9.figshare.28280789.v1</a>, 2025</div>
-      <div class="auth">E. Duke</div></div></div>
-    <div class="pub"><div class="yr">2025</div><div class="body">
-      <h3>Mass Performance Analysis for Low-power Electric Vehicles in Urban Transportation</h3>
-      <div class="meta">eNergetics 2025</div>
-      <div class="auth">F. O. C. Odunlami, E. E. Duke</div></div></div>
-    <div class="pub"><div class="yr">2025</div><div class="body">
-      <h3>Machine Learning-driven Energy Optimization Framework for Hospitality Operations: A Case Study of a 130-Room Hotel</h3>
-      <div class="meta">eNergetics 2025</div>
-      <div class="auth">E. E. Duke, M. N. Eke</div></div></div>
-    <div class="pub"><div class="yr">—</div><div class="body">
-      <h3>Management of the Air For All Open Digital Platform for Community Needs in Citizen Science, Climate and Air Quality Activities</h3>
-      <div class="meta">Air For All platform</div>
-      <div class="auth">E. E. Duke</div></div></div>
-    <p class="muted">Full list on <a href="https://scholar.google.com/citations?user=Y8si5ZgAAAAJ&hl=en">Google Scholar</a>.</p>
+    <h2 class="h2">Publications.</h2>
+    <div class="pubs">
+      <div class="pub-year">
+        <div class="yr">2026</div>
+        <div class="pub-list">
+          <article class="pub">
+            <h3>The Quadaq Framework: A Multi-Level Partnership Model for Sustainable Air Quality Management</h3>
+            <div class="meta">3rd Conference on Future Challenges in Sustainable Urban Planning, 2026</div>
+            <div class="auth">E. E. Duke</div>
+          </article>
+        </div>
+      </div>
+      <div class="pub-year">
+        <div class="yr">2025</div>
+        <div class="pub-list">
+          <article class="pub">
+            <h3>Experimental Study of Fouling Effect on Feed Water Heaters: A CFD Modeling Approach in Steam Power Plants</h3>
+            <div class="meta">10th Virtual International Conference on Science, Technology and Management, 2025</div>
+            <div class="auth">M. N. Eke, E. E. Duke, I. A. Agunbiade</div>
+          </article>
+          <article class="pub">
+            <h3>CFD Simulation of Fouling Effect on Feedwater Heater Outlet Temperature</h3>
+            <div class="meta"><a class="doi" href="https://doi.org/10.6084/m9.figshare.28280789.v1">doi.org/10.6084/m9.figshare.28280789.v1</a>, 2025</div>
+            <div class="auth">E. Duke</div>
+          </article>
+          <article class="pub">
+            <h3>Mass Performance Analysis for Low-power Electric Vehicles in Urban Transportation</h3>
+            <div class="meta">eNergetics 2025</div>
+            <div class="auth">F. O. C. Odunlami, E. E. Duke</div>
+          </article>
+          <article class="pub">
+            <h3>Machine Learning-driven Energy Optimization Framework for Hospitality Operations: A Case Study of a 130-Room Hotel</h3>
+            <div class="meta">eNergetics 2025</div>
+            <div class="auth">E. E. Duke, M. N. Eke</div>
+          </article>
+        </div>
+      </div>
+      <div class="pub-year">
+        <div class="yr" aria-label="Undated">—</div>
+        <div class="pub-list">
+          <article class="pub">
+            <h3>Management of the Air For All Open Digital Platform for Community Needs in Citizen Science, Climate and Air Quality Activities</h3>
+            <div class="meta">Air For All platform</div>
+            <div class="auth">E. E. Duke</div>
+          </article>
+        </div>
+      </div>
+    </div>
+    <p class="muted">Full list on <a class="quiet-link" href="https://scholar.google.com/citations?user=Y8si5ZgAAAAJ&amp;hl=en">Google Scholar</a>.</p>
   </section>
 
   <section class="reveal" id="credentials">
     <p class="kicker">Recognition</p>
-    <div class="h2">Honors &amp; certifications.</div>
+    <h2 class="h2">Honors &amp; certifications.</h2>
     <h3 class="subh">Honors &amp; awards</h3>
-    <div class="grid">
-      <div class="card"><span class="tag">2023</span><h3>Award of Active Service</h3><p>Street Priests Inc. — certificate of recognition.</p></div>
-      <div class="card"><span class="tag">2018</span><h3>Agbami Medical &amp; Engineering Scholarship</h3><p>NNPC/Chevron Joint Venture.</p></div>
-      <div class="card"><span class="tag">2011</span><h3>NNPC/STAN Science Competition</h3><p>State-level winner, Science Competition for Primary Schools.</p></div>
-      <div class="card"><span class="tag">2010</span><h3>Nigeria Turkish Mathematics Olympiad</h3><p>Participant (NTS).</p></div>
+    <div class="ruled two">
+      <div><span class="tag">2023</span><h3>Award of Active Service</h3><p>Street Priests Inc. — certificate of recognition.</p></div>
+      <div><span class="tag">2018</span><h3>Agbami Medical &amp; Engineering Scholarship</h3><p>NNPC/Chevron Joint Venture.</p></div>
+      <div><span class="tag">2011</span><h3>NNPC/STAN Science Competition</h3><p>State-level winner, Science Competition for Primary Schools.</p></div>
+      <div><span class="tag">2010</span><h3>Nigeria Turkish Mathematics Olympiad</h3><p>Participant (NTS).</p></div>
     </div>
     <h3 class="subh">Licenses &amp; certifications</h3>
-    <div class="grid">
-      <div class="card"><span class="tag">Politecnico di Milano</span><h3>Off-Grid Energy Systems Modelling</h3><p>MICROGRIDSPY — energy systems modelling (2025).</p></div>
-      <div class="card"><span class="tag">Strathmore University</span><h3>Data for Renewable Energy Systems</h3><p>Data analysis &amp; collection for renewables (2025).</p></div>
-      <div class="card"><span class="tag">AI Safety Hungary</span><h3>AI Safety Fundamentals &amp; Technical AI Safety</h3><p>Introductory AI Safety Fundamentals course and the Technical AI Safety / Alignment track.</p></div>
-      <div class="card"><span class="tag">Common Purpose</span><h3>Social Impact — Common Purpose Legacy</h3><p>Leadership, relationship building &amp; collaboration (2020).</p></div>
-      <div class="card"><span class="tag">Cisco</span><h3>IT Essentials</h3><p>UNITeS Cisco Networking Academy.</p></div>
-      <div class="card"><span class="tag">HP LIFE</span><h3>Energy Efficiency &amp; Inventory Management</h3><p>Business and operations foundations.</p></div>
+    <div class="ruled">
+      <div><span class="tag">Politecnico di Milano</span><h3>Off-Grid Energy Systems Modelling</h3><p>MICROGRIDSPY — energy systems modelling (2025).</p></div>
+      <div><span class="tag">Strathmore University</span><h3>Data for Renewable Energy Systems</h3><p>Data analysis &amp; collection for renewables (2025).</p></div>
+      <div><span class="tag">AI Safety Hungary</span><h3>AI Safety Fundamentals &amp; Technical AI Safety</h3><p>Introductory AI Safety Fundamentals course and the Technical AI Safety / Alignment track.</p></div>
+      <div><span class="tag">Common Purpose</span><h3>Social Impact — Common Purpose Legacy</h3><p>Leadership, relationship building &amp; collaboration (2020).</p></div>
+      <div><span class="tag">Cisco</span><h3>IT Essentials</h3><p>UNITeS Cisco Networking Academy.</p></div>
+      <div><span class="tag">HP LIFE</span><h3>Energy Efficiency &amp; Inventory Management</h3><p>Business and operations foundations.</p></div>
     </div>
-    <p class="muted">Full profile on <a href="https://www.linkedin.com/in/emmanuel-duke-a5723320b/">LinkedIn</a>.</p>
+    <p class="muted">Full profile on <a class="quiet-link" href="https://www.linkedin.com/in/emmanuel-duke-a5723320b/">LinkedIn</a>.</p>
   </section>
-</div>
+</main>
 
 <footer id="contact">
   <div class="wrap">
+    <p class="kicker">Contact</p>
     <div class="links">
-      <a href="mailto:duke.emmanueleffiom@gmail.com"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>Email</a>
-      <a href="https://github.com/dukemawex"><svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>GitHub</a>
-      <a href="https://www.linkedin.com/in/emmanuel-duke-a5723320b/"><svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6Z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>LinkedIn</a>
-      <a href="https://x.com/starduke001"><svg viewBox="0 0 24 24"><path d="M18 2h3l-7 8 8 12h-6l-5-6-5 6H2l8-9L2 2h6l4 5 6-5Z"/></svg>X</a>
-      <a href="https://scholar.google.com/citations?user=Y8si5ZgAAAAJ&hl=en"><svg viewBox="0 0 24 24"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1 2.7 3 6 3s6-2 6-3v-5"/></svg>Scholar</a>
-      <a href="https://sciprofiles.com/profile/EmmanuelDuke"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Z"/><path d="M2 12h20"/></svg>SciProfiles</a>
+      <a href="mailto:duke.emmanueleffiom@gmail.com"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>Email</a>
+      <a href="https://github.com/dukemawex"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>GitHub</a>
+      <a href="https://www.linkedin.com/in/emmanuel-duke-a5723320b/"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6Z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>LinkedIn</a>
+      <a href="https://x.com/starduke001"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 2h3l-7 8 8 12h-6l-5-6-5 6H2l8-9L2 2h6l4 5 6-5Z"/></svg>X</a>
+      <a href="https://scholar.google.com/citations?user=Y8si5ZgAAAAJ&amp;hl=en"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1 2.7 3 6 3s6-2 6-3v-5"/></svg>Scholar</a>
+      <a href="https://sciprofiles.com/profile/EmmanuelDuke"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Z"/><path d="M2 12h20"/></svg>SciProfiles</a>
     </div>
     © <span id="yr"></span> Emmanuel Effiom Duke · <a href="https://duker.me">duker.me</a>
   </div>
@@ -334,31 +711,63 @@
 
 <script>
   document.getElementById('yr').textContent = new Date().getFullYear();
-  const projects = [
-    {name:"SPD Mechanism Clustering",desc:"Mechanistic-interpretability research: the first systematic empirical study of automated mechanism clustering for Stochastic Parameter Decomposition (SPD). Seven experiments from toy models to a real grokked transformer, showing component specialization — not clustering-signal choice — is the binding constraint. Paper + reproducible code.",lang:"AI Safety · Python",url:"https://github.com/dukemawex/spd-mechanism-clustering"},
-    {name:"Reward-Generalization Early Warning",desc:"Reproduces unintended reward generalization (the OpenAI 'goblin' dynamic) in a controlled model and tests whether internal signals can flag reward spread before it surfaces in outputs — a follow-up to OpenAI's alignment research.",lang:"AI Safety · Python",url:"https://github.com/dukemawex/reward-generalization-earlywarning"},
-    {name:"Deception Feature Universality",desc:"Cross-architecture interpretability study finding statistically significant representational universality (CKA 0.56 vs null 0.26, p=0.024) for deception cues — evidence that different models represent phishing/social-engineering concepts similarly.",lang:"AI Safety · Python",url:"https://github.com/dukemawex/deception-feature-universality"},
-    {name:"AxiosPay",desc:"Cross-border FX for African travelers — swap NGN, KES, UGX, GHS & ZAR at live mid-market rates with a 1.5% flat fee and instant settlement. 4th place, Interswitch × Enyata Developer Hackathon.",lang:"Fintech · Web",url:"https://axioslast-web.vercel.app/"},
-    {name:"GeoDrill",desc:"AI-powered geological drilling intelligence platform — scores drilling probability across a region and renders a live risk heatmap.",lang:"TypeScript",url:"https://github.com/dukemawex/Geodrill"},
-    {name:"Motion-Sensing Alarm System",desc:"Arduino-based motion-sensing alarm using a PIR sensor and buzzer to detect movement and trigger an alert.",lang:"Arduino · C++",url:"https://github.com/dukemawex"},
-    {name:"LandChain Africa",desc:"Blockchain-secured land registry with GIS boundary dispute resolution.",lang:"Python",url:"https://github.com/dukemawex/-LandChain-Africa"},
-    {name:"FarmVoice-AI",desc:"Agricultural extension AI agent for farmers.",lang:"TypeScript",url:"https://github.com/dukemawex/FarmVoice-AI"},
-    {name:"SoilIQ",desc:"Soil health intelligence platform.",lang:"TypeScript",url:"https://github.com/dukemawex/SoilIQ"},
-    {name:"Cropie",desc:"Crop disease early-warning system.",lang:"TypeScript",url:"https://github.com/dukemawex/Cropie"},
-    {name:"mechinterp-phishing-probe",desc:"Mechanistic interpretability to detect social-engineering circuits in LLMs.",lang:"Python",url:"https://github.com/dukemawex/mechinterp-phishing-probe"},
-    {name:"Teger-ai",desc:"Unmasking psychological manipulation using AI.",lang:"JavaScript",url:"https://github.com/dukemawex/Teger-ai"}
-  ];
-  document.getElementById('proj-grid').innerHTML = projects.map(p => `
-    <a class="card" href="${p.url}">
-      <span class="tag">${p.lang}</span>
-      <h3>${p.name}</h3>
-      <p>${p.desc}</p>
-      <span class="arrow">View →</span>
-    </a>`).join('');
 
-  // reveal on scroll
-  const io = new IntersectionObserver((es)=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});
-  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+  // Reveal on scroll (opacity + 8px; CSS disables it under prefers-reduced-motion)
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((es)=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.08});
+    document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+  } else {
+    document.querySelectorAll('.reveal').forEach(el=>el.classList.add('in'));
+  }
+
+  // Leadership photo: widen the layout only once talk-01 has actually loaded
+  const talk = document.querySelector('.talk');
+  if (talk && !talk.hidden) {
+    const img = talk.querySelector('img');
+    const mark = () => talk.parentNode.classList.add('has-fig');
+    if (img && img.complete && img.naturalWidth) mark(); else if (img) img.addEventListener('load', mark);
+  }
+
+  // Current section in nav
+  const links = [...document.querySelectorAll('.navlinks a')];
+  const navBox = document.querySelector('.navlinks');
+  const byId = Object.fromEntries(links.map(a => [a.getAttribute('href').slice(1), a]));
+  const setCurrent = (id) => {
+    links.forEach(a => a.removeAttribute('aria-current'));
+    const a = byId[id];
+    if (!a) return;
+    a.setAttribute('aria-current', 'true');
+    if (navBox.scrollWidth > navBox.clientWidth) {
+      const target = a.offsetLeft - (navBox.clientWidth - a.offsetWidth) / 2;
+      navBox.scrollTo({left: target, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'});
+    }
+  };
+  if ('IntersectionObserver' in window) {
+    const spy = new IntersectionObserver((es) => es.forEach(e => { if (e.isIntersecting) setCurrent(e.target.id); }),
+      {rootMargin: '-40% 0px -55% 0px'});
+    Object.keys(byId).forEach(id => { const el = document.getElementById(id); el && spy.observe(el); });
+    const top = document.getElementById('top');
+    new IntersectionObserver((es) => es.forEach(e => { if (e.isIntersecting) setCurrent(null); }), {rootMargin: '-40% 0px -55% 0px'}).observe(top);
+  }
+
+  // "Read more" for clamped timeline descriptions (full text is always in the DOM)
+  const clamps = [...document.querySelectorAll('.tl-b .clamp')];
+  clamps.forEach(p => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'more'; b.textContent = 'Read more'; b.setAttribute('aria-expanded', 'false');
+    b.addEventListener('click', () => {
+      const open = p.classList.toggle('open');
+      b.setAttribute('aria-expanded', String(open));
+      b.textContent = open ? 'Show less' : 'Read more';
+    });
+    p.after(b);
+  });
+  const checkClamps = () => clamps.forEach(p => {
+    if (p.classList.contains('open')) return;
+    p.nextElementSibling.classList.toggle('on', p.scrollHeight > p.clientHeight + 1);
+  });
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(checkClamps);
+  let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(checkClamps, 150); });
 </script>
 </body>
 </html>
