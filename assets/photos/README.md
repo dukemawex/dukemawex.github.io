@@ -15,7 +15,7 @@ Every photo used on duker.me lives here. Images are self-hosted; nothing is hotl
 | `work-01.webp` | 16:10 | 1600×1000 | Selected work card 1 — SPD Mechanism Clustering | ⬜ needed |
 | `work-02.webp` | 16:10 | 1600×1000 | Selected work card 2 — Reward-Generalization Early Warning | ⬜ needed |
 | `work-03.webp` | 16:10 | 1600×1000 | Selected work card 3 — Deception Feature Universality | ⬜ needed |
-| `work-04.webp` | 16:10 | 1600×1000 | Selected work card 4 — AxiosPay | ⬜ needed |
+| `work-04.webp` / `.jpg` | 16:10 | 1080×675 | Selected work card 4 — AxiosPay | ✅ present (hero of the live app, mobile screenshot) |
 | `talk-01.webp` | 3:2 | 1500×1000 | Beside the `#leadership` timeline | ◻️ optional |
 
 Each slot also accepts a same-named `.jpg` as the fallback for old browsers (optional; modern browsers only fetch the `.webp`).
