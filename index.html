@@ -272,12 +272,121 @@
   .links a:hover{border-color:var(--accent);color:var(--text)}
   @media(prefers-reduced-motion:no-preference){.links a:hover{transform:translateY(-2px)}}
 
+
+  /* ---------- Interactive layer ---------- */
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+  html:not(.js) .js-only{display:none!important}
+  kbd{font:600 11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--dim);border:1px solid var(--line);border-bottom-width:2px;
+    border-radius:5px;padding:3px 5px;background:var(--bg)}
+  .btn:active,.chip:active,.kbtn:active,.icon-btn:active{transform:scale(.97)}
+
+  /* progress bar */
+  .progress{position:absolute;left:0;right:0;bottom:-1px;height:2px;transform-origin:0 50%;transform:scaleX(var(--p,0));
+    background:linear-gradient(90deg,var(--accent),var(--accent-2));pointer-events:none}
+
+  /* nav search button */
+  .kbtn{flex:none;display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 8px 0 10px;border-radius:10px;border:1px solid var(--line);
+    background:rgba(20,27,38,.7);color:var(--dim);font:500 13.5px/1 Inter,system-ui,sans-serif;cursor:pointer;transition:border-color .2s,color .2s}
+  .kbtn:hover{border-color:#33465c;color:var(--text)}
+  .kbtn svg{width:16px;height:16px}
+  @media(max-width:899px){.kbtn .kbtn-label,.kbtn kbd{display:none}.kbtn{width:36px;justify-content:center;padding:0}}
+
+  /* hero dot grid + interactive portrait */
+  .hero-bg::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+    background-image:radial-gradient(rgba(234,240,247,.07) 1px,transparent 1px);background-size:22px 22px;
+    -webkit-mask-image:radial-gradient(70% 60% at 70% 30%,#000,transparent 75%);mask-image:radial-gradient(70% 60% at 70% 30%,#000,transparent 75%)}
+  .portrait .frame{transform:perspective(900px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .25s ease;will-change:transform}
+  .stat b{font-variant-numeric:tabular-nums}
+
+  /* project filters */
+  .filters{display:flex;flex-wrap:wrap;gap:8px;margin:-12px 0 28px}
+  @media(max-width:599px){.filters{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-left:calc(-1*var(--gutter));margin-right:calc(-1*var(--gutter));
+    padding:2px var(--gutter)}.filters::-webkit-scrollbar{display:none}.chip{flex:none}}
+  .chip{display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border-radius:999px;border:1px solid var(--line);background:transparent;
+    color:var(--dim);font:500 13.5px/1.2 Inter,system-ui,sans-serif;cursor:pointer;transition:background .2s,border-color .2s,color .2s,transform .15s}
+  .chip:hover{border-color:#33465c;color:var(--text)}
+  .chip[aria-pressed="true"]{background:rgba(94,179,246,.14);border-color:rgba(94,179,246,.55);color:var(--text)}
+  .chip .n{font-size:11.5px;color:var(--faint);font-variant-numeric:tabular-nums}
+  .chip[aria-pressed="true"] .n{color:var(--accent)}
+  .pcard[hidden]{display:none}
+  .pcard.pop{animation:pop .35s ease both}
+  @keyframes pop{from{opacity:0;transform:translateY(6px) scale(.985)}to{opacity:1;transform:none}}
+  .work-more:empty,.work.is-empty{display:none}
+
+  /* card spotlight (fine pointers only) */
+  .pcard::before{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;border-radius:inherit;opacity:0;transition:opacity .3s;
+    background:radial-gradient(380px circle at var(--mx,50%) var(--my,50%),rgba(94,179,246,.13),transparent 45%)}
+  @media(hover:hover) and (pointer:fine){.pcard:hover::before{opacity:1}}
+
+  /* timeline hover */
+  .tl-b::before{transition:box-shadow .25s,background .25s}
+  .tl:hover .tl-b::before{background:var(--accent);box-shadow:0 0 0 5px rgba(94,179,246,.18)}
+
+  /* publication citation copy */
+  .pub{position:relative;transition:background .2s}
+  .pub-tools{margin:8px 0 0 -9px}
+  .icon-btn{display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:7px;border:1px solid transparent;background:none;
+    color:var(--faint);font:500 12.5px/1.3 Inter,system-ui,sans-serif;cursor:pointer;transition:color .2s,border-color .2s,background .2s}
+  .icon-btn svg{width:14px;height:14px}
+  .icon-btn:hover{color:var(--text);border-color:var(--line);background:var(--elev)}
+  .pub.flash{animation:flash 1.6s ease}
+  @keyframes flash{0%,40%{background:rgba(94,179,246,.10)}100%{background:transparent}}
+
+  /* footer copy email */
+  .links button{display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border:1px dashed var(--line);border-radius:10px;background:none;
+    color:var(--dim);font:500 14px/1.6 Inter,system-ui,sans-serif;cursor:pointer;transition:border-color .2s,color .2s}
+  .links button:hover{border-color:var(--accent);color:var(--text)}
+
+  /* toast */
+  .toast{position:fixed;left:50%;bottom:24px;z-index:80;transform:translate(-50%,16px);opacity:0;pointer-events:none;
+    display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:12px;background:var(--card-hi);border:1px solid #33465c;
+    color:var(--text);font-size:14px;box-shadow:0 18px 40px -12px rgba(0,0,0,.6);transition:opacity .25s,transform .25s}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+  .toast svg{color:var(--accent-2);width:16px;height:16px}
+
+  /* back to top */
+  .to-top{position:fixed;right:20px;bottom:20px;z-index:60;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;
+    border:1px solid var(--line);background:rgba(20,27,38,.85);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:var(--text);
+    cursor:pointer;opacity:0;transform:translateY(10px);pointer-events:none;transition:opacity .25s,transform .25s,border-color .2s}
+  .to-top.show{opacity:1;transform:none;pointer-events:auto}
+  .to-top:hover{border-color:var(--accent)}
+
+  /* command palette */
+  dialog.palette{padding:0;border:0;background:transparent;color:var(--text);width:min(640px,calc(100% - 32px));max-height:min(560px,calc(100dvh - 24vh));
+    margin:12vh auto auto;overflow:visible}
+  dialog.palette::backdrop{background:rgba(5,8,12,.6);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+  .pal{display:flex;flex-direction:column;max-height:inherit;border:1px solid #2c3a4d;border-radius:16px;background:var(--elev);overflow:hidden;
+    box-shadow:0 40px 100px -20px rgba(0,0,0,.75),0 0 0 1px rgba(94,179,246,.06)}
+  dialog.palette[open] .pal{animation:palIn .18s ease}
+  @keyframes palIn{from{opacity:0;transform:translateY(-6px) scale(.985)}to{opacity:1;transform:none}}
+  .pal-in{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}
+  .pal-in svg{color:var(--faint);flex:none}
+  .pal-in input{flex:1;min-width:0;background:none;border:0;outline:0;color:var(--text);font:500 16px/1.4 Inter,system-ui,sans-serif}
+  .pal-in input::placeholder{color:var(--faint)}
+  .pal-in input::-webkit-search-cancel-button{display:none}
+  .pal-list{list-style:none;margin:0;padding:6px;overflow-y:auto;overscroll-behavior:contain}
+  .pal-group{padding:10px 10px 4px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+  .pal-item{display:flex;align-items:center;gap:12px;padding:9px 10px;border-radius:10px;cursor:pointer;color:var(--dim)}
+  .pal-item .ic{flex:none;width:28px;height:28px;border-radius:8px;display:grid;place-items:center;background:var(--card);border:1px solid var(--line);color:var(--dim)}
+  .pal-item .ic svg{width:15px;height:15px}
+  .pal-item .lb{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text);font-size:14.5px}
+  .pal-item .ht{flex:none;font-size:12px;color:var(--faint)}
+  .pal-item[aria-selected="true"]{background:rgba(94,179,246,.12)}
+  .pal-item[aria-selected="true"] .ic{color:var(--accent);border-color:rgba(94,179,246,.45)}
+  .pal-empty{padding:28px 12px;text-align:center;color:var(--faint);font-size:14px}
+  .pal-foot{display:flex;gap:16px;justify-content:flex-end;padding:9px 14px;border-top:1px solid var(--line);font-size:12px;color:var(--faint)}
+  .pal-foot kbd{margin-right:3px}
+  @media(max-width:599px){dialog.palette{margin-top:10px}.pal-foot{display:none}}
+
   /* ---------- Reveal: opacity + 8px, 400ms; JS-only so no-JS still shows everything ---------- */
   .js .reveal{opacity:0;transform:translateY(8px);transition:opacity .4s ease,transform .4s ease}
   .js .reveal.in{opacity:1;transform:none}
   @media(prefers-reduced-motion:reduce){
     .js .reveal{opacity:1;transform:none;transition:none}
     .media img,.navlinks a::after{transition:none}
+    .pcard.pop,.pub.flash,dialog.palette[open] .pal{animation:none}
+    .portrait .frame{transform:none}
+    .toast,.to-top{transition:none}
   }
 </style>
 </head>
@@ -296,7 +405,9 @@
       <a href="#credentials">Credentials</a>
       <a href="#contact">Contact</a>
     </div>
+    <button class="kbtn js-only" type="button" id="pal-open" aria-haspopup="dialog" aria-keyshortcuts="Meta+K Control+K /" aria-label="Search the site"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span class="kbtn-label">Search</span><kbd id="pal-kbd">Ctrl K</kbd></button>
   </div>
+  <div class="progress" aria-hidden="true"></div>
 </nav>
 
 <div class="hero-bg" id="top">
@@ -338,6 +449,16 @@
   <section class="reveal" id="projects">
     <p class="kicker">Selected work</p>
     <h2 class="h2">Products &amp; projects.</h2>
+    <div class="filters js-only" role="group" aria-label="Filter projects">
+      <button class="chip" type="button" data-f="all" aria-pressed="true">All <span class="n"></span></button>
+      <button class="chip" type="button" data-f="ai" aria-pressed="false">AI safety <span class="n"></span></button>
+      <button class="chip" type="button" data-f="agri" aria-pressed="false">Agriculture <span class="n"></span></button>
+      <button class="chip" type="button" data-f="sec" aria-pressed="false">Security <span class="n"></span></button>
+      <button class="chip" type="button" data-f="geo" aria-pressed="false">Geospatial <span class="n"></span></button>
+      <button class="chip" type="button" data-f="fin" aria-pressed="false">Fintech <span class="n"></span></button>
+      <button class="chip" type="button" data-f="hw" aria-pressed="false">Hardware <span class="n"></span></button>
+    </div>
+    <p class="sr-only" id="filter-status" aria-live="polite"></p>
 
     <!-- Featured cards. Screenshot files map to products (move the <picture> block to reassign):
          work-04.webp → AxiosPay
@@ -345,7 +466,7 @@
          work-06.webp → Cropie
          work-01.webp → SPD Mechanism Clustering -->
     <div class="work">
-      <article class="pcard">
+      <article class="pcard" data-cat="fin">
         <!-- work-04.webp -->
         <div class="media r1610">
           <div class="cover" aria-hidden="true"><span class="ini">A</span></div>
@@ -364,7 +485,7 @@
         </div>
       </article>
 
-      <article class="pcard">
+      <article class="pcard" data-cat="sec ai">
         <!-- work-05.webp -->
         <div class="media r1610">
           <div class="cover" aria-hidden="true"><span class="ini">T</span></div>
@@ -383,7 +504,7 @@
         </div>
       </article>
 
-      <article class="pcard">
+      <article class="pcard" data-cat="agri">
         <!-- work-06.webp -->
         <div class="media r1610">
           <div class="cover" aria-hidden="true"><span class="ini">C</span></div>
@@ -402,7 +523,7 @@
         </div>
       </article>
 
-      <article class="pcard">
+      <article class="pcard" data-cat="ai">
         <!-- work-01.webp -->
         <div class="media r1610">
           <div class="cover" aria-hidden="true"><span class="ini">S</span></div>
@@ -426,7 +547,7 @@
          work-02.webp → Reward-Generalization Early Warning
          work-03.webp → Deception Feature Universality -->
     <div class="work work-more">
-      <article class="pcard compact">
+      <article class="pcard compact" data-cat="ai">
         <!-- work-02.webp -->
         <div class="media r1610">
           <div class="cover" aria-hidden="true"><span class="ini">R</span></div>
@@ -443,7 +564,7 @@
           <p class="clamp l2">Reproduces unintended reward generalization (the OpenAI 'goblin' dynamic) in a controlled model and tests whether internal signals can flag reward spread before it surfaces in outputs — a follow-up to OpenAI's alignment research.</p>
         </div>
       </article>
-      <article class="pcard compact">
+      <article class="pcard compact" data-cat="ai sec">
         <!-- work-03.webp -->
         <div class="media r1610">
           <div class="cover" aria-hidden="true"><span class="ini">D</span></div>
@@ -460,7 +581,7 @@
           <p class="clamp l2">Cross-architecture interpretability study finding statistically significant representational universality (CKA 0.56 vs null 0.26, p=0.024) for deception cues — evidence that different models represent phishing/social-engineering concepts similarly.</p>
         </div>
       </article>
-      <article class="pcard compact">
+      <article class="pcard compact" data-cat="geo">
         <div class="media r1610" aria-hidden="true"><div class="cover"><span class="ini">G</span></div></div>
         <div class="pc-body">
           <span class="tag">TypeScript</span>
@@ -468,7 +589,7 @@
           <p class="clamp l2">AI-powered geological drilling intelligence platform — scores drilling probability across a region and renders a live risk heatmap.</p>
         </div>
       </article>
-      <article class="pcard compact">
+      <article class="pcard compact" data-cat="hw sec">
         <div class="media r1610" aria-hidden="true"><div class="cover"><span class="ini">M</span></div></div>
         <div class="pc-body">
           <span class="tag">Arduino · C++</span>
@@ -476,7 +597,7 @@
           <p class="clamp l2">Arduino-based motion-sensing alarm using a PIR sensor and buzzer to detect movement and trigger an alert.</p>
         </div>
       </article>
-      <article class="pcard compact">
+      <article class="pcard compact" data-cat="geo">
         <div class="media r1610" aria-hidden="true"><div class="cover"><span class="ini">L</span></div></div>
         <div class="pc-body">
           <span class="tag">Python</span>
@@ -484,7 +605,7 @@
           <p class="clamp l2">Blockchain-secured land registry with GIS boundary dispute resolution.</p>
         </div>
       </article>
-      <article class="pcard compact">
+      <article class="pcard compact" data-cat="agri">
         <div class="media r1610" aria-hidden="true"><div class="cover"><span class="ini">F</span></div></div>
         <div class="pc-body">
           <span class="tag">TypeScript</span>
@@ -492,7 +613,7 @@
           <p class="clamp l2">Agricultural extension AI agent for farmers.</p>
         </div>
       </article>
-      <article class="pcard compact">
+      <article class="pcard compact" data-cat="agri">
         <div class="media r1610" aria-hidden="true"><div class="cover"><span class="ini">S</span></div></div>
         <div class="pc-body">
           <span class="tag">TypeScript</span>
@@ -500,7 +621,7 @@
           <p class="clamp l2">Soil health intelligence platform.</p>
         </div>
       </article>
-      <article class="pcard compact">
+      <article class="pcard compact" data-cat="ai sec">
         <div class="media r1610" aria-hidden="true"><div class="cover"><span class="ini">m</span></div></div>
         <div class="pc-body">
           <span class="tag">Python</span>
@@ -724,10 +845,23 @@
       <a href="https://x.com/starduke001"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 2h3l-7 8 8 12h-6l-5-6-5 6H2l8-9L2 2h6l4 5 6-5Z"/></svg>X</a>
       <a href="https://scholar.google.com/citations?user=Y8si5ZgAAAAJ&amp;hl=en"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1 2.7 3 6 3s6-2 6-3v-5"/></svg>Scholar</a>
       <a href="https://sciprofiles.com/profile/EmmanuelDuke"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Z"/><path d="M2 12h20"/></svg>SciProfiles</a>
+      <button class="js-only" type="button" data-copy="duke.emmanueleffiom@gmail.com" data-toast="Email address copied"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy email</button>
     </div>
     © <span id="yr"></span> Emmanuel Effiom Duke · <a href="https://duker.me">duker.me</a>
   </div>
 </footer>
+
+<button class="to-top js-only" type="button" aria-label="Back to top"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg></button>
+<div class="toast" role="status" aria-live="polite"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><span></span></div>
+
+<dialog class="palette" id="palette" aria-label="Search the site">
+  <div class="pal">
+    <div class="pal-in"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="pal-q" type="text" enterkeyhint="go" placeholder="Search projects, papers, sections…" autocomplete="off" spellcheck="false"
+        role="combobox" aria-expanded="true" aria-controls="pal-list" aria-autocomplete="list" /><kbd>Esc</kbd></div>
+    <ul class="pal-list" id="pal-list" role="listbox" aria-label="Results"></ul>
+    <div class="pal-foot"><span><kbd>↑</kbd><kbd>↓</kbd> move</span><span><kbd>↵</kbd> open</span><span><kbd>Esc</kbd> close</span></div>
+  </div>
+</dialog>
 
 <script>
   document.getElementById('yr').textContent = new Date().getFullYear();
@@ -788,6 +922,200 @@
   });
   (document.fonts ? document.fonts.ready : Promise.resolve()).then(checkClamps);
   let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(checkClamps, 150); });
+
+  // ---------- Interactive layer ----------
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  const finePointer = matchMedia('(hover: hover) and (pointer: fine)');
+  const smooth = () => reduceMotion.matches ? 'auto' : 'smooth';
+
+  // Toast + clipboard
+  const toastEl = document.querySelector('.toast');
+  let toastT;
+  const toast = (msg) => {
+    toastEl.querySelector('span').textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastT); toastT = setTimeout(() => toastEl.classList.remove('show'), 2200);
+  };
+  const copy = async (text, msg) => {
+    try { await navigator.clipboard.writeText(text); }
+    catch {
+      const ta = Object.assign(document.createElement('textarea'), {value: text});
+      ta.style.cssText = 'position:fixed;opacity:0'; document.body.append(ta); ta.select();
+      try { document.execCommand('copy'); } finally { ta.remove(); }
+    }
+    toast(msg);
+  };
+  document.querySelectorAll('[data-copy]').forEach(b => b.addEventListener('click', () => copy(b.dataset.copy, b.dataset.toast || 'Copied')));
+
+  // Reading progress + back to top
+  const navEl = document.querySelector('nav');
+  const toTop = document.querySelector('.to-top');
+  let ticking = false;
+  const onScroll = () => {
+    if (ticking) return; ticking = true;
+    requestAnimationFrame(() => {
+      const max = document.documentElement.scrollHeight - innerHeight;
+      navEl.style.setProperty('--p', max > 0 ? Math.min(1, scrollY / max).toFixed(4) : 0);
+      toTop.classList.toggle('show', scrollY > innerHeight * 1.2);
+      ticking = false;
+    });
+  };
+  addEventListener('scroll', onScroll, {passive: true}); onScroll();
+  toTop.addEventListener('click', () => { scrollTo({top: 0, behavior: smooth()}); document.querySelector('.brand').focus({preventScroll: true}); });
+
+  // Hero stats count up once
+  if (!reduceMotion.matches) {
+    document.querySelectorAll('.stat b').forEach((b, i) => {
+      const m = b.textContent.match(/^(\d+)(.*)$/); if (!m) return;
+      const end = +m[1], suffix = m[2], final = b.textContent;
+      b.setAttribute('aria-label', final);
+      const t0 = performance.now() + 150 + i * 110, dur = 1000;
+      b.textContent = '0' + suffix;
+      const step = (now) => {
+        const k = Math.min(1, Math.max(0, (now - t0) / dur));
+        b.textContent = Math.round(end * (1 - Math.pow(1 - k, 3))) + suffix;
+        if (k < 1) requestAnimationFrame(step); else b.textContent = final;
+      };
+      requestAnimationFrame(step);
+    });
+  }
+
+  // Portrait tilt + card spotlight (fine pointers, motion allowed)
+  const portraitFrame = document.querySelector('.portrait .frame');
+  if (portraitFrame) {
+    portraitFrame.addEventListener('pointermove', (e) => {
+      if (!finePointer.matches || reduceMotion.matches) return;
+      const r = portraitFrame.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+      portraitFrame.style.setProperty('--ry', (x * 8).toFixed(2) + 'deg');
+      portraitFrame.style.setProperty('--rx', (-y * 8).toFixed(2) + 'deg');
+    });
+    portraitFrame.addEventListener('pointerleave', () => { portraitFrame.style.removeProperty('--rx'); portraitFrame.style.removeProperty('--ry'); });
+  }
+  document.querySelectorAll('.work').forEach(grid => grid.addEventListener('pointermove', (e) => {
+    if (!finePointer.matches) return;
+    const card = e.target.closest('.pcard'); if (!card) return;
+    const r = card.getBoundingClientRect();
+    card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+    card.style.setProperty('--my', (e.clientY - r.top) + 'px');
+  }));
+
+  // Project filters
+  const cards = [...document.querySelectorAll('.pcard[data-cat]')];
+  const chips = [...document.querySelectorAll('.filters .chip')];
+  const filterStatus = document.getElementById('filter-status');
+  const inCat = (card, f) => f === 'all' || card.dataset.cat.split(' ').includes(f);
+  chips.forEach(c => { c.querySelector('.n').textContent = cards.filter(card => inCat(card, c.dataset.f)).length; });
+  const applyFilter = (f) => {
+    chips.forEach(c => c.setAttribute('aria-pressed', String(c.dataset.f === f)));
+    let shown = 0;
+    cards.forEach(card => {
+      const on = inCat(card, f);
+      card.classList.remove('pop');
+      card.hidden = !on;
+      if (on) { shown++; void card.offsetWidth; card.classList.add('pop'); }
+    });
+    document.querySelectorAll('.work').forEach(g => g.classList.toggle('is-empty', !g.querySelector('.pcard:not([hidden])')));
+    const label = chips.find(c => c.dataset.f === f).firstChild.textContent.trim();
+    filterStatus.textContent = f === 'all' ? `Showing all ${shown} projects` : `Showing ${shown} ${label} project${shown === 1 ? '' : 's'}`;
+  };
+  chips.forEach(c => c.addEventListener('click', () => applyFilter(c.dataset.f)));
+
+  // Copy citation for each publication
+  const COPY_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+  document.querySelectorAll('.pub').forEach(pub => {
+    const yr = pub.closest('.pub-year').querySelector('.yr').textContent.trim();
+    const year = /^\d{4}$/.test(yr) ? yr : 'n.d.';
+    const title = pub.querySelector('h3').textContent.trim();
+    const auth = pub.querySelector('.auth').textContent.trim();
+    const doi = pub.querySelector('a.doi');
+    let venue = pub.querySelector('.meta').textContent.trim().replace(new RegExp('[,\\s]*' + year + '$'), '');
+    if (doi) venue = doi.href;
+    const cite = `${auth} (${year}). ${title}. ${venue}.`.replace(/\.\.$/, '.');
+    const tools = document.createElement('div'); tools.className = 'pub-tools';
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'icon-btn'; b.innerHTML = COPY_ICON + 'Copy citation';
+    b.setAttribute('aria-label', 'Copy citation: ' + title);
+    b.addEventListener('click', () => copy(cite, 'Citation copied'));
+    tools.append(b); pub.append(tools);
+  });
+
+  // Command palette
+  const pal = document.getElementById('palette');
+  const palQ = document.getElementById('pal-q');
+  const palList = document.getElementById('pal-list');
+  const palOpenBtn = document.getElementById('pal-open');
+  const isMac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
+  document.getElementById('pal-kbd').textContent = isMac ? '⌘K' : 'Ctrl K';
+  const IC = {
+    sec: '<svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>',
+    proj: '<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8"/></svg>',
+    pub: '<svg viewBox="0 0 24 24"><path d="M4 4h12l4 4v12H4z"/><path d="M8 12h8M8 16h6"/></svg>',
+    act: '<svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>',
+    link: '<svg viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></svg>'
+  };
+  const goTo = (el) => { el.scrollIntoView({behavior: smooth(), block: 'start'}); };
+  const items = [];
+  [['top', 'Home'], ...links.map(a => [a.getAttribute('href').slice(1), a.textContent.trim()]), ['education', 'Education']]
+    .forEach(([id, label]) => { const el = document.getElementById(id); el && items.push({g: 'Sections', label, hint: 'Section', ic: IC.sec, run: () => goTo(el)}); });
+  cards.forEach(card => {
+    const a = card.querySelector('h3 a');
+    items.push({g: 'Projects', label: a.textContent.trim(), hint: card.querySelector('.tag').textContent.trim(), kw: card.querySelector('p').textContent, ic: IC.proj, run: () => { location.href = a.href; }});
+  });
+  document.querySelectorAll('.pub').forEach(pub => {
+    items.push({g: 'Research', label: pub.querySelector('h3').textContent.trim(), hint: pub.closest('.pub-year').querySelector('.yr').textContent.trim(), kw: pub.querySelector('.auth').textContent, ic: IC.pub,
+      run: () => { pub.scrollIntoView({behavior: smooth(), block: 'center'}); pub.classList.remove('flash'); void pub.offsetWidth; pub.classList.add('flash'); }});
+  });
+  items.push(
+    {g: 'Actions', label: 'Copy email address', hint: 'Email', ic: IC.act, run: () => copy('duke.emmanueleffiom@gmail.com', 'Email address copied')},
+    {g: 'Actions', label: 'Send an email', hint: 'Email', ic: IC.link, run: () => { location.href = 'mailto:duke.emmanueleffiom@gmail.com'; }},
+    ...[...document.querySelectorAll('.links a[href^="http"]')].map(a => ({g: 'Actions', label: 'Open ' + a.textContent.trim(), hint: new URL(a.href).hostname.replace('www.', ''), ic: IC.link, run: () => { location.href = a.href; }}))
+  );
+  let results = [], sel = 0;
+  const render = () => {
+    const q = palQ.value.trim().toLowerCase();
+    results = !q ? items.filter(i => i.g !== 'Research') : items
+      .map(i => { const l = i.label.toLowerCase(), k = (i.kw || '').toLowerCase() + ' ' + (i.hint || '').toLowerCase();
+        const score = l.startsWith(q) ? 0 : l.includes(q) ? 1 : k.includes(q) ? 2 : -1; return {i, score}; })
+      .filter(x => x.score >= 0).sort((a, b) => a.score - b.score).map(x => x.i);
+    sel = Math.min(sel, Math.max(0, results.length - 1));
+    if (!results.length) { palList.innerHTML = `<li class="pal-empty" role="presentation">No results for “${palQ.value.replace(/[<&>]/g, '')}”</li>`; palQ.removeAttribute('aria-activedescendant'); return; }
+    let html = '', last = '';
+    const order = ['Sections', 'Projects', 'Research', 'Actions'];
+    results.sort((a, b) => order.indexOf(a.g) - order.indexOf(b.g));
+    results.forEach((r, n) => {
+      if (r.g !== last) { html += `<li class="pal-group" role="presentation">${r.g}</li>`; last = r.g; }
+      const esc = (t) => t.replace(/[<&>"]/g, c => ({'<': '&lt;', '&': '&amp;', '>': '&gt;', '"': '&quot;'}[c]));
+      html += `<li class="pal-item" role="option" id="pal-${n}" data-n="${n}" aria-selected="${n === sel}"><span class="ic" aria-hidden="true">${r.ic}</span><span class="lb">${esc(r.label)}</span><span class="ht">${esc(r.hint || '')}</span></li>`;
+    });
+    palList.innerHTML = html;
+    palQ.setAttribute('aria-activedescendant', 'pal-' + sel);
+  };
+  const highlight = (n) => {
+    sel = (n + results.length) % results.length;
+    palList.querySelectorAll('.pal-item').forEach(li => li.setAttribute('aria-selected', String(+li.dataset.n === sel)));
+    palQ.setAttribute('aria-activedescendant', 'pal-' + sel);
+    palList.querySelector(`#pal-${sel}`)?.scrollIntoView({block: 'nearest'});
+  };
+  const runSel = (n = sel) => { const r = results[n]; if (!r) return; pal.close(); setTimeout(r.run, 30); };
+  const openPal = () => { if (pal.open) return; palQ.value = ''; sel = 0; render(); pal.showModal(); palQ.focus(); };
+  palOpenBtn.addEventListener('click', openPal);
+  palQ.addEventListener('input', () => { sel = 0; render(); });
+  palQ.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown') { e.preventDefault(); highlight(sel + 1); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); highlight(sel - 1); }
+    else if (e.key === 'Enter') { e.preventDefault(); runSel(); }
+    else if (e.key === 'Escape') { e.preventDefault(); pal.close(); }
+  });
+  palList.addEventListener('click', (e) => { const li = e.target.closest('.pal-item'); li && runSel(+li.dataset.n); });
+  palList.addEventListener('pointermove', (e) => { const li = e.target.closest('.pal-item'); if (li && +li.dataset.n !== sel) highlight(+li.dataset.n); });
+  pal.addEventListener('click', (e) => { if (e.target === pal) pal.close(); });
+  pal.addEventListener('close', () => palOpenBtn.focus({preventScroll: true}));
+  addEventListener('keydown', (e) => {
+    const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName) || document.activeElement.isContentEditable;
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); pal.open ? pal.close() : openPal(); }
+    else if (e.key === '/' && !typing && !pal.open) { e.preventDefault(); openPal(); }
+  });
 </script>
 </body>
 </html>
