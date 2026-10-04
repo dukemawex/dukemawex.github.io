@@ -339,70 +339,12 @@
     <p class="kicker">Selected work</p>
     <h2 class="h2">Products &amp; projects.</h2>
 
-    <!-- Featured cards. Screenshot slots map by position, not by product:
-         work-01.webp → card 1 (SPD Mechanism Clustering)
-         work-02.webp → card 2 (Reward-Generalization Early Warning)
-         work-03.webp → card 3 (Deception Feature Universality)
-         work-04.webp → card 4 (AxiosPay)
-         To reassign a screenshot, move its <picture> block to another card. -->
+    <!-- Featured cards. Screenshot files map to products (move the <picture> block to reassign):
+         work-04.webp → AxiosPay
+         work-05.webp → Teger-ai
+         work-06.webp → Cropie
+         work-01.webp → SPD Mechanism Clustering -->
     <div class="work">
-      <article class="pcard">
-        <!-- work-01.webp -->
-        <div class="media r1610">
-          <div class="cover" aria-hidden="true"><span class="ini">S</span></div>
-          <picture>
-            <source type="image/webp" srcset="assets/photos/work-01.webp" />
-            <img src="assets/photos/work-01.jpg" width="1600" height="1000" loading="lazy" decoding="async" onload="photoOk(this)" onerror="photoMissing(this)"
-                 alt="Screenshot of the SPD Mechanism Clustering project" />
-          </picture>
-          <span class="dev-hint">work-01.webp · 16:10</span>
-        </div>
-        <div class="pc-body">
-          <span class="tag">AI Safety · Python</span>
-          <h3><a href="https://github.com/dukemawex/spd-mechanism-clustering">SPD Mechanism Clustering</a></h3>
-          <p class="clamp">Mechanistic-interpretability research: the first systematic empirical study of automated mechanism clustering for Stochastic Parameter Decomposition (SPD). Seven experiments from toy models to a real grokked transformer, showing component specialization — not clustering-signal choice — is the binding constraint. Paper + reproducible code.</p>
-          <span class="go" aria-hidden="true">View →</span>
-        </div>
-      </article>
-
-      <article class="pcard">
-        <!-- work-02.webp -->
-        <div class="media r1610">
-          <div class="cover" aria-hidden="true"><span class="ini">R</span></div>
-          <picture>
-            <source type="image/webp" srcset="assets/photos/work-02.webp" />
-            <img src="assets/photos/work-02.jpg" width="1600" height="1000" loading="lazy" decoding="async" onload="photoOk(this)" onerror="photoMissing(this)"
-                 alt="Screenshot of the Reward-Generalization Early Warning project" />
-          </picture>
-          <span class="dev-hint">work-02.webp · 16:10</span>
-        </div>
-        <div class="pc-body">
-          <span class="tag">AI Safety · Python</span>
-          <h3><a href="https://github.com/dukemawex/reward-generalization-earlywarning">Reward-Generalization Early Warning</a></h3>
-          <p class="clamp">Reproduces unintended reward generalization (the OpenAI 'goblin' dynamic) in a controlled model and tests whether internal signals can flag reward spread before it surfaces in outputs — a follow-up to OpenAI's alignment research.</p>
-          <span class="go" aria-hidden="true">View →</span>
-        </div>
-      </article>
-
-      <article class="pcard">
-        <!-- work-03.webp -->
-        <div class="media r1610">
-          <div class="cover" aria-hidden="true"><span class="ini">D</span></div>
-          <picture>
-            <source type="image/webp" srcset="assets/photos/work-03.webp" />
-            <img src="assets/photos/work-03.jpg" width="1600" height="1000" loading="lazy" decoding="async" onload="photoOk(this)" onerror="photoMissing(this)"
-                 alt="Screenshot of the Deception Feature Universality project" />
-          </picture>
-          <span class="dev-hint">work-03.webp · 16:10</span>
-        </div>
-        <div class="pc-body">
-          <span class="tag">AI Safety · Python</span>
-          <h3><a href="https://github.com/dukemawex/deception-feature-universality">Deception Feature Universality</a></h3>
-          <p class="clamp">Cross-architecture interpretability study finding statistically significant representational universality (CKA 0.56 vs null 0.26, p=0.024) for deception cues — evidence that different models represent phishing/social-engineering concepts similarly.</p>
-          <span class="go" aria-hidden="true">View →</span>
-        </div>
-      </article>
-
       <article class="pcard">
         <!-- work-04.webp -->
         <div class="media r1610">
@@ -421,10 +363,103 @@
           <span class="go" aria-hidden="true">View →</span>
         </div>
       </article>
+
+      <article class="pcard">
+        <!-- work-05.webp -->
+        <div class="media r1610">
+          <div class="cover" aria-hidden="true"><span class="ini">T</span></div>
+          <picture>
+            <source type="image/webp" srcset="assets/photos/work-05.webp" />
+            <img src="assets/photos/work-05.jpg" width="1080" height="675" loading="lazy" decoding="async" onload="photoOk(this)" onerror="photoMissing(this)"
+                 alt="TegerAI landing page: an “MVP in development · Private beta — coming soon” badge above the headline “Stop the message before it becomes the breach.”" />
+          </picture>
+          <span class="dev-hint">work-05.webp · 16:10</span>
+        </div>
+        <div class="pc-body">
+          <span class="tag">JavaScript</span>
+          <h3><a href="https://tegerai.tech/">Teger-ai</a></h3>
+          <p class="clamp">Unmasking psychological manipulation using AI.</p>
+          <span class="go" aria-hidden="true">View →</span>
+        </div>
+      </article>
+
+      <article class="pcard">
+        <!-- work-06.webp -->
+        <div class="media r1610">
+          <div class="cover" aria-hidden="true"><span class="ini">C</span></div>
+          <picture>
+            <source type="image/webp" srcset="assets/photos/work-06.webp" />
+            <img src="assets/photos/work-06.jpg" width="976" height="610" loading="lazy" decoding="async" onload="photoOk(this)" onerror="photoMissing(this)"
+                 alt="Cropie landing page: the AgroSentinel label above the headline “Satellite-powered crop disease” on a pale green grid background" />
+          </picture>
+          <span class="dev-hint">work-06.webp · 16:10</span>
+        </div>
+        <div class="pc-body">
+          <span class="tag">TypeScript</span>
+          <h3><a href="https://cropie.vercel.app/">Cropie</a></h3>
+          <p class="clamp">Crop disease early-warning system.</p>
+          <span class="go" aria-hidden="true">View →</span>
+        </div>
+      </article>
+
+      <article class="pcard">
+        <!-- work-01.webp -->
+        <div class="media r1610">
+          <div class="cover" aria-hidden="true"><span class="ini">S</span></div>
+          <picture>
+            <source type="image/webp" srcset="assets/photos/work-01.webp" />
+            <img src="assets/photos/work-01.jpg" width="1600" height="1000" loading="lazy" decoding="async" onload="photoOk(this)" onerror="photoMissing(this)"
+                 alt="Screenshot of the SPD Mechanism Clustering project" />
+          </picture>
+          <span class="dev-hint">work-01.webp · 16:10</span>
+        </div>
+        <div class="pc-body">
+          <span class="tag">AI Safety · Python</span>
+          <h3><a href="https://github.com/dukemawex/spd-mechanism-clustering">SPD Mechanism Clustering</a></h3>
+          <p class="clamp">Mechanistic-interpretability research: the first systematic empirical study of automated mechanism clustering for Stochastic Parameter Decomposition (SPD). Seven experiments from toy models to a real grokked transformer, showing component specialization — not clustering-signal choice — is the binding constraint. Paper + reproducible code.</p>
+          <span class="go" aria-hidden="true">View →</span>
+        </div>
+      </article>
     </div>
 
-    <!-- More projects: typographic covers only (no screenshot slots). -->
+    <!-- More projects. Typographic covers; the two AI-safety cards keep screenshot slots as thumbnails:
+         work-02.webp → Reward-Generalization Early Warning
+         work-03.webp → Deception Feature Universality -->
     <div class="work work-more">
+      <article class="pcard compact">
+        <!-- work-02.webp -->
+        <div class="media r1610">
+          <div class="cover" aria-hidden="true"><span class="ini">R</span></div>
+          <picture>
+            <source type="image/webp" srcset="assets/photos/work-02.webp" />
+            <img src="assets/photos/work-02.jpg" width="1600" height="1000" loading="lazy" decoding="async" onload="photoOk(this)" onerror="photoMissing(this)"
+                 alt="Screenshot of the Reward-Generalization Early Warning project" />
+          </picture>
+          <span class="dev-hint">work-02</span>
+        </div>
+        <div class="pc-body">
+          <span class="tag">AI Safety · Python</span>
+          <h3><a href="https://github.com/dukemawex/reward-generalization-earlywarning">Reward-Generalization Early Warning</a></h3>
+          <p class="clamp l2">Reproduces unintended reward generalization (the OpenAI 'goblin' dynamic) in a controlled model and tests whether internal signals can flag reward spread before it surfaces in outputs — a follow-up to OpenAI's alignment research.</p>
+        </div>
+      </article>
+      <article class="pcard compact">
+        <!-- work-03.webp -->
+        <div class="media r1610">
+          <div class="cover" aria-hidden="true"><span class="ini">D</span></div>
+          <picture>
+            <source type="image/webp" srcset="assets/photos/work-03.webp" />
+            <img src="assets/photos/work-03.jpg" width="1600" height="1000" loading="lazy" decoding="async" onload="photoOk(this)" onerror="photoMissing(this)"
+                 alt="Screenshot of the Deception Feature Universality project" />
+          </picture>
+          <span class="dev-hint">work-03</span>
+        </div>
+        <div class="pc-body">
+          <span class="tag">AI Safety · Python</span>
+          <h3><a href="https://github.com/dukemawex/deception-feature-universality">Deception Feature Universality</a></h3>
+          <p class="clamp l2">Cross-architecture interpretability study finding statistically significant representational universality (CKA 0.56 vs null 0.26, p=0.024) for deception cues — evidence that different models represent phishing/social-engineering concepts similarly.</p>
+        </div>
+      </article>
       <article class="pcard compact">
         <div class="media r1610" aria-hidden="true"><div class="cover"><span class="ini">G</span></div></div>
         <div class="pc-body">
@@ -466,27 +501,11 @@
         </div>
       </article>
       <article class="pcard compact">
-        <div class="media r1610" aria-hidden="true"><div class="cover"><span class="ini">C</span></div></div>
-        <div class="pc-body">
-          <span class="tag">TypeScript</span>
-          <h3><a href="https://cropie.vercel.app/">Cropie</a></h3>
-          <p class="clamp l2">Crop disease early-warning system.</p>
-        </div>
-      </article>
-      <article class="pcard compact">
         <div class="media r1610" aria-hidden="true"><div class="cover"><span class="ini">m</span></div></div>
         <div class="pc-body">
           <span class="tag">Python</span>
           <h3><a href="https://github.com/dukemawex/mechinterp-phishing-probe">mechinterp-phishing-probe</a></h3>
           <p class="clamp l2">Mechanistic interpretability to detect social-engineering circuits in LLMs.</p>
-        </div>
-      </article>
-      <article class="pcard compact">
-        <div class="media r1610" aria-hidden="true"><div class="cover"><span class="ini">T</span></div></div>
-        <div class="pc-body">
-          <span class="tag">JavaScript</span>
-          <h3><a href="https://tegerai.tech/">Teger-ai</a></h3>
-          <p class="clamp l2">Unmasking psychological manipulation using AI.</p>
         </div>
       </article>
     </div>

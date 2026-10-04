@@ -12,15 +12,17 @@ Every photo used on duker.me lives here. Images are self-hosted; nothing is hotl
 | `portrait-sm.webp` / `.jpg` | 1:1 | 192×192 | "Work with me" band in `#help` | ✅ present (cropped from `../emmanuel.png`) |
 | `field-01.webp` | 3:2 | 1500×1000 | Field band between `#about` and `#experience` (left) | ⬜ needed |
 | `field-02.webp` | 3:2 | 1500×1000 | Field band between `#about` and `#experience` (right) | ⬜ needed |
-| `work-01.webp` | 16:10 | 1600×1000 | Selected work card 1 — SPD Mechanism Clustering | ⬜ needed |
-| `work-02.webp` | 16:10 | 1600×1000 | Selected work card 2 — Reward-Generalization Early Warning | ⬜ needed |
-| `work-03.webp` | 16:10 | 1600×1000 | Selected work card 3 — Deception Feature Universality | ⬜ needed |
-| `work-04.webp` / `.jpg` | 16:10 | 1080×675 | Selected work card 4 — AxiosPay | ✅ present (hero of the live app, mobile screenshot) |
+| `work-01.webp` | 16:10 | 1600×1000 | Featured card — SPD Mechanism Clustering | ⬜ needed |
+| `work-02.webp` | 16:10 | 1600×1000 | Compact card thumbnail — Reward-Generalization Early Warning | ⬜ needed |
+| `work-03.webp` | 16:10 | 1600×1000 | Compact card thumbnail — Deception Feature Universality | ⬜ needed |
+| `work-04.webp` / `.jpg` | 16:10 | 1080×675 | Featured card — AxiosPay | ✅ present (hero of the live app, mobile screenshot) |
+| `work-05.webp` / `.jpg` | 16:10 | 1080×675 | Featured card — Teger-ai | ✅ present (hero of tegerai.tech, mobile screenshot) |
+| `work-06.webp` / `.jpg` | 16:10 | 976×610 | Featured card — Cropie | ✅ present (hero of cropie.vercel.app, mobile screenshot) |
 | `talk-01.webp` | 3:2 | 1500×1000 | Beside the `#leadership` timeline | ◻️ optional |
 
 Each slot also accepts a same-named `.jpg` as the fallback for old browsers (optional; modern browsers only fetch the `.webp`).
 
-`work-NN` maps to the card **by position** (see the comment above the `.work` grid in `index.html`).
+Each `work-NN` file belongs to one product (see the comments above the two `.work` grids in `index.html`).
 To put a screenshot on a different project, move its `<picture>` block to that card.
 
 ## How slots behave
