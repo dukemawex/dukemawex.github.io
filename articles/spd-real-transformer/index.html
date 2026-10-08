@@ -3,29 +3,34 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Writing by Emmanuel Effiom Duke | Articles</title>
-<meta name="description" content="Articles by Emmanuel Effiom Duke on AI forecasting, AI security, mechanistic interpretability, model evaluation and AI-safety research." />
+<title>SPD meets a real grokked transformer | Emmanuel Effiom Duke</title>
+<meta name="description" content="Applying Stochastic Parameter Decomposition to a transformer that grokked modular addition: the ground truth was verified, but the components never specialized." />
 <meta name="author" content="Emmanuel Effiom Duke" />
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
-<link rel="canonical" href="https://duker.me/articles/" />
+<link rel="canonical" href="https://duker.me/articles/spd-real-transformer/" />
 <meta name="referrer" content="strict-origin-when-cross-origin" />
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-rVN+wX4gYmdY7Jk4Mnn4nTTyUp8ZXMroU+Kp1+4N4Zg='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; manifest-src 'self'; base-uri 'self'; form-action 'self' mailto:; object-src 'none'; upgrade-insecure-requests" />
 
-<meta property="og:type" content="website" />
+<meta property="og:type" content="article" />
 <meta property="og:site_name" content="Emmanuel Effiom Duke" />
-<meta property="og:title" content="Writing by Emmanuel Effiom Duke | Articles" />
-<meta property="og:description" content="Articles by Emmanuel Effiom Duke on AI forecasting, AI security, mechanistic interpretability, model evaluation and AI-safety research." />
-<meta property="og:url" content="https://duker.me/articles/" />
+<meta property="og:title" content="SPD meets a real grokked transformer | Emmanuel Effiom Duke" />
+<meta property="og:description" content="Applying Stochastic Parameter Decomposition to a transformer that grokked modular addition: the ground truth was verified, but the components never specialized." />
+<meta property="og:url" content="https://duker.me/articles/spd-real-transformer/" />
 <meta property="og:image" content="https://duker.me/assets/og/og-default.jpg" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <meta property="og:image:alt" content="Emmanuel Effiom Duke — AI Engineer, Researcher and Founder of Dukers LTD" />
 <meta property="og:locale" content="en_US" />
+<meta property="article:published_time" content="2026-10-08" />
+<meta property="article:author" content="https://duker.me/about/" />
+<meta property="article:tag" content="AI safety" />
+<meta property="article:tag" content="Mechanistic interpretability" />
+<meta property="article:tag" content="Research" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:site" content="@starduke001" />
 <meta name="twitter:creator" content="@starduke001" />
-<meta name="twitter:title" content="Writing by Emmanuel Effiom Duke | Articles" />
-<meta name="twitter:description" content="Articles by Emmanuel Effiom Duke on AI forecasting, AI security, mechanistic interpretability, model evaluation and AI-safety research." />
+<meta name="twitter:title" content="SPD meets a real grokked transformer | Emmanuel Effiom Duke" />
+<meta name="twitter:description" content="Applying Stochastic Parameter Decomposition to a transformer that grokked modular addition: the ground truth was verified, but the components never specialized." />
 <meta name="twitter:image" content="https://duker.me/assets/og/og-default.jpg" />
 <meta name="twitter:image:alt" content="Emmanuel Effiom Duke — AI Engineer, Researcher and Founder of Dukers LTD" />
 
@@ -131,79 +136,32 @@
       }
     },
     {
-      "@type": "CollectionPage",
-      "@id": "https://duker.me/articles/#page",
-      "url": "https://duker.me/articles/",
-      "name": "Writing by Emmanuel Effiom Duke | Articles",
-      "description": "Articles by Emmanuel Effiom Duke on AI forecasting, AI security, mechanistic interpretability, model evaluation and AI-safety research.",
-      "isPartOf": {
-        "@id": "https://duker.me/#website"
-      },
+      "@type": "BlogPosting",
+      "@id": "https://duker.me/articles/spd-real-transformer/#article",
+      "headline": "SPD meets a real grokked transformer",
+      "description": "Applying Stochastic Parameter Decomposition to a transformer that grokked modular addition: the ground truth was verified, but the components never specialized.",
+      "url": "https://duker.me/articles/spd-real-transformer/",
+      "mainEntityOfPage": "https://duker.me/articles/spd-real-transformer/",
+      "datePublished": "2026-10-08",
+      "dateModified": "2026-10-08",
       "author": {
         "@id": "https://duker.me/#person"
       },
-      "breadcrumb": {
-        "@id": "https://duker.me/articles/#breadcrumb"
+      "publisher": {
+        "@id": "https://duker.me/#person"
       },
-      "inLanguage": "en",
-      "dateModified": "2026-10-08",
-      "mainEntity": {
-        "@type": "ItemList",
-        "itemListElement": [
-          {
-            "@type": "ListItem",
-            "position": 1,
-            "url": "https://duker.me/articles/metaculus-forecasting-bot/",
-            "name": "Building a Metaculus forecasting bot"
-          },
-          {
-            "@type": "ListItem",
-            "position": 2,
-            "url": "https://duker.me/articles/llm-knowledge-cutoff-probe/",
-            "name": "Ask the calendar, not the model"
-          },
-          {
-            "@type": "ListItem",
-            "position": 3,
-            "url": "https://duker.me/articles/designing-teger-ai/",
-            "name": "Designing Teger AI to explain phishing"
-          },
-          {
-            "@type": "ListItem",
-            "position": 4,
-            "url": "https://duker.me/articles/secret-loyalties-audit/",
-            "name": "Four false positives and one real signal"
-          },
-          {
-            "@type": "ListItem",
-            "position": 5,
-            "url": "https://duker.me/articles/spd-real-transformer/",
-            "name": "SPD meets a real grokked transformer"
-          },
-          {
-            "@type": "ListItem",
-            "position": 6,
-            "url": "https://duker.me/articles/spd-mechanism-clustering/",
-            "name": "Clustering SPD components into mechanisms"
-          },
-          {
-            "@type": "ListItem",
-            "position": 7,
-            "url": "https://duker.me/articles/deception-feature-universality/",
-            "name": "Do models represent deception alike?"
-          },
-          {
-            "@type": "ListItem",
-            "position": 8,
-            "url": "https://duker.me/articles/reward-generalization-early-warning/",
-            "name": "The reward spread; the warning didn't"
-          }
-        ]
-      }
+      "isPartOf": {
+        "@id": "https://duker.me/#website"
+      },
+      "image": "https://duker.me/assets/articles/spd-real-transformer.png",
+      "keywords": "AI safety, Mechanistic interpretability, Research",
+      "isBasedOn": "https://github.com/dukemawex/spd-real-transformer",
+      "wordCount": 396,
+      "inLanguage": "en"
     },
     {
       "@type": "BreadcrumbList",
-      "@id": "https://duker.me/articles/#breadcrumb",
+      "@id": "https://duker.me/articles/spd-real-transformer/#breadcrumb",
       "itemListElement": [
         {
           "@type": "ListItem",
@@ -216,6 +174,12 @@
           "position": 2,
           "name": "Writing",
           "item": "https://duker.me/articles/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "SPD meets a real grokked transformer",
+          "item": "https://duker.me/articles/spd-real-transformer/"
         }
       ]
     }
@@ -259,70 +223,88 @@
   </div>
 </nav>
 
-<main class="wrap bio">
+<main class="wrap bio post">
   <nav class="crumbs" aria-label="Breadcrumb">
-    <ol><li><a href="/">Home</a></li><li><span aria-current="page">Writing</span></li></ol>
+    <ol><li><a href="/">Home</a></li><li><a href="/articles/">Writing</a></li><li><span aria-current="page">SPD meets a real grokked transformer</span></li></ol>
   </nav>
 
-  <header class="bio-head single">
-    <div>
-      <p class="kicker">Writing</p>
-      <h1>Writing by Emmanuel Effiom Duke</h1>
-      <p class="bio-lede">Technical notes on AI forecasting, AI security, model evaluation, interpretability and AI-safety research, written from my own projects, negative results included. I'm Emmanuel Effiom Duke, founder of <a href="https://dukersltd.com/">Dukers LTD</a>; associated initiatives include <a href="https://tegerai.tech/">Teger AI</a> and <a href="https://transly.software/">Transly</a>.</p>
-    </div>
-  </header>
+  <article class="post-article">
+    <header class="post-head">
+      <p class="kicker">AI safety · Mechanistic interpretability · Research</p>
+      <h1>SPD meets a real grokked transformer</h1>
+      <p class="post-dek">Applying Stochastic Parameter Decomposition to a transformer that grokked modular addition: the ground truth was verified, but the components never specialized.</p>
+      <p class="byline">By <a href="/about/" rel="author">Emmanuel Effiom Duke</a> · <time datetime="2026-10-08">8 October 2026</time> · 2 min read</p>
+    </header>
 
-  <section class="post-index" aria-label="All articles">
+    <figure class="post-figure">
+      <div class="fig-scroll" tabindex="0" role="region" aria-label="Figure: scrolls sideways on small screens">
+        <picture>
+          <source type="image/webp" srcset="/assets/articles/spd-real-transformer.webp" />
+          <img src="/assets/articles/spd-real-transformer.png" width="830" height="546" decoding="async" alt="Bar chart of Fourier power in the grokked model's embedding: four tall bars at frequencies 11, 12, 17 and 26, with near-zero power elsewhere." />
+        </picture>
+      </div>
+      <figcaption>The ground truth, measured directly from the embedding: the grokked model relies on about four Fourier frequencies (17, 11, 12 and 26).</figcaption>
+    </figure>
+    <div class="prose">
+      <p>My <a href="/articles/spd-mechanism-clustering/">first SPD clustering pilot</a> worked on a toy model, where gate co-activation recovered the true mechanisms with an adjusted Rand index of 0.53. Toy models are forgiving, though. The fifth experiment in the series asked the question that matters: does automated mechanism recovery survive contact with a <strong>real trained transformer</strong>?</p>
+
+      <h2>A real model with a known answer</h2>
+      <p>I trained a small transformer (embedding, attention and MLP; d_model = 64) on <strong>(a + b) mod 53</strong> with weight decay. It <strong>grokked to 100% test accuracy</strong>, meaning it learned the actual algorithm rather than memorising. Grokked modular-addition models are known to represent numbers using a handful of Fourier frequencies (Nanda et al., 2023), which provides ground truth.</p>
+      <p>Crucially, I measured that ground truth <em>independently of SPD</em>, directly from a Fourier transform of the embedding. The model uses about <strong>four key frequencies: 17, 11, 12 and 26</strong>, and the top five frequencies hold 91% of the spectral power.</p>
+
+      <h2>Result: the components collapsed</h2>
+      <p>I applied SPD to the MLP up-projection and asked whether the decomposed components line up with those frequencies. They didn't:</p>
+      <ul>
+        <li>All components collapsed onto the single dominant frequency, 17.</li>
+        <li>Clustering against the true frequencies scored an ARI of <strong>0</strong>.</li>
+        <li>The cause: the importance-minimality term stayed saturated (around 1.0), so the components <strong>never specialised</strong> within the training budget on this larger layer.</li>
+      </ul>
+      <p>As a follow-up I ran a stronger, annealed SPD with more components (48) and a longer schedule. The model still scored 100%, but the components recovered only <strong>one of the four</strong> true frequencies.</p>
+
+      <h2>The through-line</h2>
+      <p>Across the series (toy superposition models, a balanced variant, a compositional MLP and this real transformer), one finding held and got stronger with scale:</p>
+      <blockquote><p>The binding constraint on automated mechanism recovery is SPD component <strong>specialization</strong>, not the choice of clustering signal.</p></blockquote>
+      <p>When components map cleanly to single mechanisms, simple co-activation works. As targets get realistic, components fail to specialise, and then <em>no</em> clustering signal recovers the verified mechanisms, whether co-activation, attribution or causal double-ablation. The practical recommendation is to invest in specialization first: sharper L0 gates, longer or stronger sparsity schedules, and per-mechanism capacity. Clustering-signal design comes after that.</p>
+      <p class="refs">References: Bushnaq, Braun &amp; Sharkey (2025), <em>Stochastic Parameter Decomposition</em>, arXiv:2506.20790 · Nanda et al. (2023), <em>Progress measures for grokking via mechanistic interpretability</em>, ICLR · Elhage et al. (2022), <em>Toy Models of Superposition</em>.</p>
+    </div>
+
+    <p class="source-box">Code, data and full results: <a href="https://github.com/dukemawex/spd-real-transformer">dukemawex/spd-real-transformer</a> on GitHub.</p>
+
+    <aside class="author-box" aria-labelledby="author-h">
+      <picture>
+        <source type="image/webp" srcset="/assets/photos/headshot-480.webp" />
+        <img src="/assets/photos/headshot-960.jpg" width="960" height="1200" loading="lazy" decoding="async" alt="Emmanuel Effiom Duke, smiling, in a light grey collared shirt" />
+      </picture>
+      <div>
+        <h2 id="author-h">About the author</h2>
+        <p><a href="/about/" rel="author">Emmanuel Effiom Duke</a> is an AI engineer, mechanical engineer (B.Eng., University of Nigeria, Nsukka) and researcher, and the founder of <a href="https://dukersltd.com/">Dukers LTD</a>. Associated initiatives: <a href="https://tegerai.tech/">Teger AI</a> and <a href="https://transly.software/">Transly</a>.</p>
+      </div>
+    </aside>
+  </article>
+
+  <section class="more-posts" aria-labelledby="more-h">
+    <h2 id="more-h">More writing</h2>
     <div class="posts">
       <article class="post-card">
         <p class="tag">Forecasting · <time datetime="2026-10-08">8 October 2026</time> · 3 min read</p>
-        <h2><a href="/articles/metaculus-forecasting-bot/">Building a Metaculus forecasting bot</a></h2>
+        <h3><a href="/articles/metaculus-forecasting-bot/">Building a Metaculus forecasting bot</a></h3>
         <p>Lessons from an LLM forecasting bot in Metaculus AI tournaments: silent research failures, extremized toss-ups, and replacing vibes-tuning with measurement.</p>
         <span class="go" aria-hidden="true">Read →</span>
       </article>
       <article class="post-card">
         <p class="tag">AI evaluation · <time datetime="2026-10-08">8 October 2026</time> · 2 min read</p>
-        <h2><a href="/articles/llm-knowledge-cutoff-probe/">Ask the calendar, not the model</a></h2>
+        <h3><a href="/articles/llm-knowledge-cutoff-probe/">Ask the calendar, not the model</a></h3>
         <p>Measuring nine language models' real knowledge cutoffs with dated-event bisection: every model that self-reported a cutoff was wrong, some by over a year.</p>
         <span class="go" aria-hidden="true">Read →</span>
       </article>
       <article class="post-card">
         <p class="tag">AI security · <time datetime="2026-10-08">8 October 2026</time> · 2 min read</p>
-        <h2><a href="/articles/designing-teger-ai/">Designing Teger AI to explain phishing</a></h2>
+        <h3><a href="/articles/designing-teger-ai/">Designing Teger AI to explain phishing</a></h3>
         <p>How Teger AI, an explainable social-engineering defence for Gmail and Slack, pairs deterministic signals with AI analysis and treats every message as untrusted.</p>
         <span class="go" aria-hidden="true">Read →</span>
       </article>
-      <article class="post-card">
-        <p class="tag">AI safety · <time datetime="2026-10-08">8 October 2026</time> · 2 min read</p>
-        <h2><a href="/articles/secret-loyalties-audit/">Four false positives and one real signal</a></h2>
-        <p>A weights-first audit of three model organisms for secret loyalties at the Apart Research hackathon, and the workflow that rejected four false positives.</p>
-        <span class="go" aria-hidden="true">Read →</span>
-      </article>
-      <article class="post-card">
-        <p class="tag">AI safety · <time datetime="2026-10-08">8 October 2026</time> · 2 min read</p>
-        <h2><a href="/articles/spd-real-transformer/">SPD meets a real grokked transformer</a></h2>
-        <p>Applying Stochastic Parameter Decomposition to a transformer that grokked modular addition: the ground truth was verified, but the components never specialized.</p>
-        <span class="go" aria-hidden="true">Read →</span>
-      </article>
-      <article class="post-card">
-        <p class="tag">AI safety · <time datetime="2026-10-08">8 October 2026</time> · 2 min read</p>
-        <h2><a href="/articles/spd-mechanism-clustering/">Clustering SPD components into mechanisms</a></h2>
-        <p>A CPU pilot showing SPD subcomponents can be grouped into ground-truth mechanisms automatically, and why specialization is the real bottleneck.</p>
-        <span class="go" aria-hidden="true">Read →</span>
-      </article>
-      <article class="post-card">
-        <p class="tag">AI safety · <time datetime="2026-10-08">8 October 2026</time> · 2 min read</p>
-        <h2><a href="/articles/deception-feature-universality/">Do models represent deception alike?</a></h2>
-        <p>Do different architectures learn similar internal representations of deception cues? A toy-scale test, and why the first null was too weak to answer.</p>
-        <span class="go" aria-hidden="true">Read →</span>
-      </article>
-      <article class="post-card">
-        <p class="tag">AI safety · <time datetime="2026-10-08">8 October 2026</time> · 2 min read</p>
-        <h2><a href="/articles/reward-generalization-early-warning/">The reward spread; the warning didn't</a></h2>
-        <p>Reproducing unintended reward generalization in an inspectable toy model, and a negative result: internal signals gave no early warning.</p>
-        <span class="go" aria-hidden="true">Read →</span>
-      </article>
     </div>
+    <p><a href="/articles/">All articles →</a></p>
   </section>
 </main>
 

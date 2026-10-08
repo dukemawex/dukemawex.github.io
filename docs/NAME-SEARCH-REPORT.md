@@ -137,16 +137,19 @@ PageSpeed Insights, and real HTTP status/redirect behaviour.
 
 ## 7. Update: Writing section (articles)
 
-Added after the report above. There are five articles at `/articles/`, each based strictly on one of Emmanuel's public
+Added after the report above. There are eight articles at `/articles/`, each based strictly on one of Emmanuel's public
 repositories, with that repository cited and linked (`BlogPosting.isBasedOn`). Negative and inconclusive
 results are reported as the repositories state them. Each article:
 
 - has its own canonical URL, `BlogPosting` + `BreadcrumbList` JSON-LD with `author` → `https://duker.me/#person`,
   and an author box linking duker.me/about, Dukers LTD, Teger AI and Transly
-- is listed in `sitemap.xml` (now 8 URLs), the `/articles/` index (`CollectionPage` + `ItemList`), the homepage
+- is listed in `sitemap.xml` (now 11 URLs), the `/articles/` index (`CollectionPage` + `ItemList`), the homepage
   Writing section (latest 3) and `llms.txt`
 
 Transly and Dukers LTD are linked but not described beyond "associated initiatives" and "founder", since there
-are still no verified facts. Tests: `npm test` → articles up to date · static checks 8 pages · browser checks
+are still no verified facts. Tests: `npm test` → articles up to date · static checks 11 pages · browser checks
 5 pages × 6 viewport/theme combos with axe, all passing.
 
+Articles added in the second batch: *Building a Metaculus forecasting bot* (botduke--update; no tournament scores are
+claimed because the repository records none), *Ask the calendar, not the model* (llm-knowledge-cutoff-probe)
+and *SPD meets a real grokked transformer* (spd-real-transformer).

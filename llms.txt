@@ -26,8 +26,11 @@ Canonical pages: https://duker.me/ (overview) and https://duker.me/about/ (full 
 ## Articles
 
 <!--ARTICLES:START-->
+- [Building a Metaculus forecasting bot](https://duker.me/articles/metaculus-forecasting-bot/): Lessons from an LLM forecasting bot in Metaculus AI tournaments: silent research failures, extremized toss-ups, and replacing vibes-tuning with measurement.
+- [Ask the calendar, not the model](https://duker.me/articles/llm-knowledge-cutoff-probe/): Measuring nine language models' real knowledge cutoffs with dated-event bisection: every model that self-reported a cutoff was wrong, some by over a year.
 - [Designing Teger AI to explain phishing](https://duker.me/articles/designing-teger-ai/): How Teger AI, an explainable social-engineering defence for Gmail and Slack, pairs deterministic signals with AI analysis and treats every message as untrusted.
 - [Four false positives and one real signal](https://duker.me/articles/secret-loyalties-audit/): A weights-first audit of three model organisms for secret loyalties at the Apart Research hackathon, and the workflow that rejected four false positives.
+- [SPD meets a real grokked transformer](https://duker.me/articles/spd-real-transformer/): Applying Stochastic Parameter Decomposition to a transformer that grokked modular addition: the ground truth was verified, but the components never specialized.
 - [Clustering SPD components into mechanisms](https://duker.me/articles/spd-mechanism-clustering/): A CPU pilot showing SPD subcomponents can be grouped into ground-truth mechanisms automatically, and why specialization is the real bottleneck.
 - [Do models represent deception alike?](https://duker.me/articles/deception-feature-universality/): Do different architectures learn similar internal representations of deception cues? A toy-scale test, and why the first null was too weak to answer.
 - [The reward spread; the warning didn't](https://duker.me/articles/reward-generalization-early-warning/): Reproducing unintended reward generalization in an inspectable toy model, and a negative result: internal signals gave no early warning.

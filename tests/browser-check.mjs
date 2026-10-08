@@ -23,7 +23,7 @@ const base = `http://127.0.0.1:${server.address().port}`;
 const browser = await chromium.launch({ executablePath: process.env.PW_CHROMIUM || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
 const fails = [];
 const sizes = [['phone', 375, 812], ['tablet', 768, 1024], ['desktop', 1366, 900]];
-for (const route of ['/', '/about/', '/articles/', '/articles/designing-teger-ai/', '/articles/spd-mechanism-clustering/']) for (const theme of ['light', 'dark']) for (const [name, width, height] of sizes) {
+for (const route of ['/', '/about/', '/articles/', '/articles/metaculus-forecasting-bot/', '/articles/llm-knowledge-cutoff-probe/']) for (const theme of ['light', 'dark']) for (const [name, width, height] of sizes) {
   const ctx = await browser.newContext({ viewport: { width, height }, colorScheme: theme, reducedMotion: 'reduce' });
   const page = await ctx.newPage();
   const errs = [];

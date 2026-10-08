@@ -1,0 +1,33 @@
+<!--meta
+{
+  "slug": "spd-real-transformer",
+  "headline": "SPD meets a real grokked transformer",
+  "description": "Applying Stochastic Parameter Decomposition to a transformer that grokked modular addition: the ground truth was verified, but the components never specialized.",
+  "date": "2026-10-08",
+  "tags": ["AI safety", "Mechanistic interpretability", "Research"],
+  "source": {"label": "dukemawex/spd-real-transformer", "url": "https://github.com/dukemawex/spd-real-transformer"},
+  "image": {"src": "/assets/articles/spd-real-transformer.png", "webp": "/assets/articles/spd-real-transformer.webp", "width": 830, "height": 546,
+            "alt": "Bar chart of Fourier power in the grokked model's embedding: four tall bars at frequencies 11, 12, 17 and 26, with near-zero power elsewhere."},
+  "figcaption": "The ground truth, measured directly from the embedding: the grokked model relies on about four Fourier frequencies (17, 11, 12 and 26)."
+}
+-->
+<p>My <a href="/articles/spd-mechanism-clustering/">first SPD clustering pilot</a> worked on a toy model, where gate co-activation recovered the true mechanisms with an adjusted Rand index of 0.53. Toy models are forgiving, though. The fifth experiment in the series asked the question that matters: does automated mechanism recovery survive contact with a <strong>real trained transformer</strong>?</p>
+
+<h2>A real model with a known answer</h2>
+<p>I trained a small transformer (embedding, attention and MLP; d_model = 64) on <strong>(a + b) mod 53</strong> with weight decay. It <strong>grokked to 100% test accuracy</strong>, meaning it learned the actual algorithm rather than memorising. Grokked modular-addition models are known to represent numbers using a handful of Fourier frequencies (Nanda et al., 2023), which provides ground truth.</p>
+<p>Crucially, I measured that ground truth <em>independently of SPD</em>, directly from a Fourier transform of the embedding. The model uses about <strong>four key frequencies: 17, 11, 12 and 26</strong>, and the top five frequencies hold 91% of the spectral power.</p>
+
+<h2>Result: the components collapsed</h2>
+<p>I applied SPD to the MLP up-projection and asked whether the decomposed components line up with those frequencies. They didn't:</p>
+<ul>
+  <li>All components collapsed onto the single dominant frequency, 17.</li>
+  <li>Clustering against the true frequencies scored an ARI of <strong>0</strong>.</li>
+  <li>The cause: the importance-minimality term stayed saturated (around 1.0), so the components <strong>never specialised</strong> within the training budget on this larger layer.</li>
+</ul>
+<p>As a follow-up I ran a stronger, annealed SPD with more components (48) and a longer schedule. The model still scored 100%, but the components recovered only <strong>one of the four</strong> true frequencies.</p>
+
+<h2>The through-line</h2>
+<p>Across the series (toy superposition models, a balanced variant, a compositional MLP and this real transformer), one finding held and got stronger with scale:</p>
+<blockquote><p>The binding constraint on automated mechanism recovery is SPD component <strong>specialization</strong>, not the choice of clustering signal.</p></blockquote>
+<p>When components map cleanly to single mechanisms, simple co-activation works. As targets get realistic, components fail to specialise, and then <em>no</em> clustering signal recovers the verified mechanisms, whether co-activation, attribution or causal double-ablation. The practical recommendation is to invest in specialization first: sharper L0 gates, longer or stronger sparsity schedules, and per-mechanism capacity. Clustering-signal design comes after that.</p>
+<p class="refs">References: Bushnaq, Braun &amp; Sharkey (2025), <em>Stochastic Parameter Decomposition</em>, arXiv:2506.20790 · Nanda et al. (2023), <em>Progress measures for grokking via mechanistic interpretability</em>, ICLR · Elhage et al. (2022), <em>Toy Models of Superposition</em>.</p>

@@ -1,0 +1,49 @@
+<!--meta
+{
+  "slug": "metaculus-forecasting-bot",
+  "headline": "Building a Metaculus forecasting bot",
+  "description": "Lessons from an LLM forecasting bot in Metaculus AI tournaments: silent research failures, extremized toss-ups, and replacing vibes-tuning with measurement.",
+  "date": "2026-10-08",
+  "tags": ["Forecasting", "LLM engineering", "Metaculus"],
+  "source": {"label": "dukemawex/botduke--update", "url": "https://github.com/dukemawex/botduke--update"}
+}
+-->
+<p>Between October 2025 and August 2026 I built and ran an automated forecasting bot in Metaculus's AI forecasting tournaments, most recently under the name <strong>oracledeckv1</strong>. It started from Metaculus's bot template, built on the <code>forecasting_tools</code> library, and grew into a multi-source research and LLM-ensemble pipeline. This is what building it taught me. Most of it came from finding where the bot was quietly wrong.</p>
+
+<h2>How the bot works</h2>
+<p>For each open question, the bot:</p>
+<ol>
+  <li>classifies the question's domain (geopolitics, economics, science, tech, business, health or sports)</li>
+  <li>turns it into up to three targeted search queries</li>
+  <li>runs several search and news providers in parallel and synthesises them into one research brief with a cross-source "signal strength" score</li>
+  <li>asks an ensemble of different LLMs for a forecast, aggregated by the median for robustness to outliers</li>
+  <li>passes the result through a critic and a red-team model</li>
+  <li>applies calibration: shrinkage when the ensemble disagrees, time-decay for far-off close dates, and extremization rules</li>
+</ol>
+<p>The bot was configured for three tournaments at once: the primary AI competition, MiniBench and Market Pulse.</p>
+
+<h2>Lesson 1: the scariest failures are silent</h2>
+<p>Reading the run logs in July turned up research providers that were failing <em>without crashing</em>: a wrong API call signature, a synthesis model name that didn't exist, and an SDK wrapper incompatibility. The bot kept forecasting, just with less evidence than I thought it had. I replaced the broken sources with Nimble and You.com search, and gated You.com to finance and market questions, where it added the most. Since then, I treat "it ran" and "it worked" as separate claims that need separate checks.</p>
+
+<h2>Lesson 2: don't extremize a toss-up</h2>
+<p>The original calibration curve pushed forecasts between 0.45 and 0.55 hard towards the extremes (strength 1.8). That produced confident-wrong forecasts and negative scores. A near-50/50 ensemble means "we don't know", and making that confident is exactly backwards. I changed the policy:</p>
+<ul>
+  <li>toss-ups (0.45–0.55): no extremization at all</li>
+  <li>mild leanings (0.35–0.45 and 0.55–0.65): gentle extremization</li>
+  <li>clear signals (below 0.35 or above 0.65): moderate extremization</li>
+</ul>
+
+<h2>Lesson 3: replace vibes-tuning with measurement</h2>
+<p>Tuning on live tournaments is slow and noisy, so in August I added an offline evaluation harness, built with an AI coding agent. Its two stages mean the expensive research-and-ensemble step runs once per question and is cached, after which calibration variants can be swept at zero token cost. Running it against <strong>190 resolved binary Metaculus questions</strong> (May–August 2026) produced findings I wouldn't have guessed:</p>
+<ul>
+  <li><strong>Only 31.6% resolved YES</strong> (60 of 190). The bot's habit of shrinking uncertain forecasts towards 50% was therefore a systematic bias towards YES, not a neutral safety measure. A new calibration does one bounded shrink in log-odds space towards a base-rate prior instead.</li>
+  <li><strong>Bot accounts don't receive community-prediction aggregates</strong>: the field was empty on all 190 questions. The branch of the code that blended in the community forecast had never run.</li>
+  <li><strong>The research-quality signal was saturated.</strong> Counting snippets hit the cap on every question, which pinned "quality" at 1.0 and silently disabled the shrink meant for weak research. It now counts distinct source domains.</li>
+  <li><strong>Backtests leak unless search is date-bounded.</strong> A "leak canary" showed that unbounded search on resolved questions surfaced coverage of the actual outcome, while date-bounded search didn't. Without that bound, any backtest score would be inflated.</li>
+</ul>
+
+<h2>Lesson 4: know what your models know</h2>
+<p>An ensemble mixes models with different training cutoffs, and their self-reported cutoffs are unreliable (see <a href="/articles/llm-knowledge-cutoff-probe/">my knowledge-cutoff probe</a>). So the bot now measures each ensemble member's cutoff with a compact dated-event ladder and logs it next to every forecast, noting that live research extends what the model knows unaided. I also moved to a cheaper ensemble of models, each verified live before switching, and added a memory that recalls similar resolved questions alongside the bot's track record on them.</p>
+
+<h2>What I can't claim yet</h2>
+<p>I don't have a clean before-and-after score. Metaculus's peer score compares you with other forecasters, which can't be reproduced offline. The harness only ranks variants against each other, as a proxy. The first full stage-one run was also interrupted by upstream model-provider errors, so the head-to-head of the old and new calibration is still pending. The code, the harness and the corpus tooling are all public, so anyone can check the numbers above.</p>

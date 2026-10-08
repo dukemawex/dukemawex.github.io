@@ -13,7 +13,7 @@ const SITE = 'https://duker.me';
 const FULL = 'Emmanuel Effiom Duke';
 const UPDATED = '2026-10-08'; // bump when page content changes meaningfully
 // Display order on the homepage and the index (newest/most relevant first)
-const ORDER = ['designing-teger-ai', 'secret-loyalties-audit', 'spd-mechanism-clustering', 'deception-feature-universality', 'reward-generalization-early-warning'];
+const ORDER = ['metaculus-forecasting-bot', 'llm-knowledge-cutoff-probe', 'designing-teger-ai', 'secret-loyalties-audit', 'spd-real-transformer', 'spd-mechanism-clustering', 'deception-feature-universality', 'reward-generalization-early-warning'];
 const HOME_LIMIT = 3;
 
 const read = (f) => readFileSync(path.join(root, f), 'utf8');
@@ -220,7 +220,7 @@ ${a.body.split('\n').map((l) => (l ? '      ' + l : l)).join('\n')}
 {
   const url = `${SITE}/articles/`, trail = [['/', 'Home'], ['/articles/', 'Writing']];
   const title = `Writing by ${FULL} | Articles`;
-  const description = `Articles by ${FULL} on AI security, mechanistic interpretability, AI safety research and building Teger AI.`;
+  const description = `Articles by ${FULL} on AI forecasting, AI security, mechanistic interpretability, model evaluation and AI-safety research.`;
   const ld = [
     {
       '@type': 'CollectionPage', '@id': `${url}#page`, url, name: title, description, isPartOf: { '@id': WEBSITE },
@@ -238,7 +238,7 @@ ${a.body.split('\n').map((l) => (l ? '      ' + l : l)).join('\n')}
     <div>
       <p class="kicker">Writing</p>
       <h1>Writing by ${FULL}</h1>
-      <p class="bio-lede">Technical notes on AI security, interpretability and AI-safety research, written from my own projects, negative results included. I'm ${FULL}, founder of <a href="https://dukersltd.com/">Dukers LTD</a>; associated initiatives include <a href="https://tegerai.tech/">Teger AI</a> and <a href="https://transly.software/">Transly</a>.</p>
+      <p class="bio-lede">Technical notes on AI forecasting, AI security, model evaluation, interpretability and AI-safety research, written from my own projects, negative results included. I'm ${FULL}, founder of <a href="https://dukersltd.com/">Dukers LTD</a>; associated initiatives include <a href="https://tegerai.tech/">Teger AI</a> and <a href="https://transly.software/">Transly</a>.</p>
     </div>
   </header>
 

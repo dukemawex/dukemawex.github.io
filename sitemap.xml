@@ -15,6 +15,15 @@
     <lastmod>2026-10-08</lastmod>
   </url>
   <url>
+    <loc>https://duker.me/articles/metaculus-forecasting-bot/</loc>
+    <lastmod>2026-10-08</lastmod>
+  </url>
+  <url>
+    <loc>https://duker.me/articles/llm-knowledge-cutoff-probe/</loc>
+    <lastmod>2026-10-08</lastmod>
+    <image:image><image:loc>https://duker.me/assets/articles/knowledge-cutoff.png</image:loc></image:image>
+  </url>
+  <url>
     <loc>https://duker.me/articles/designing-teger-ai/</loc>
     <lastmod>2026-10-08</lastmod>
     <image:image><image:loc>https://duker.me/assets/photos/work-05.jpg</image:loc></image:image>
@@ -22,6 +31,11 @@
   <url>
     <loc>https://duker.me/articles/secret-loyalties-audit/</loc>
     <lastmod>2026-10-08</lastmod>
+  </url>
+  <url>
+    <loc>https://duker.me/articles/spd-real-transformer/</loc>
+    <lastmod>2026-10-08</lastmod>
+    <image:image><image:loc>https://duker.me/assets/articles/spd-real-transformer.png</image:loc></image:image>
   </url>
   <url>
     <loc>https://duker.me/articles/spd-mechanism-clustering/</loc>

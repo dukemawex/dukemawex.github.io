@@ -1,0 +1,57 @@
+<!--meta
+{
+  "slug": "llm-knowledge-cutoff-probe",
+  "headline": "Ask the calendar, not the model",
+  "description": "Measuring nine language models' real knowledge cutoffs with dated-event bisection: every model that self-reported a cutoff was wrong, some by over a year.",
+  "date": "2026-10-08",
+  "tags": ["AI evaluation", "LLM reliability", "Research"],
+  "source": {"label": "dukemawex/llm-knowledge-cutoff-probe", "url": "https://github.com/dukemawex/llm-knowledge-cutoff-probe"},
+  "image": {"src": "/assets/articles/knowledge-cutoff.png", "webp": "/assets/articles/knowledge-cutoff.webp", "width": 1600, "height": 734,
+            "alt": "Line chart of whether each of nine models knows dated events from June 2024 to June 2026. Most GPT-5.6 and Claude Fable 5 lines stay at 'knows' through September 2025, then drop; Kimi, DeepSeek and the Claude 4.6 models drop earlier."},
+  "figcaption": "Measured knowledge boundary across nine models. The models spread from about mid-2024 to September 2025, and none match their self-reported cutoff."
+}
+-->
+<p>While comparing GPT-5.6 and Claude Fable 5 in July 2026, I needed to know their training cutoffs, so I could tell when a model was reasoning from memory and when it was guessing. The obvious move is to ask. The answers were wrong. GPT-5.6 said "June 2024" and Claude Fable 5 said "January 2025". Both contradicted their own documentation, and both contradicted their behaviour. So I built a probe that measures the cutoff instead of trusting the model's account of it.</p>
+
+<h2>Method: dated-event bisection</h2>
+<p>The idea is to ask the calendar, not the model:</p>
+<ul>
+  <li>Build a <strong>ladder of real, precisely dated events</strong>, roughly one or more per month, each with a single verifiable answer and a source.</li>
+  <li>Ask each model closed factual questions about them, <strong>with no date hints</strong>, twice at temperature 0.</li>
+  <li>Define the <strong>contiguous-known cutoff</strong> as the latest month for which the model answered every dated fact correctly before its first miss.</li>
+  <li>Stay blind to self-report: the model is never told a date, and its claim is compared only afterwards.</li>
+</ul>
+
+<h2>Results across nine models</h2>
+<table>
+  <thead><tr><th>Model</th><th>Self-reported</th><th>Measured cutoff</th></tr></thead>
+  <tbody>
+    <tr><td>GPT-5.6 Luna / Sol / Terra</td><td>June 2024</td><td><strong>Sept 2025</strong></td></tr>
+    <tr><td>Claude Fable 5</td><td>January 2025</td><td><strong>Sept 2025</strong></td></tr>
+    <tr><td>Claude Opus 4.6</td><td>—</td><td>Apr 2025</td></tr>
+    <tr><td>Claude Sonnet 4.6</td><td>—</td><td>Jan 2025</td></tr>
+    <tr><td>DeepSeek-V4-Pro</td><td>—</td><td>Nov 2024</td></tr>
+    <tr><td>Kimi-K2.6</td><td>—</td><td>Jun 2024</td></tr>
+    <tr><td>Qwen3-Max</td><td>—</td><td>n/a (early miss)</td></tr>
+  </tbody>
+</table>
+<p><strong>Every model that self-reported a cutoff was wrong</strong>, by between 8 and 15 months. Qwen3-Max missed an early anchor question, which looks like a gap in that topic rather than a cutoff, so it isn't scored as a boundary.</p>
+
+<h2>What happens past the boundary</h2>
+<p>The more useful safety signal is what a model does when asked about events after its cutoff: does it say "I don't know", or does it make something up?</p>
+<ul>
+  <li>GPT-5.6 (all three variants) and Claude Fable 5 disclaimed <strong>100%</strong> of post-cutoff questions, with no confabulation.</li>
+  <li>Claude Opus 4.6 and Sonnet 4.6 confabulated on about <strong>10–12%</strong>.</li>
+  <li>DeepSeek-V4-Pro confabulated on <strong>42%</strong> and Kimi-K2.6 on <strong>50%</strong>.</li>
+</ul>
+<p>A model that confidently answers questions it can't know about is risky for anything time-sensitive, however good its benchmark scores are.</p>
+
+<h2>Limitations</h2>
+<ul>
+  <li>Resolution is about one month, and "knows a dated fact" is a lower bound on the true cutoff.</li>
+  <li>Open-recall questions ("name a news event from…") are weaker than closed factual ones. A few late open-recall hits in the chart aren't treated as evidence of a later cutoff.</li>
+  <li>A measured boundary can differ from vendor documentation. Trust the probe for the endpoint you actually call.</li>
+</ul>
+
+<h2>Where I use it</h2>
+<p>The probe now runs inside my <a href="/articles/metaculus-forecasting-bot/">Metaculus forecasting bot</a>, which logs every ensemble member's measured cutoff alongside its forecasts. The full method, the sourced event ladder, the raw results and a conference-style paper are in the repository.</p>
