@@ -16,7 +16,7 @@ const og = `<!doctype html><html><head><style>
     background:radial-gradient(60% 80% at 15% 10%,rgba(94,179,246,.28),transparent 60%),radial-gradient(50% 70% at 70% 100%,rgba(183,156,255,.22),transparent 60%),#0b0f16;
     display:grid;grid-template-columns:1fr 420px;align-items:center;padding:0 0 0 72px}
   .k{font-family:'DejaVu Serif',Georgia,serif;font-style:italic;color:#7ee0c0;font-size:30px;margin-bottom:14px}
-  h1{font-size:84px;font-weight:850;letter-spacing:-3px;line-height:1}
+  h1{font-size:64px;font-weight:850;letter-spacing:-2.2px;line-height:1.02}
   ul{list-style:none;padding:0;margin:30px 0 0;display:flex;flex-wrap:wrap;gap:12px;max-width:640px}
   li{font-size:24px;font-weight:600;padding:9px 18px;border:1.5px solid rgba(234,240,247,.22);border-radius:999px;color:#cfd9e6}
   .u{margin-top:40px;font-size:26px;font-weight:700;color:#5eb3f6;letter-spacing:-.3px}
@@ -24,8 +24,8 @@ const og = `<!doctype html><html><head><style>
   .p img{width:100%;height:100%;object-fit:cover;object-position:50% 25%}
   .p::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#0b0f16 0,rgba(11,15,22,0) 30%)}
 </style></head><body>
-  <div><p class="k">duker.me</p><h1>Emmanuel Duke</h1>
-  <ul><li>AI Builder</li><li>Mechanical Engineer</li><li>Technology Entrepreneur</li><li>Researcher</li></ul>
+  <div><p class="k">duker.me</p><h1>Emmanuel Effiom Duke</h1>
+  <ul><li>AI Engineer</li><li>Mechanical Engineer</li><li>Researcher</li></ul>
   <p class="u">Founder, Dukers LTD</p></div>
   <div class="p"><img src="${portrait}" alt=""></div>
 </body></html>`;

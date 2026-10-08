@@ -1,14 +1,14 @@
-# Emmanuel Duke
+# Emmanuel Effiom Duke
 
-> Personal site of Emmanuel Duke (Emmanuel Effiom Duke): AI builder, mechanical engineer, technology entrepreneur and researcher based in Enugu State, Nigeria. Founder of Dukers LTD. B.Eng. Mechanical Engineering, University of Nigeria, Nsukka.
+> Personal site of Emmanuel Effiom Duke (also Emmanuel Duke): AI builder, mechanical engineer, technology entrepreneur and researcher based in Enugu State, Nigeria. Founder of Dukers LTD. B.Eng. Mechanical Engineering, University of Nigeria, Nsukka.
 
-The canonical page is https://duker.me/. All content is in the HTML of that single page.
+Canonical pages: https://duker.me/ (overview) and https://duker.me/about/ (full biography). All content is plain HTML.
 
 ## Sections
 
 - [Ventures](https://duker.me/#ventures): Dukers LTD (founder, https://dukersltd.com), Teger AI (https://tegerai.tech), Transly (https://transly.software)
 - [Projects](https://duker.me/#projects): AI-safety research code, fintech (AxiosPay), agriculture, geospatial and security projects
-- [About](https://duker.me/#about): biography and skills
+- [About](https://duker.me/about/): full biography
 - [Experience](https://duker.me/#experience): roles and dates
 - [Research](https://duker.me/#publications): research interests and publications
 - [Community](https://duker.me/#leadership): mentoring and leadership

@@ -5,4 +5,9 @@
     <lastmod>2026-10-08</lastmod>
     <image:image><image:loc>https://duker.me/assets/photos/portrait.jpg</image:loc></image:image>
   </url>
+  <url>
+    <loc>https://duker.me/about/</loc>
+    <lastmod>2026-10-08</lastmod>
+    <image:image><image:loc>https://duker.me/assets/photos/headshot-960.jpg</image:loc></image:image>
+  </url>
 </urlset>
