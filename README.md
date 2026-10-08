@@ -1,18 +1,21 @@
 # dukemawex.github.io
 
-Personal site for Emmanuel Duke — AI builder, mechanical engineer, technology entrepreneur and
-researcher; founder of Dukers LTD. Live at [duker.me](https://duker.me).
+Personal site for Emmanuel Effiom Duke (Emmanuel Duke): AI engineer, mechanical engineer, researcher and
+founder of Dukers LTD. Live at [duker.me](https://duker.me).
 
-Static site served by GitHub Pages from the default branch. **No build step**: `index.html` is the page,
-`assets/js/site.js` is its script.
+Static site served by GitHub Pages from the default branch. **No build step**: `index.html` (home) and
+`about/index.html` (biography) are the pages, sharing `assets/css/site.css` and `assets/js/base.js`.
 
 Sections: Ventures, Projects, About, Experience, Education, Community (leadership), How I help,
 Research & publications, Credentials, Contact.
 
 | Path | Purpose |
 |---|---|
-| `index.html` | The page: content, inline CSS, metadata, JSON-LD, CSP |
-| `assets/js/site.js` | Interactions (nav, filters, search palette, project popup, theme) |
+| `index.html` | Home: content, metadata, JSON-LD, CSP |
+| `about/index.html` | Full biography, with BreadcrumbList JSON-LD. Its Person JSON-LD must stay identical to the homepage's (tests check) |
+| `assets/css/site.css` | Shared styles |
+| `assets/js/base.js` | Shared: theme toggle, mobile menu, footer year |
+| `assets/js/site.js` | Home only: nav highlight, filters, search palette, project popup |
 | `assets/photos/` | Portrait and project screenshots — see [its README](assets/photos/README.md) |
 | `assets/og/og-default.jpg` | 1200×630 social sharing image |
 | `favicon.*`, `apple-touch-icon.png`, `assets/icons/`, `site.webmanifest` | Icons and manifest |
@@ -21,6 +24,8 @@ Research & publications, Credentials, Contact.
 | `_config.yml` | Keeps tooling out of the published Pages output |
 | `scripts/`, `tests/`, `package.json` | Local tooling only (not published) |
 | `docs/SEO-AND-DEPLOYMENT.md` | Audit, search-console setup and deployment checklist |
+| `docs/NAME-SEARCH-REPORT.md` | Before/after report for the "Emmanuel Effiom Duke" name search |
+| `docs/reciprocal/` | Prepared founder-link snippets for dukersltd.com, tegerai.tech, transly.software |
 
 ## Checks
 
@@ -31,5 +36,5 @@ npm test            # static SEO/link checks + HTML validation + Chromium/axe ch
 
 `npm run browser` uses Chromium at `/opt/pw-browsers/...`; set `PW_CHROMIUM=/path/to/chrome` elsewhere.
 
-**When you edit the inline `<script>` in `<head>`**, its CSP hash changes. `npm run check` prints the
-new `sha256-…` value; paste it into the `Content-Security-Policy` meta tag.
+**When you edit the inline `<script>` in `<head>`** (it's the same on both pages), its CSP hash changes.
+`npm run check` prints the new `sha256-…` value; paste it into the `Content-Security-Policy` meta tag on both pages.

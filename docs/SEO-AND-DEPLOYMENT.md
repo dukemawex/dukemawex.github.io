@@ -1,6 +1,7 @@
 # duker.me — audit, SEO setup and deployment checklist
 
-Last updated 2026-10-08. Hosting: **GitHub Pages** (custom domain via `CNAME` → `duker.me`). No Vercel
+Last updated 2026-10-08. For the name-search work (title, About page, JSON-LD names), see
+[NAME-SEARCH-REPORT.md](NAME-SEARCH-REPORT.md). Hosting: **GitHub Pages** (custom domain via `CNAME` → `duker.me`). No Vercel
 project, firewall or server config exists in this repository.
 
 ## 1. Audit: before → after
@@ -43,8 +44,8 @@ project popup, citation copy and theme toggle.
 - **Teger AI** copy comes from the screenshot of tegerai.tech already in the repo ("MVP in development ·
   Private beta — coming soon"; "Stop the message before it becomes the breach").
 - **Writing section** — no articles exist, so none was created. Add one once there are real posts.
-- **Separate pages** (/about, /projects, …) — the site stays a single canonical page, which avoids thin,
-  duplicate pages. Splitting it is a sensible later step once each section has enough unique content.
+- **Separate pages**: `/about/` (full biography) was added for name search. See `docs/NAME-SEARCH-REPORT.md`.
+  Other sections stay on the homepage to avoid thin, duplicate pages.
 - **"80+ GitHub repos"** stat is carried over from the existing site. Please re-confirm it occasionally.
 - **Forms** — there are none (contact is `mailto:`), so there's nothing to abuse. If you add a form, use a
   provider with built-in spam protection (e.g. Formspree + honeypot/Turnstile), and add its host to the CSP
@@ -69,7 +70,7 @@ project popup, citation copy and theme toggle.
 3. DNS (check only — don't change without reason): apex `duker.me` A/AAAA records point to GitHub Pages.
    If `www.duker.me` should work, it needs a CNAME to `dukemawex.github.io` (Pages then redirects it to the apex).
 4. After deploying, verify in production:
-   - `https://duker.me/robots.txt`, `/sitemap.xml`, `/site.webmanifest`, `/favicon.ico`, `/llms.txt` return 200
+   - `https://duker.me/about/`, `/robots.txt`, `/sitemap.xml`, `/site.webmanifest`, `/favicon.ico`, `/llms.txt` return 200
    - `https://duker.me/does-not-exist` shows the branded 404 page
    - `http://duker.me/` redirects to `https://duker.me/`
    - `https://dukemawex.github.io/` redirects to `https://duker.me/`

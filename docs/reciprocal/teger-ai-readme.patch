@@ -1,0 +1,15 @@
+diff --git a/README.md b/README.md
+index fa805a3..ace2565 100644
+--- a/README.md
++++ b/README.md
+@@ -108,6 +108,10 @@ See docs/api-reference.md.
+ 
+ See SECURITY.md and docs/threat-model.md.
+ 
++## Creator
++
++Teger AI is created by [Emmanuel Effiom Duke](https://duker.me/about/), AI engineer, researcher and founder of [Dukers LTD](https://dukersltd.com/).
++
+ ## License
+ 
+ MIT — See LICENSE.
