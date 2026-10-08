@@ -34,4 +34,5 @@ Canonical pages: https://duker.me/ (overview) and https://duker.me/about/ (full 
 - [Clustering SPD components into mechanisms](https://duker.me/articles/spd-mechanism-clustering/): A CPU pilot showing SPD subcomponents can be grouped into ground-truth mechanisms automatically, and why specialization is the real bottleneck.
 - [Do models represent deception alike?](https://duker.me/articles/deception-feature-universality/): Do different architectures learn similar internal representations of deception cues? A toy-scale test, and why the first null was too weak to answer.
 - [The reward spread; the warning didn't](https://duker.me/articles/reward-generalization-early-warning/): Reproducing unintended reward generalization in an inspectable toy model, and a negative result: internal signals gave no early warning.
+- [2021 NHEF Essay Competition entry](https://www.scribd.com/document/797321594/2021-NHEF-Essay-Competition-Duke-Emmanuel) (2021, Scribd): My essay for the 2021 essay competition of the Nigeria Higher Education Foundation (NHEF), published on Scribd.
 <!--ARTICLES:END-->

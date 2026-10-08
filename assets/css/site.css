@@ -621,3 +621,6 @@ nav.crumbs{position:static;z-index:auto;background:none;border:0;-webkit-backdro
 .fig-scroll:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 @media(max-width:599px){.post-figure.wide img{width:680px;max-width:none}}
 .post .prose{margin-top:24px}
+.post-index.elsewhere{padding-top:clamp(40px,5vw,56px)}
+.post-index.elsewhere .subh{margin-bottom:18px}
+.post-card.external{border-style:dashed}

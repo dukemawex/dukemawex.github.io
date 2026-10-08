@@ -30,17 +30,22 @@ const shared = homeGraph.filter((n) => ['WebSite', 'Person', 'Organization'].inc
 const PERSON = `${SITE}/#person`, WEBSITE = `${SITE}/#website`;
 
 // ---- Load articles ----
-const articles = readdirSync(path.join(root, 'content/articles')).filter((f) => f.endsWith('.html')).map((f) => {
+const all = readdirSync(path.join(root, 'content/articles')).filter((f) => f.endsWith('.html')).map((f) => {
   const raw = read(`content/articles/${f}`);
   const m = raw.match(/^<!--meta\n([\s\S]*?)\n-->\n([\s\S]*)$/);
   if (!m) throw new Error(`${f}: missing <!--meta … --> header`);
   const meta = JSON.parse(m[1]);
   if (meta.slug + '.html' !== f) throw new Error(`${f}: slug "${meta.slug}" must match the file name`);
-  for (const k of ['headline', 'description', 'date', 'tags', 'source']) if (!meta[k]) throw new Error(`${f}: missing ${k}`);
+  const required = meta.external ? ['headline', 'description', 'date', 'tags'] : ['headline', 'description', 'date', 'tags', 'source'];
+  for (const k of required) if (!meta[k]) throw new Error(`${f}: missing ${k}`);
+  if (meta.external && !/^https:\/\//.test(meta.external.url || '')) throw new Error(`${f}: external.url must be https`);
   const body = m[2].trim();
   const words = body.replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length;
   return { ...meta, body, words, minutes: Math.max(1, Math.round(words / 220)), url: `${SITE}/articles/${meta.slug}/`, path: `/articles/${meta.slug}/` };
 });
+// External pieces (hosted elsewhere) are listed on the index but get no page, sitemap entry or ItemList entry.
+const elsewhere = all.filter((a) => a.external).sort((a, b) => b.date.localeCompare(a.date));
+const articles = all.filter((a) => !a.external);
 for (const a of articles) if (!ORDER.includes(a.slug)) throw new Error(`add "${a.slug}" to ORDER`);
 articles.sort((a, b) => ORDER.indexOf(a.slug) - ORDER.indexOf(b.slug));
 
@@ -85,6 +90,12 @@ const authorBox = `<aside class="author-box" aria-labelledby="author-h">
         <p><a href="/about/" rel="author">${FULL}</a> is an AI engineer, mechanical engineer (B.Eng., University of Nigeria, Nsukka) and researcher, and the founder of <a href="https://dukersltd.com/">Dukers LTD</a>. Associated initiatives: <a href="https://tegerai.tech/">Teger AI</a> and <a href="https://transly.software/">Transly</a>.</p>
       </div>
     </aside>`;
+const externalCard = (a, level = 2) => `<article class="post-card external">
+        <p class="tag">${esc(a.tags[0])} · <time datetime="${a.date.slice(0, 4)}">${esc(a.displayDate || fmtDate(a.date))}</time> · ${esc(a.external.site)}</p>
+        <h${level}><a href="${a.external.url}">${esc(a.headline)}</a></h${level}>
+        <p>${esc(a.description)}</p>
+        <span class="go" aria-hidden="true">Read on ${esc(a.external.site)} ↗</span>
+      </article>`;
 const card = (a, level = 3) => `<article class="post-card">
         <p class="tag">${esc(a.tags[0])} · <time datetime="${a.date}">${fmtDate(a.date)}</time> · ${a.minutes} min read</p>
         <h${level}><a href="${a.path}">${esc(a.headline)}</a></h${level}>
@@ -246,7 +257,14 @@ ${a.body.split('\n').map((l) => (l ? '      ' + l : l)).join('\n')}
     <div class="posts">
       ${articles.map((a) => card(a, 2)).join('\n      ')}
     </div>
-  </section>
+  </section>${elsewhere.length ? `
+
+  <section class="post-index elsewhere" aria-labelledby="elsewhere-h">
+    <h2 id="elsewhere-h" class="subh">Earlier writing, published elsewhere</h2>
+    <div class="posts">
+      ${elsewhere.map((a) => externalCard(a, 3)).join('\n      ')}
+    </div>
+  </section>` : ''}
 </main>`,
   }));
 }
@@ -287,7 +305,8 @@ ${entries.map((e) => `  <url>
   const llms = read('llms.txt');
   const re = /<!--ARTICLES:START-->[\s\S]*?<!--ARTICLES:END-->/;
   if (!re.test(llms)) throw new Error('llms.txt: missing article markers');
-  out.set('llms.txt', llms.replace(re, `<!--ARTICLES:START-->\n${articles.map((a) => `- [${a.headline}](${a.url}): ${a.description}`).join('\n')}\n<!--ARTICLES:END-->`));
+  const lines = [...articles.map((a) => `- [${a.headline}](${a.url}): ${a.description}`), ...elsewhere.map((a) => `- [${a.headline}](${a.external.url}) (${a.displayDate || a.date}, ${a.external.site}): ${a.description}`)];
+  out.set('llms.txt', llms.replace(re, `<!--ARTICLES:START-->\n${lines.join('\n')}\n<!--ARTICLES:END-->`));
 }
 
 // ---- Write or check ----
@@ -302,4 +321,4 @@ for (const [f, content] of out) {
   console.log('wrote', f);
 }
 if (stale.length) { console.error('✗ generated files are out of date — run `npm run articles`:\n  ' + stale.join('\n  ')); process.exit(1); }
-console.log(`✓ articles: ${articles.length} posts${process.argv.includes('--check') ? ', generated files up to date' : ''}`);
+console.log(`✓ articles: ${articles.length} posts + ${elsewhere.length} external${process.argv.includes('--check') ? ', generated files up to date' : ''}`);
