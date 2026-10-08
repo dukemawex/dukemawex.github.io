@@ -19,7 +19,7 @@ export `origin/main` with `git archive origin/main | tar -x -C /tmp/before`), `n
 
 | Check | Result | Evidence |
 |---|---|---|
-| Web search for `"Emmanuel Effiom Duke"` (2026-10-08) | duker.me **not returned**. The top results were unrelated people (e.g. a University of Calabar lecturer named Emmanuel Orok Duke) | WebSearch tool (not Google itself). Search Console will give the real Google position after verification |
+| Web search for `"Emmanuel Effiom Duke"` (2026-10-08) | duker.me **not returned**. The top results were other people with similar names, none of them Emmanuel Effiom Duke | WebSearch tool (not Google itself). Search Console will give the real Google position after verification |
 | robots.txt | **Missing** → 404 | `origin/main` tree has no `robots.txt` |
 | sitemap.xml | **Missing** → 404 | no `sitemap.xml` |
 | Canonical URL | **None** | no `<link rel="canonical">` |
