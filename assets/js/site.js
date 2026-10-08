@@ -1,5 +1,4 @@
 'use strict';
-document.getElementById('yr').textContent = new Date().getFullYear();
 
 // Reveal on scroll (opacity + 8px; CSS disables it under prefers-reduced-motion)
 if ('IntersectionObserver' in window) {
@@ -257,28 +256,6 @@ addEventListener('keydown', (e) => {
   else if (e.key === '/' && !typing && !pal.open) { e.preventDefault(); openPal(); }
 });
 
-// ---------- Lively layer ----------
-const root = document.documentElement;
-const themeMeta = document.querySelector('meta[name="theme-color"]');
-const themeBtn = document.getElementById('theme-btn');
-const syncTheme = () => {
-  const dark = root.dataset.theme === 'dark';
-  themeBtn.setAttribute('aria-label', dark ? 'Switch to light theme' : 'Switch to dark theme');
-  themeMeta.setAttribute('content', dark ? '#0b0f16' : '#f6f8fc');
-};
-syncTheme();
-themeBtn.addEventListener('click', (e) => {
-  const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
-  const apply = () => { root.dataset.theme = next; syncTheme(); try { localStorage.setItem('theme', next); } catch {} };
-  if (!document.startViewTransition || reduceMotion.matches) { apply(); return; }
-  const r = themeBtn.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2;
-  const end = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
-  document.startViewTransition(apply).ready.then(() => {
-    root.animate({clipPath: [`circle(0 at ${x}px ${y}px)`, `circle(${end}px at ${x}px ${y}px)`]},
-      {duration: 650, easing: 'cubic-bezier(.4,0,.2,1)', pseudoElement: '::view-transition-new(root)'});
-  });
-});
-
 // Staggered 3D rise for items inside each revealed section
 [['.ventures', '.venture'], ['.work', '.pcard'], ['.ruled', ':scope > div'], ['.tline', '.tl'], ['.pubs', '.pub']].forEach(([g, item]) => {
   document.querySelectorAll(g).forEach(group => group.querySelectorAll(item).forEach((el, i) => {
@@ -362,12 +339,3 @@ pmBox.addEventListener('touchend', (e) => {
   if (touchX === null) return; const dx = e.changedTouches[0].clientX - touchX; touchX = null;
   if (Math.abs(dx) > 60) stepProject(dx < 0 ? 1 : -1);
 }, {passive: true});
-
-// Mobile menu sheet
-const menuBtn = document.getElementById('menu-btn');
-links.forEach((a, i) => a.style.setProperty('--n', i));
-const setMenu = (open) => { navBox.classList.toggle('open', open); menuBtn.setAttribute('aria-expanded', String(open)); };
-menuBtn.addEventListener('click', () => setMenu(!navBox.classList.contains('open')));
-links.forEach(a => a.addEventListener('click', () => setMenu(false)));
-document.addEventListener('click', (e) => { if (navBox.classList.contains('open') && !e.target.closest('#navlinks, #menu-btn')) setMenu(false); });
-addEventListener('keydown', (e) => { if (e.key === 'Escape' && navBox.classList.contains('open')) { setMenu(false); menuBtn.focus(); } });
