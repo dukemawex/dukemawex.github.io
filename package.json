@@ -4,9 +4,11 @@
   "description": "Static personal site for duker.me (GitHub Pages). Tooling here is for checks only; there is no build step.",
   "type": "module",
   "scripts": {
-    "test": "npm run check && npm run validate && npm run browser",
+    "test": "npm run articles:check && npm run check && npm run validate && npm run browser",
+    "articles": "node scripts/build-articles.mjs",
+    "articles:check": "node scripts/build-articles.mjs --check",
     "check": "node tests/static-check.mjs",
-    "validate": "html-validate index.html about/index.html 404.html",
+    "validate": "html-validate \"**/*.html\"",
     "browser": "node tests/browser-check.mjs",
     "images": "node scripts/make-images.mjs"
   },

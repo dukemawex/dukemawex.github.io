@@ -23,7 +23,7 @@ const base = `http://127.0.0.1:${server.address().port}`;
 const browser = await chromium.launch({ executablePath: process.env.PW_CHROMIUM || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
 const fails = [];
 const sizes = [['phone', 375, 812], ['tablet', 768, 1024], ['desktop', 1366, 900]];
-for (const route of ['/', '/about/']) for (const theme of ['light', 'dark']) for (const [name, width, height] of sizes) {
+for (const route of ['/', '/about/', '/articles/', '/articles/designing-teger-ai/', '/articles/spd-mechanism-clustering/']) for (const theme of ['light', 'dark']) for (const [name, width, height] of sizes) {
   const ctx = await browser.newContext({ viewport: { width, height }, colorScheme: theme, reducedMotion: 'reduce' });
   const page = await ctx.newPage();
   const errs = [];
@@ -48,7 +48,7 @@ for (const route of ['/', '/about/']) for (const theme of ['light', 'dark']) for
   await page.evaluate(axeSource); // CDP evaluation is not subject to the page CSP
   const res = await page.evaluate(async () => window.axe ? axe.run(document, { runOnly: ['wcag2a', 'wcag2aa', 'wcag21aa', 'best-practice'] }) : null).catch(() => null);
   if (res) res.violations.forEach((v) => fails.push(`${tag}: axe ${v.id} (${v.impact}) ×${v.nodes.length}: ${v.nodes.slice(0, 2).map((n) => n.target.join(' ')).join(' | ')}`));
-  if (shots) { await mkdir(shots, { recursive: true }); await page.screenshot({ path: `${shots}/${route === '/' ? 'home' : 'about'}-${theme}-${name}.png`, fullPage: name !== 'desktop' }); }
+  if (shots) { await mkdir(shots, { recursive: true }); await page.screenshot({ path: `${shots}/${route === '/' ? 'home' : route.split('/').filter(Boolean).pop()}-${theme}-${name}.png`, fullPage: name !== 'desktop' }); }
   await ctx.close();
 }
 // 404 page
@@ -60,4 +60,4 @@ for (const route of ['/', '/about/']) for (const theme of ['light', 'dark']) for
 }
 await browser.close(); server.close();
 if (fails.length) { console.error([...new Set(fails)].map((f) => '✗ ' + f).join('\n')); process.exit(1); }
-console.log('✓ browser checks passed (2 pages × 6 viewport/theme combos, axe, CSP, no failed requests)');
+console.log('✓ browser checks passed (5 pages × 6 viewport/theme combos, axe, CSP, no failed requests)');

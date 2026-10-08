@@ -1,6 +1,6 @@
 // Static checks for the published site: SEO metadata, structured data, CSP hash,
 // local references, anchors, headings, images, robots and sitemap. No network.
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -12,11 +12,15 @@ const ok = (cond, msg) => { if (!cond) fails.push(msg); };
 const attr = (tag, name) => (tag.match(new RegExp(`\\s${name}="([^"]*)"`)) || [])[1];
 const FULL = 'Emmanuel Effiom Duke';
 
-// Every indexable page: file, canonical URL, exact title (null = only check it names the person)
+// Every indexable page: file, canonical URL, kind, exact title (null = only check it names the person)
 const PAGES = [
-  { file: 'index.html', url: 'https://duker.me/', title: 'Emmanuel Effiom Duke | AI Engineer, Researcher &amp; Founder' },
-  { file: 'about/index.html', url: 'https://duker.me/about/', title: null },
+  { file: 'index.html', url: 'https://duker.me/', kind: 'profile', title: 'Emmanuel Effiom Duke | AI Engineer, Researcher &amp; Founder' },
+  { file: 'about/index.html', url: 'https://duker.me/about/', kind: 'profile', title: null },
+  { file: 'articles/index.html', url: 'https://duker.me/articles/', kind: 'collection', title: null },
+  ...readdirSync(path.join(root, 'articles'), { withFileTypes: true }).filter((d) => d.isDirectory())
+    .map((d) => ({ file: `articles/${d.name}/index.html`, url: `https://duker.me/articles/${d.name}/`, kind: 'article', title: null })),
 ];
+ok(PAGES.filter((p) => p.kind === 'article').length >= 1, 'expected at least one article');
 const allIds = {};
 const persons = [];
 
@@ -32,7 +36,8 @@ for (const pg of PAGES) {
   ok(title.includes(FULL) && title.length <= 65, at(`title must contain "${FULL}" and be ≤65 chars (${title.length})`));
   const desc = meta('description') || '';
   ok(desc.length >= 70 && desc.length <= 160, at(`meta description length ${desc.length} (want 70–160)`));
-  ok(desc.includes(FULL), at('meta description should name the person in full'));
+  if (pg.kind !== 'article') ok(desc.includes(FULL), at('meta description should name the person in full'));
+  else ok(meta('author') === FULL, at('article must declare the author in full'));
   ok(html.includes(`<link rel="canonical" href="${pg.url}" />`), at(`canonical must be ${pg.url}`));
   ok((html.match(/rel="canonical"/g) || []).length === 1, at('exactly one canonical'));
   ok(/^index, follow/.test(meta('robots') || '') && !/noindex/i.test(html), at('page must be indexable (no noindex)'));
@@ -47,7 +52,8 @@ for (const pg of PAGES) {
   // Full name in crawlable HTML: in the h1 and in visible body text (not only metadata)
   const body = html.slice(html.indexOf('<body'));
   const h1 = (body.match(/<h1>([\s\S]*?)<\/h1>/) || [])[1] || '';
-  ok(h1.replace(/<[^>]+>/g, ' ').includes(FULL), at(`h1 must contain "${FULL}"`));
+  if (pg.kind === 'article') ok(/class="byline">By <a href="\/about\/" rel="author">Emmanuel Effiom Duke<\/a>/.test(body), at('article byline must credit the author in full'));
+  else ok(h1.replace(/<[^>]+>/g, ' ').includes(FULL), at(`h1 must contain "${FULL}"`));
   const text = body.replace(/<script[\s\S]*?<\/script>/g, '').replace(/<[^>]+>/g, ' ');
   ok((text.match(new RegExp(FULL, 'g')) || []).length >= 3, at(`"${FULL}" should appear at least 3 times in visible text`));
 
@@ -57,12 +63,32 @@ for (const pg of PAGES) {
   let graph = [];
   try { graph = JSON.parse(ld[0][1])['@graph']; } catch (e) { fails.push(at('JSON-LD does not parse: ' + e.message)); }
   const types = graph.map((n) => n['@type']);
-  for (const t of ['WebSite', 'ProfilePage', 'Person']) ok(types.includes(t), at(`JSON-LD missing ${t}`));
+  const KIND_TYPE = { profile: 'ProfilePage', collection: 'CollectionPage', article: 'BlogPosting' };
+  for (const t of ['WebSite', 'Person', KIND_TYPE[pg.kind]]) ok(types.includes(t), at(`JSON-LD missing ${t}`));
   if (pg.file !== 'index.html') ok(types.includes('BreadcrumbList'), at('JSON-LD missing BreadcrumbList'));
   const ids = new Set(graph.map((n) => n['@id']));
   JSON.stringify(graph).replace(/\{"@id":"([^"]+)"\}/g, (_, id) => { ok(ids.has(id), at(`JSON-LD dangling reference ${id}`)); return ''; });
-  const profile = graph.find((n) => n['@type'] === 'ProfilePage') || {};
-  ok(profile.url === pg.url && profile.mainEntity?.['@id'] === 'https://duker.me/#person', at('ProfilePage must use the canonical URL and point at the Person'));
+  if (pg.kind === 'profile') {
+    const profile = graph.find((n) => n['@type'] === 'ProfilePage') || {};
+    ok(profile.url === pg.url && profile.mainEntity?.['@id'] === 'https://duker.me/#person', at('ProfilePage must use the canonical URL and point at the Person'));
+  }
+  if (pg.kind === 'article') {
+    const post = graph.find((n) => n['@type'] === 'BlogPosting') || {};
+    ok(post.url === pg.url && post.mainEntityOfPage === pg.url, at('BlogPosting url/mainEntityOfPage must be canonical'));
+    ok(post.author?.['@id'] === 'https://duker.me/#person', at('BlogPosting author must be the Person'));
+    ok(/^\d{4}-\d{2}-\d{2}$/.test(post.datePublished || ''), at('BlogPosting datePublished'));
+    ok(post.headline && post.headline.length <= 110, at('BlogPosting headline missing or too long'));
+    ok(/^https:\/\/github\.com\/dukemawex\//.test(post.isBasedOn || ''), at('article must cite its source repository (isBasedOn)'));
+    ok(html.includes(`href="${post.isBasedOn}"`), at('source repository must be linked visibly'));
+    ok(existsSync(path.join(root, (post.image || '').replace('https://duker.me/', ''))), at('BlogPosting image must exist'));
+  }
+  if (pg.kind === 'collection') {
+    const col = graph.find((n) => n['@type'] === 'CollectionPage') || {};
+    const listed = (col.mainEntity?.itemListElement || []).map((i) => i.url);
+    const expected = PAGES.filter((p) => p.kind === 'article').map((p) => p.url);
+    ok(listed.length === expected.length && expected.every((u) => listed.includes(u)), at('CollectionPage ItemList must list every article'));
+    for (const u of expected) ok(html.includes(`href="${u.replace('https://duker.me', '')}"`), at(`articles index must link ${u}`));
+  }
   const person = graph.find((n) => n['@type'] === 'Person') || {};
   persons.push(JSON.stringify(person));
   ok(person.name === FULL, at(`Person.name must be "${FULL}"`));
@@ -124,6 +150,7 @@ for (const pg of PAGES) {
   }
 }
 ok(read('index.html').includes('href="/about/"'), 'homepage must link to the About page');
+ok(read('index.html').includes('href="/articles/"'), 'homepage must link to the articles index');
 for (const m of read('404.html').matchAll(/href="\/#([^"]+)"/g)) ok(allIds['https://duker.me/'].includes(m[1]), `404 links to missing anchor #${m[1]}`);
 ok(!/photoOk|photoMissing/.test(read('assets/js/site.js')), 'stale photo handlers referenced');
 
@@ -134,7 +161,7 @@ ok(robots.includes('Sitemap: https://duker.me/sitemap.xml'), 'robots.txt must re
 const sm = read('sitemap.xml');
 ok(/^<\?xml version="1.0" encoding="UTF-8"\?>/.test(sm) && sm.includes('xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"'), 'sitemap header/namespace');
 const locs = [...sm.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
-ok(JSON.stringify(locs) === JSON.stringify(PAGES.map((p) => p.url)), `sitemap URLs ${locs} must equal canonical pages`);
+ok(locs.length === PAGES.length && PAGES.every((p) => locs.includes(p.url)), `sitemap URLs must equal the canonical pages (${locs.length} vs ${PAGES.length})`);
 for (const m of sm.matchAll(/<lastmod>([^<]+)<\/lastmod>/g)) ok(/^\d{4}-\d{2}-\d{2}$/.test(m[1]), `bad lastmod ${m[1]}`);
 for (const m of sm.matchAll(/<image:loc>https:\/\/duker\.me\/([^<]+)<\/image:loc>/g)) ok(existsSync(path.join(root, m[1])), `sitemap image missing ${m[1]}`);
 const man = JSON.parse(read('site.webmanifest'));

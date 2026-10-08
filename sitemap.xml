@@ -10,4 +10,32 @@
     <lastmod>2026-10-08</lastmod>
     <image:image><image:loc>https://duker.me/assets/photos/headshot-960.jpg</image:loc></image:image>
   </url>
+  <url>
+    <loc>https://duker.me/articles/</loc>
+    <lastmod>2026-10-08</lastmod>
+  </url>
+  <url>
+    <loc>https://duker.me/articles/designing-teger-ai/</loc>
+    <lastmod>2026-10-08</lastmod>
+    <image:image><image:loc>https://duker.me/assets/photos/work-05.jpg</image:loc></image:image>
+  </url>
+  <url>
+    <loc>https://duker.me/articles/secret-loyalties-audit/</loc>
+    <lastmod>2026-10-08</lastmod>
+  </url>
+  <url>
+    <loc>https://duker.me/articles/spd-mechanism-clustering/</loc>
+    <lastmod>2026-10-08</lastmod>
+    <image:image><image:loc>https://duker.me/assets/articles/spd-clustering.png</image:loc></image:image>
+  </url>
+  <url>
+    <loc>https://duker.me/articles/deception-feature-universality/</loc>
+    <lastmod>2026-10-08</lastmod>
+    <image:image><image:loc>https://duker.me/assets/articles/deception-universality.png</image:loc></image:image>
+  </url>
+  <url>
+    <loc>https://duker.me/articles/reward-generalization-early-warning/</loc>
+    <lastmod>2026-10-08</lastmod>
+    <image:image><image:loc>https://duker.me/assets/articles/reward-generalization.png</image:loc></image:image>
+  </url>
 </urlset>

@@ -569,3 +569,55 @@ dialog.pmodal[open] .pm{animation:pmIn .55s cubic-bezier(.2,.9,.25,1.15)}
 .profile-links a{display:inline-block;padding:8px 14px;border:1px solid var(--line);border-radius:10px;text-decoration:none!important;color:var(--dim);font-size:14.5px}
 .profile-links a:hover{border-color:var(--accent);color:var(--text)}
 nav.crumbs{position:static;z-index:auto;background:none;border:0;-webkit-backdrop-filter:none;backdrop-filter:none}
+
+/* ---------- Writing ---------- */
+.posts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.post-index .posts{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:899px){.posts,.post-index .posts{grid-template-columns:1fr 1fr}}
+@media(max-width:599px){.posts,.post-index .posts{grid-template-columns:1fr}}
+.post-card{position:relative;display:flex;flex-direction:column;gap:8px;padding:22px;border:1px solid var(--line);border-radius:var(--radius);background:var(--card);
+  transition:border-color .2s,transform .2s}
+.post-card:hover{border-color:var(--line-hi)}
+.post-card:focus-within{border-color:var(--accent)}
+@media(prefers-reduced-motion:no-preference){.post-card:hover{transform:translateY(-3px)}}
+.post-card h2,.post-card h3{margin:0;font-size:18.5px;font-weight:700;letter-spacing:-.01em;line-height:1.3}
+.post-card h2 a,.post-card h3 a{color:var(--text)}
+.post-card h2 a::after,.post-card h3 a::after{content:"";position:absolute;inset:0;border-radius:inherit}
+.post-card p{margin:0;color:var(--dim);font-size:14.5px;line-height:1.55}
+.post-card .tag{text-transform:none;letter-spacing:.01em;font-size:12.5px;font-weight:600}
+.post-card .go{margin-top:auto;padding-top:6px;color:var(--faint);font-size:13.5px;font-weight:600}
+.post-card:hover .go{color:var(--accent)}
+.bio-head.single{grid-template-columns:1fr}
+.post-index{padding-top:clamp(32px,4vw,48px)}
+.post-article{max-width:760px}
+.post-head{padding:clamp(28px,5vw,48px) 0 8px}
+.post-head h1{font-size:clamp(30px,4.6vw,48px);line-height:1.08;letter-spacing:-.03em;margin:0 0 14px}
+.post-dek{font-size:clamp(17px,1.8vw,19.5px);color:var(--dim);margin:0 0 16px;line-height:1.55}
+.byline{margin:0;font-size:14px;color:var(--faint)}
+.byline a{color:var(--dim);text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--line-hi)}
+.post-figure{margin:28px 0 4px}
+.post-figure img{width:100%;height:auto;border-radius:14px;background:#fff;padding:8px;box-shadow:0 0 0 1px var(--line)}
+.post-figure figcaption{margin-top:10px;font-size:13.5px;color:var(--faint)}
+.post .prose section,.post .prose{padding-top:0}
+.post .prose h2{margin-top:clamp(28px,4vw,40px)}
+.prose table{width:100%;border-collapse:collapse;margin:4px 0 20px;font-size:15px}
+.prose th,.prose td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line)}
+.prose th{color:var(--text);font-weight:600;font-size:13.5px}
+.prose td{color:var(--dim)}
+.prose ol{margin:0 0 16px;padding-left:22px}
+.prose code{font:14px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--card-hi);border:1px solid var(--line);border-radius:6px;padding:1px 5px}
+.prose p a,.source-box a,.author-box a{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:rgba(var(--acc-rgb),.5)}
+.prose .refs{font-size:14px;color:var(--faint)}
+.source-box{margin:28px 0 0;padding:14px 16px;border:1px dashed var(--line-hi);border-radius:12px;font-size:14.5px;color:var(--dim)}
+.author-box{display:flex;gap:18px;align-items:flex-start;margin:28px 0 0;padding:20px;border:1px solid var(--line);border-radius:var(--radius);background:var(--card)}
+.author-box picture{flex:none}
+.author-box img{width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:50% 20%}
+.author-box h2{margin:0 0 6px;font-size:16px;font-weight:700}
+.author-box p{margin:0;color:var(--dim);font-size:14.5px;line-height:1.6}
+.more-posts{margin-top:clamp(48px,7vw,80px);padding-top:clamp(32px,4vw,48px);border-top:1px solid var(--line)}
+.more-posts h2{font-size:clamp(22px,2.6vw,28px);letter-spacing:-.02em;margin:0 0 20px}
+.more-posts > p{margin:20px 0 0}
+.fig-scroll{overflow-x:auto;border-radius:14px;-webkit-overflow-scrolling:touch}
+.fig-scroll:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+@media(max-width:599px){.post-figure.wide img{width:680px;max-width:none}}
+.post .prose{margin-top:24px}

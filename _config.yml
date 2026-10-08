@@ -2,6 +2,7 @@
 exclude:
   - README.md
   - docs/
+  - content/
   - scripts/
   - tests/
   - package.json

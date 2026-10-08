@@ -1,0 +1,53 @@
+<!--meta
+{
+  "slug": "designing-teger-ai",
+  "headline": "Designing Teger AI to explain phishing",
+  "description": "How Teger AI, an explainable social-engineering defence for Gmail and Slack, pairs deterministic signals with AI analysis and treats every message as untrusted.",
+  "date": "2026-10-08",
+  "tags": ["AI security", "Social engineering", "Product design"],
+  "source": {"label": "dukemawex/Teger-ai", "url": "https://github.com/dukemawex/Teger-ai"},
+  "image": {"src": "/assets/photos/work-05.jpg", "webp": "/assets/photos/work-05.webp", "width": 1080, "height": 675,
+            "alt": "Teger AI landing page with an “MVP in development · Private beta” badge above the headline “Stop the message before it becomes the breach.”"}
+}
+-->
+<p>Most phishing tools give you a verdict: <em>suspicious</em> or <em>safe</em>. A verdict is a poor teaching tool, and it asks the user to trust a black box at the exact moment someone is trying to manipulate their trust. I built <a href="https://tegerai.tech/">Teger AI</a> around a different goal: when it warns you, it should show you <strong>why</strong>, and tell you what to do next.</p>
+
+<h2>What it does today</h2>
+<p>Teger AI is at MVP v0.2, in private beta. A Chrome extension adds an explicit <strong>Scan with Teger AI</strong> action to Gmail and Slack. The user picks the message; Teger never reads the inbox on its own. For each scan it returns a risk level, a confidence, the manipulation tactics it found, the concrete cues behind them, its reasoning, and a recommended safe action.</p>
+
+<h2>Two layers: deterministic signals, then AI analysis</h2>
+<p>The detection pipeline deliberately runs in two stages. First, deterministic code extracts signals that don't need a model at all:</p>
+<ul>
+  <li>urgency</li>
+  <li>credential requests</li>
+  <li>financial requests</li>
+  <li>authority claims</li>
+  <li>secrecy or process-bypass requests</li>
+  <li>the shape of any URLs</li>
+</ul>
+<p>Only then does the message go to the AI forensic analysis, along with those signals. The deterministic signals are treated as <strong>hints, not proof</strong>. They anchor the explanation in things a person can check, while the model handles the context that rules can't. The model's output is validated against a typed schema, and any tactic that isn't in Teger's shared threat taxonomy is dropped. The model can't invent new categories of alarm.</p>
+
+<h2>Every message is attacker-controlled</h2>
+<p>A phishing email is, by definition, written by an adversary. Feeding it to a language model creates an obvious risk: the message can contain instructions aimed at the detector itself (prompt injection). So the message is explicitly marked as <strong>untrusted, attacker-controlled data</strong> at the model boundary, and instructions inside it are never treated as instructions for Teger.</p>
+
+<h2>Security of the product itself</h2>
+<p>A security tool that leaks credentials or private mail would be worse than none. The MVP's controls include:</p>
+<ul>
+  <li>The OpenAI API key lives only in backend environment variables. It never ships in the extension or dashboard.</li>
+  <li>Clients get an HMAC-signed anonymous installation token, and every analysis request must present it.</li>
+  <li>Scans are rate-limited per installation <em>and</em> per source IP, and creating installations is rate-limited separately.</li>
+  <li>Message and context length are bounded, CORS origins are restricted, and upstream errors are converted to generic client errors.</li>
+  <li>Local scan history stores metadata only. Raw message text isn't added to browser history.</li>
+  <li>CI runs linting, regression tests, dataset validation, dashboard builds and secret scanning.</li>
+</ul>
+
+<h2>What it doesn't do yet</h2>
+<p>Being explicit about limits is part of being explainable. In the current MVP:</p>
+<ul>
+  <li>Rate limiting is in-memory per process and needs a shared store such as Redis before running on multiple instances.</li>
+  <li>Gmail and Slack page structures can change, so the selectors need regression testing.</li>
+  <li>The sender identity shown on the page is context, not cryptographic proof.</li>
+  <li>The model's confidence is not a calibrated probability until it has been evaluated as one.</li>
+  <li>There's no attachment detonation, mailbox authentication check or full URL-reputation lookup yet.</li>
+</ul>
+<p>The architecture and threat model are documented in the open-source repository, alongside the API reference.</p>

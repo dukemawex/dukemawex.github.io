@@ -1,0 +1,33 @@
+<!--meta
+{
+  "slug": "reward-generalization-early-warning",
+  "headline": "The reward spread; the warning didn't",
+  "description": "Reproducing unintended reward generalization in an inspectable toy model, and a negative result: internal signals gave no early warning.",
+  "date": "2026-10-08",
+  "tags": ["AI safety", "Alignment", "Negative result"],
+  "source": {"label": "dukemawex/reward-generalization-earlywarning", "url": "https://github.com/dukemawex/reward-generalization-earlywarning"},
+  "image": {"src": "/assets/articles/reward-generalization.png", "webp": "/assets/articles/reward-generalization.webp", "width": 1560, "height": 546,
+            "alt": "Left: the rewarded tic and the tic in never-rewarded contexts both rise to maximum within the first few hundred steps. Right: the tic output rises almost immediately while internal representation drift rises more slowly."},
+  "figcaption": "The tic spreads to contexts that were never rewarded (left). The internal signal rises after the output, not before it (right)."
+}
+-->
+<p>OpenAI's <em>Where the Goblins Came From</em> describes a reward that generalised beyond the context it was meant for. A natural safety follow-up is to ask whether you can see that spread coming <strong>inside</strong> the model before it shows up in behaviour. I tested both halves in a model small enough to inspect completely.</p>
+
+<h2>Setup</h2>
+<p>A small MLP has two heads, a "tic" and a "task", over six contexts. I rewarded a high tic <strong>only in context 0</strong>, then measured two things: whether the tic spreads to contexts that were never rewarded, and whether an internal signal rises in those contexts <em>before</em> the behavioural tic does.</p>
+
+<h2>Result 1: reward generalization reproduced</h2>
+<p>It does spread. Rewarding the tic in context 0 alone drives it to maximum in <strong>every</strong> context, including those that were never rewarded. The goblin dynamic appears in a fully inspectable toy.</p>
+
+<h2>Result 2: no early warning (a negative result)</h2>
+<p>The early-warning hypothesis was <strong>not supported</strong>. First-layer representation drift in the unrewarded contexts didn't reliably precede the output tic; the measured lead time was about zero, or slightly negative. In a small, tightly coupled network, the internal and behavioural signals move together.</p>
+<p>I tried one more angle: tracking the projection onto the reward-linked component rather than raw activations. It still gave no lead time at this scale.</p>
+
+<h2>Why a negative result is worth publishing</h2>
+<p>The proposal's own failure criterion, stated in advance, was that the project fails if the spread only becomes detectable after it appears in outputs. At toy scale, that is what happened. Rather than refuting the idea, the result narrows down what an early-warning system would need:</p>
+<ul>
+  <li>a deeper model, where the readout sits far from the mechanism, and/or</li>
+  <li>a decomposition such as SPD that isolates the reward-linked mechanism from the readout. This connects to my <a href="/articles/spd-mechanism-clustering/">SPD clustering work</a>.</li>
+</ul>
+<p>The next experiment is a small real transformer with a lexical-reward fine-tune. Both scripts in the repository (reproduce the generalization; run the early-warning test) run on a CPU.</p>
+<p class="refs">Reference: OpenAI (2026), <em>Where the Goblins Came From</em>.</p>

@@ -1,0 +1,40 @@
+<!--meta
+{
+  "slug": "deception-feature-universality",
+  "headline": "Do models represent deception alike?",
+  "description": "Do different architectures learn similar internal representations of deception cues? A toy-scale test, and why the first null was too weak to answer.",
+  "date": "2026-10-08",
+  "tags": ["AI safety", "Interpretability", "Research"],
+  "source": {"label": "dukemawex/deception-feature-universality", "url": "https://github.com/dukemawex/deception-feature-universality"},
+  "image": {"src": "/assets/articles/deception-universality.png", "webp": "/assets/articles/deception-universality.webp", "width": 1560, "height": 546,
+            "alt": "Left: bar chart of CKA similarity between model pairs, 0.82 to 0.98 within and across architectures. Right: real A-versus-B similarity of 0.88 beside a permutation null of 0.85, p = 0.405."},
+  "figcaption": "The four-cue experiment: high similarity everywhere, but a permutation null almost as high (right), so per-cue identity isn't established."
+}
+-->
+<p>If different models independently develop the same internal building blocks for deception (urgency, impersonation, false authority, trust manipulation), then a detector or an interpretability tool built on one model might transfer to others. That's the universality question, and this experiment is a small, concrete test of it. It also illustrates how easily a similarity score can look convincing when it isn't.</p>
+
+<h2>Setup</h2>
+<p>A toy "deception detector" sees four cue types projected into a shared input space, and labels an input as phishing if at least two cues are present. I trained three architectures (widths 32, 48 and 64; depths one and two), each with three seeds. All reach 100% accuracy. I then extracted a representation signature for each cue and compared models using linear CKA, with a permutation test as the null.</p>
+
+<h2>First result: similar, but not significant</h2>
+<table>
+  <thead><tr><th>Comparison</th><th>CKA</th></tr></thead>
+  <tbody>
+    <tr><td>Within architecture (seed vs seed)</td><td>0.82–0.98</td></tr>
+    <tr><td>Across architectures</td><td>0.82–0.97</td></tr>
+    <tr><td>Architecture A vs B, real vs permutation null</td><td>0.88 vs 0.85 (p = 0.40)</td></tr>
+  </tbody>
+</table>
+<p>Across different widths and depths, the models converge on very similar representations: cross-architecture similarity is about as high as same-architecture similarity. But the permutation null is <em>almost as high</em> as the real value. With only four nearly orthogonal cues, nearly any alignment looks similar. So the stronger claim, that each cue is the <em>same</em> building block in every model, wasn't demonstrated. Reporting 0.88 on its own would have been misleading.</p>
+
+<h2>Making the null informative</h2>
+<p>The fix was to make the task hard enough for the null to reject. I raised the number of cues to twelve and let them correlate. With twelve cues:</p>
+<ul>
+  <li>cross-architecture CKA was <strong>0.56</strong></li>
+  <li>the permutation null was <strong>0.26</strong></li>
+  <li><strong>p = 0.024</strong></li>
+</ul>
+<p>That is statistically significant representational universality for deception cues across architectures, at toy scale.</p>
+
+<h2>What it does and doesn't show</h2>
+<p>This is evidence for the coarse universality claim, in small models on a synthetic task. The fine-grained "same building block" claim needs matched component signatures across models, for example using SPD components instead of layer-level CKA, and eventually a small real transformer on real phishing text. That connects this work to <a href="/articles/designing-teger-ai/">Teger AI</a>, where the practical question is whether manipulation cues are represented consistently enough to detect reliably.</p>

@@ -1,0 +1,42 @@
+<!--meta
+{
+  "slug": "spd-mechanism-clustering",
+  "headline": "Clustering SPD components into mechanisms",
+  "description": "A CPU pilot showing SPD subcomponents can be grouped into ground-truth mechanisms automatically, and why specialization is the real bottleneck.",
+  "date": "2026-10-08",
+  "tags": ["AI safety", "Mechanistic interpretability", "Research"],
+  "source": {"label": "dukemawex/spd-mechanism-clustering", "url": "https://github.com/dukemawex/spd-mechanism-clustering"},
+  "image": {"src": "/assets/articles/spd-clustering.png", "webp": "/assets/articles/spd-clustering.webp", "width": 1560, "height": 520,
+            "alt": "Left: heatmap of SPD subcomponent activation for each of five input features. Right: bar chart of adjusted Rand index — 0.53 for gate co-activation, 0.46 for attribution signature, 0.00 for a random baseline."},
+  "figcaption": "Which subcomponents each feature drives (left), and how well each automated signal recovers the five ground-truth features (right)."
+}
+-->
+<p>Stochastic Parameter Decomposition (SPD) breaks a network's weights into many small subcomponents, each meant to capture a piece of the network's computation. That leaves an open problem the SPD authors flagged themselves: a real mechanism is usually spread across <em>several</em> subcomponents, and grouping them by hand doesn't scale. This pilot, part of a seven-repository series I ran in July 2026, asks whether that grouping can be automated <strong>without being told the answer</strong>.</p>
+
+<h2>A model where the answer is known</h2>
+<p>To check any automatic clustering, you need ground truth. So the target is a Toy Model of Superposition (Elhage et al., 2022): five features squeezed into two hidden dimensions. Its true mechanisms are simply those five features.</p>
+<p>I decomposed it with an SPD-style method that follows Bushnaq, Braun and Sharkey (2025). Each weight matrix becomes 20 rank-one subcomponents, each with a learned causal-importance gate. Training combines faithfulness, a stochastic-masking reconstruction loss and an importance-minimality penalty. It converges cleanly: faithfulness error around 10⁻¹⁵, and stochastic reconstruction error near zero.</p>
+
+<h2>Two automatic signals</h2>
+<p>I then clustered the subcomponents using two signals, without access to the labels, and only afterwards compared the clusters with the five real features:</p>
+<table>
+  <thead><tr><th>Clustering signal</th><th>ARI</th><th>NMI</th></tr></thead>
+  <tbody>
+    <tr><td>Gate co-activation</td><td><strong>0.53</strong></td><td>0.47</td></tr>
+    <tr><td>Attribution signature</td><td>0.46</td><td>0.38</td></tr>
+    <tr><td>Random baseline</td><td>0.00</td><td>0.00</td></tr>
+  </tbody>
+</table>
+<p>Both signals recover real structure: an adjusted Rand index around 0.5, against 0.0 for random. SPD subcomponents <em>can</em> be grouped into the true features automatically. The gap from a perfect 1.0 matters too. At this sparsity the components aren't cleanly one-feature-each.</p>
+
+<h2>What went wrong, and what it taught</h2>
+<ul>
+  <li><strong>Gate sparsity sits on a knife edge.</strong> Too much importance penalty and every gate collapses to zero; too little and nothing specialises. That reproduces a known SPD training-stability issue and argues for annealed or adaptive importance weighting.</li>
+  <li><strong>Co-activation beat attribution</strong>, the opposite of what I expected, which suggests fusing the two signals rather than choosing one.</li>
+  <li><strong>Sharper gates aren't the fix on their own.</strong> As a follow-up I tried hard-concrete (L0) gates. They increased the number of specialised components (24 of 38), but ARI <em>fell</em> to 0.28.</li>
+</ul>
+<p>That last result is the thread running through the series: how well components specialise, not which clustering signal you pick, is what limits recovery. I wrote it up as <em>Specialization Is the Bottleneck</em>.</p>
+
+<h2>Next</h2>
+<p>The natural next steps are annealing the importance coefficient, adding a causal-interaction (double-ablation) signal fused with co-activation, and moving to cross-layer models, where mechanisms span layers and manual clustering stops being feasible. Everything in the pilot runs on a CPU in a few minutes, and the code is public.</p>
+<p class="refs">References: Bushnaq, Braun &amp; Sharkey (2025), <em>Stochastic Parameter Decomposition</em>, arXiv:2506.20790 · Braun et al. (2025), <em>Attribution-based Parameter Decomposition</em>, arXiv:2501.14926 · Elhage et al. (2022), <em>Toy Models of Superposition</em>.</p>
