@@ -1,0 +1,7 @@
+# duker.me — all public content may be crawled and indexed by search engines
+# and AI search/assistant crawlers (Googlebot, Bingbot, OAI-SearchBot, GPTBot,
+# ClaudeBot, and others). There are no private paths on this site.
+User-agent: *
+Allow: /
+
+Sitemap: https://duker.me/sitemap.xml

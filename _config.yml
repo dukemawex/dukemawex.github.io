@@ -1,0 +1,12 @@
+# GitHub Pages (Jekyll) — the site is plain static HTML; keep tooling out of the published output.
+exclude:
+  - README.md
+  - docs/
+  - scripts/
+  - tests/
+  - package.json
+  - package-lock.json
+  - node_modules/
+  - assets/photos/README.md
+include:
+  - llms.txt
