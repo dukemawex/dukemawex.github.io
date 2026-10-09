@@ -42,6 +42,7 @@ based on (`source`), and the static checks enforce it.
 | `scripts/`, `tests/`, `package.json` | Local tooling only (not published) |
 | `docs/SEO-AND-DEPLOYMENT.md` | Audit, search-console setup and deployment checklist |
 | `docs/NAME-SEARCH-REPORT.md` | Before/after report for the "Emmanuel Effiom Duke" name search |
+| `docs/VISIBILITY-PLAYBOOK.md` | Profile-side steps (LinkedIn, X, GitHub, Scholar) and indexing checklist |
 | `docs/reciprocal/` | Prepared founder-link snippets for dukersltd.com, tegerai.tech, transly.software |
 
 ## Checks

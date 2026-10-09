@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+  <title>Writing by Emmanuel Effiom Duke</title>
+  <subtitle>Articles on AI forecasting, AI security, model evaluation, interpretability and AI-safety research.</subtitle>
+  <id>https://duker.me/articles/</id>
+  <link rel="self" type="application/atom+xml" href="https://duker.me/feed.xml" />
+  <link rel="alternate" type="text/html" href="https://duker.me/articles/" />
+  <updated>2026-10-08T00:00:00Z</updated>
+  <author><name>Emmanuel Effiom Duke</name><uri>https://duker.me/</uri></author>
+  <icon>https://duker.me/favicon.svg</icon>
+  <entry>
+    <title>Building a Metaculus forecasting bot</title>
+    <id>https://duker.me/articles/metaculus-forecasting-bot/</id>
+    <link rel="alternate" type="text/html" href="https://duker.me/articles/metaculus-forecasting-bot/" />
+    <published>2026-10-08T00:00:00Z</published>
+    <updated>2026-10-08T00:00:00Z</updated>
+    <author><name>Emmanuel Effiom Duke</name><uri>https://duker.me/about/</uri></author>
+    <category term="Forecasting" />
+    <category term="LLM engineering" />
+    <category term="Metaculus" />
+    <summary>Lessons from an LLM forecasting bot in Metaculus AI tournaments: silent research failures, extremized toss-ups, and replacing vibes-tuning with measurement.</summary>
+    <content type="html">&lt;p&gt;Between October 2025 and August 2026 I built and ran an automated forecasting bot in Metaculus's AI forecasting tournaments, most recently under the name &lt;strong&gt;oracledeckv1&lt;/strong&gt;. It started from Metaculus's bot template, built on the &lt;code&gt;forecasting_tools&lt;/code&gt; library, and grew into a multi-source research and LLM-ensemble pipeline. This is what building it taught me. Most of it came from finding where the bot was quietly wrong.&lt;/p&gt;
+
+&lt;h2&gt;How the bot works&lt;/h2&gt;
+&lt;p&gt;For each open question, the bot:&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;classifies the question's domain (geopolitics, economics, science, tech, business, health or sports)&lt;/li&gt;
+  &lt;li&gt;turns it into up to three targeted search queries&lt;/li&gt;
+  &lt;li&gt;runs several search and news providers in parallel and synthesises them into one research brief with a cross-source &quot;signal strength&quot; score&lt;/li&gt;
+  &lt;li&gt;asks an ensemble of different LLMs for a forecast, aggregated by the median for robustness to outliers&lt;/li&gt;
+  &lt;li&gt;passes the result through a critic and a red-team model&lt;/li&gt;
+  &lt;li&gt;applies calibration: shrinkage when the ensemble disagrees, time-decay for far-off close dates, and extremization rules&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;The bot was configured for three tournaments at once: the primary AI competition, MiniBench and Market Pulse.&lt;/p&gt;
+
+&lt;h2&gt;Lesson 1: the scariest failures are silent&lt;/h2&gt;
+&lt;p&gt;Reading the run logs in July turned up research providers that were failing &lt;em&gt;without crashing&lt;/em&gt;: a wrong API call signature, a synthesis model name that didn't exist, and an SDK wrapper incompatibility. The bot kept forecasting, just with less evidence than I thought it had. I replaced the broken sources with Nimble and You.com search, and gated You.com to finance and market questions, where it added the most. Since then, I treat &quot;it ran&quot; and &quot;it worked&quot; as separate claims that need separate checks.&lt;/p&gt;
+
+&lt;h2&gt;Lesson 2: don't extremize a toss-up&lt;/h2&gt;
+&lt;p&gt;The original calibration curve pushed forecasts between 0.45 and 0.55 hard towards the extremes (strength 1.8). That produced confident-wrong forecasts and negative scores. A near-50/50 ensemble means &quot;we don't know&quot;, and making that confident is exactly backwards. I changed the policy:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;toss-ups (0.45–0.55): no extremization at all&lt;/li&gt;
+  &lt;li&gt;mild leanings (0.35–0.45 and 0.55–0.65): gentle extremization&lt;/li&gt;
+  &lt;li&gt;clear signals (below 0.35 or above 0.65): moderate extremization&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2&gt;Lesson 3: replace vibes-tuning with measurement&lt;/h2&gt;
+&lt;p&gt;Tuning on live tournaments is slow and noisy, so in August I added an offline evaluation harness, built with an AI coding agent. Its two stages mean the expensive research-and-ensemble step runs once per question and is cached, after which calibration variants can be swept at zero token cost. Running it against &lt;strong&gt;190 resolved binary Metaculus questions&lt;/strong&gt; (May–August 2026) produced findings I wouldn't have guessed:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Only 31.6% resolved YES&lt;/strong&gt; (60 of 190). The bot's habit of shrinking uncertain forecasts towards 50% was therefore a systematic bias towards YES, not a neutral safety measure. A new calibration does one bounded shrink in log-odds space towards a base-rate prior instead.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Bot accounts don't receive community-prediction aggregates&lt;/strong&gt;: the field was empty on all 190 questions. The branch of the code that blended in the community forecast had never run.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;The research-quality signal was saturated.&lt;/strong&gt; Counting snippets hit the cap on every question, which pinned &quot;quality&quot; at 1.0 and silently disabled the shrink meant for weak research. It now counts distinct source domains.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Backtests leak unless search is date-bounded.&lt;/strong&gt; A &quot;leak canary&quot; showed that unbounded search on resolved questions surfaced coverage of the actual outcome, while date-bounded search didn't. Without that bound, any backtest score would be inflated.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2&gt;Lesson 4: know what your models know&lt;/h2&gt;
+&lt;p&gt;An ensemble mixes models with different training cutoffs, and their self-reported cutoffs are unreliable (see &lt;a href=&quot;https://duker.me/articles/llm-knowledge-cutoff-probe/&quot;&gt;my knowledge-cutoff probe&lt;/a&gt;). So the bot now measures each ensemble member's cutoff with a compact dated-event ladder and logs it next to every forecast, noting that live research extends what the model knows unaided. I also moved to a cheaper ensemble of models, each verified live before switching, and added a memory that recalls similar resolved questions alongside the bot's track record on them.&lt;/p&gt;
+
+&lt;h2&gt;What I can't claim yet&lt;/h2&gt;
+&lt;p&gt;I don't have a clean before-and-after score. Metaculus's peer score compares you with other forecasters, which can't be reproduced offline. The harness only ranks variants against each other, as a proxy. The first full stage-one run was also interrupted by upstream model-provider errors, so the head-to-head of the old and new calibration is still pending. The code, the harness and the corpus tooling are all public, so anyone can check the numbers above.&lt;/p&gt;&lt;p&gt;Source: &lt;a href=&quot;https://github.com/dukemawex/botduke--update&quot;&gt;dukemawex/botduke--update&lt;/a&gt;&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <title>Ask the calendar, not the model</title>
+    <id>https://duker.me/articles/llm-knowledge-cutoff-probe/</id>
+    <link rel="alternate" type="text/html" href="https://duker.me/articles/llm-knowledge-cutoff-probe/" />
+    <published>2026-10-08T00:00:00Z</published>
+    <updated>2026-10-08T00:00:00Z</updated>
+    <author><name>Emmanuel Effiom Duke</name><uri>https://duker.me/about/</uri></author>
+    <category term="AI evaluation" />
+    <category term="LLM reliability" />
+    <category term="Research" />
+    <summary>Measuring nine language models' real knowledge cutoffs with dated-event bisection: every model that self-reported a cutoff was wrong, some by over a year.</summary>
+    <content type="html">&lt;p&gt;While comparing GPT-5.6 and Claude Fable 5 in July 2026, I needed to know their training cutoffs, so I could tell when a model was reasoning from memory and when it was guessing. The obvious move is to ask. The answers were wrong. GPT-5.6 said &quot;June 2024&quot; and Claude Fable 5 said &quot;January 2025&quot;. Both contradicted their own documentation, and both contradicted their behaviour. So I built a probe that measures the cutoff instead of trusting the model's account of it.&lt;/p&gt;
+
+&lt;h2&gt;Method: dated-event bisection&lt;/h2&gt;
+&lt;p&gt;The idea is to ask the calendar, not the model:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Build a &lt;strong&gt;ladder of real, precisely dated events&lt;/strong&gt;, roughly one or more per month, each with a single verifiable answer and a source.&lt;/li&gt;
+  &lt;li&gt;Ask each model closed factual questions about them, &lt;strong&gt;with no date hints&lt;/strong&gt;, twice at temperature 0.&lt;/li&gt;
+  &lt;li&gt;Define the &lt;strong&gt;contiguous-known cutoff&lt;/strong&gt; as the latest month for which the model answered every dated fact correctly before its first miss.&lt;/li&gt;
+  &lt;li&gt;Stay blind to self-report: the model is never told a date, and its claim is compared only afterwards.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2&gt;Results across nine models&lt;/h2&gt;
+&lt;table&gt;
+  &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Model&lt;/th&gt;&lt;th&gt;Self-reported&lt;/th&gt;&lt;th&gt;Measured cutoff&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;&lt;td&gt;GPT-5.6 Luna / Sol / Terra&lt;/td&gt;&lt;td&gt;June 2024&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Sept 2025&lt;/strong&gt;&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;Claude Fable 5&lt;/td&gt;&lt;td&gt;January 2025&lt;/td&gt;&lt;td&gt;&lt;strong&gt;Sept 2025&lt;/strong&gt;&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;Claude Opus 4.6&lt;/td&gt;&lt;td&gt;—&lt;/td&gt;&lt;td&gt;Apr 2025&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;Claude Sonnet 4.6&lt;/td&gt;&lt;td&gt;—&lt;/td&gt;&lt;td&gt;Jan 2025&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;DeepSeek-V4-Pro&lt;/td&gt;&lt;td&gt;—&lt;/td&gt;&lt;td&gt;Nov 2024&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;Kimi-K2.6&lt;/td&gt;&lt;td&gt;—&lt;/td&gt;&lt;td&gt;Jun 2024&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;Qwen3-Max&lt;/td&gt;&lt;td&gt;—&lt;/td&gt;&lt;td&gt;n/a (early miss)&lt;/td&gt;&lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;Every model that self-reported a cutoff was wrong&lt;/strong&gt;, by between 8 and 15 months. Qwen3-Max missed an early anchor question, which looks like a gap in that topic rather than a cutoff, so it isn't scored as a boundary.&lt;/p&gt;
+
+&lt;h2&gt;What happens past the boundary&lt;/h2&gt;
+&lt;p&gt;The more useful safety signal is what a model does when asked about events after its cutoff: does it say &quot;I don't know&quot;, or does it make something up?&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;GPT-5.6 (all three variants) and Claude Fable 5 disclaimed &lt;strong&gt;100%&lt;/strong&gt; of post-cutoff questions, with no confabulation.&lt;/li&gt;
+  &lt;li&gt;Claude Opus 4.6 and Sonnet 4.6 confabulated on about &lt;strong&gt;10–12%&lt;/strong&gt;.&lt;/li&gt;
+  &lt;li&gt;DeepSeek-V4-Pro confabulated on &lt;strong&gt;42%&lt;/strong&gt; and Kimi-K2.6 on &lt;strong&gt;50%&lt;/strong&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;A model that confidently answers questions it can't know about is risky for anything time-sensitive, however good its benchmark scores are.&lt;/p&gt;
+
+&lt;h2&gt;Limitations&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;Resolution is about one month, and &quot;knows a dated fact&quot; is a lower bound on the true cutoff.&lt;/li&gt;
+  &lt;li&gt;Open-recall questions (&quot;name a news event from…&quot;) are weaker than closed factual ones. A few late open-recall hits in the chart aren't treated as evidence of a later cutoff.&lt;/li&gt;
+  &lt;li&gt;A measured boundary can differ from vendor documentation. Trust the probe for the endpoint you actually call.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2&gt;Where I use it&lt;/h2&gt;
+&lt;p&gt;The probe now runs inside my &lt;a href=&quot;https://duker.me/articles/metaculus-forecasting-bot/&quot;&gt;Metaculus forecasting bot&lt;/a&gt;, which logs every ensemble member's measured cutoff alongside its forecasts. The full method, the sourced event ladder, the raw results and a conference-style paper are in the repository.&lt;/p&gt;&lt;p&gt;Source: &lt;a href=&quot;https://github.com/dukemawex/llm-knowledge-cutoff-probe&quot;&gt;dukemawex/llm-knowledge-cutoff-probe&lt;/a&gt;&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <title>Designing Teger AI to explain phishing</title>
+    <id>https://duker.me/articles/designing-teger-ai/</id>
+    <link rel="alternate" type="text/html" href="https://duker.me/articles/designing-teger-ai/" />
+    <published>2026-10-08T00:00:00Z</published>
+    <updated>2026-10-08T00:00:00Z</updated>
+    <author><name>Emmanuel Effiom Duke</name><uri>https://duker.me/about/</uri></author>
+    <category term="AI security" />
+    <category term="Social engineering" />
+    <category term="Product design" />
+    <summary>How Teger AI, an explainable social-engineering defence for Gmail and Slack, pairs deterministic signals with AI analysis and treats every message as untrusted.</summary>
+    <content type="html">&lt;p&gt;Most phishing tools give you a verdict: &lt;em&gt;suspicious&lt;/em&gt; or &lt;em&gt;safe&lt;/em&gt;. A verdict is a poor teaching tool, and it asks the user to trust a black box at the exact moment someone is trying to manipulate their trust. I built &lt;a href=&quot;https://tegerai.tech/&quot;&gt;Teger AI&lt;/a&gt; around a different goal: when it warns you, it should show you &lt;strong&gt;why&lt;/strong&gt;, and tell you what to do next.&lt;/p&gt;
+
+&lt;h2&gt;What it does today&lt;/h2&gt;
+&lt;p&gt;Teger AI is at MVP v0.2, in private beta. A Chrome extension adds an explicit &lt;strong&gt;Scan with Teger AI&lt;/strong&gt; action to Gmail and Slack. The user picks the message; Teger never reads the inbox on its own. For each scan it returns a risk level, a confidence, the manipulation tactics it found, the concrete cues behind them, its reasoning, and a recommended safe action.&lt;/p&gt;
+
+&lt;h2&gt;Two layers: deterministic signals, then AI analysis&lt;/h2&gt;
+&lt;p&gt;The detection pipeline deliberately runs in two stages. First, deterministic code extracts signals that don't need a model at all:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;urgency&lt;/li&gt;
+  &lt;li&gt;credential requests&lt;/li&gt;
+  &lt;li&gt;financial requests&lt;/li&gt;
+  &lt;li&gt;authority claims&lt;/li&gt;
+  &lt;li&gt;secrecy or process-bypass requests&lt;/li&gt;
+  &lt;li&gt;the shape of any URLs&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Only then does the message go to the AI forensic analysis, along with those signals. The deterministic signals are treated as &lt;strong&gt;hints, not proof&lt;/strong&gt;. They anchor the explanation in things a person can check, while the model handles the context that rules can't. The model's output is validated against a typed schema, and any tactic that isn't in Teger's shared threat taxonomy is dropped. The model can't invent new categories of alarm.&lt;/p&gt;
+
+&lt;h2&gt;Every message is attacker-controlled&lt;/h2&gt;
+&lt;p&gt;A phishing email is, by definition, written by an adversary. Feeding it to a language model creates an obvious risk: the message can contain instructions aimed at the detector itself (prompt injection). So the message is explicitly marked as &lt;strong&gt;untrusted, attacker-controlled data&lt;/strong&gt; at the model boundary, and instructions inside it are never treated as instructions for Teger.&lt;/p&gt;
+
+&lt;h2&gt;Security of the product itself&lt;/h2&gt;
+&lt;p&gt;A security tool that leaks credentials or private mail would be worse than none. The MVP's controls include:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;The OpenAI API key lives only in backend environment variables. It never ships in the extension or dashboard.&lt;/li&gt;
+  &lt;li&gt;Clients get an HMAC-signed anonymous installation token, and every analysis request must present it.&lt;/li&gt;
+  &lt;li&gt;Scans are rate-limited per installation &lt;em&gt;and&lt;/em&gt; per source IP, and creating installations is rate-limited separately.&lt;/li&gt;
+  &lt;li&gt;Message and context length are bounded, CORS origins are restricted, and upstream errors are converted to generic client errors.&lt;/li&gt;
+  &lt;li&gt;Local scan history stores metadata only. Raw message text isn't added to browser history.&lt;/li&gt;
+  &lt;li&gt;CI runs linting, regression tests, dataset validation, dashboard builds and secret scanning.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2&gt;What it doesn't do yet&lt;/h2&gt;
+&lt;p&gt;Being explicit about limits is part of being explainable. In the current MVP:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Rate limiting is in-memory per process and needs a shared store such as Redis before running on multiple instances.&lt;/li&gt;
+  &lt;li&gt;Gmail and Slack page structures can change, so the selectors need regression testing.&lt;/li&gt;
+  &lt;li&gt;The sender identity shown on the page is context, not cryptographic proof.&lt;/li&gt;
+  &lt;li&gt;The model's confidence is not a calibrated probability until it has been evaluated as one.&lt;/li&gt;
+  &lt;li&gt;There's no attachment detonation, mailbox authentication check or full URL-reputation lookup yet.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The architecture and threat model are documented in the open-source repository, alongside the API reference.&lt;/p&gt;&lt;p&gt;Source: &lt;a href=&quot;https://github.com/dukemawex/Teger-ai&quot;&gt;dukemawex/Teger-ai&lt;/a&gt;&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <title>Four false positives and one real signal</title>
+    <id>https://duker.me/articles/secret-loyalties-audit/</id>
+    <link rel="alternate" type="text/html" href="https://duker.me/articles/secret-loyalties-audit/" />
+    <published>2026-10-08T00:00:00Z</published>
+    <updated>2026-10-08T00:00:00Z</updated>
+    <author><name>Emmanuel Effiom Duke</name><uri>https://duker.me/about/</uri></author>
+    <category term="AI safety" />
+    <category term="Model auditing" />
+    <category term="Hackathon" />
+    <summary>A weights-first audit of three model organisms for secret loyalties at the Apart Research hackathon, and the workflow that rejected four false positives.</summary>
+    <content type="html">&lt;p&gt;In July 2026 I entered Apart Research's Secret Loyalties Hackathon (Track 2: Detection &amp;amp; Auditing). The task was to audit three released fine-tunes of &lt;code&gt;Qwen2.5-7B-Instruct&lt;/code&gt;, model organisms deliberately built to carry a hidden allegiance, and work out which were loyal, to whom, and how to tell. My submission, &lt;em&gt;Four False Positives and One Real Signal: A Controlled Audit of Secret-Loyalty Organisms&lt;/em&gt;, placed in the top half of 179 submissions. Its title is also the lesson.&lt;/p&gt;
+
+&lt;h2&gt;Start with the weights, not the chat&lt;/h2&gt;
+&lt;p&gt;Behavioural probing is the obvious approach and the easiest to fool yourself with. So I started from the weights:&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;&lt;strong&gt;Weight diff.&lt;/strong&gt; Compare each organism with the base model, tensor by tensor, with no inference at all.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;LoRA-subspace SVD&lt;/strong&gt; of the weight delta, to see how the change was installed.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Logit-lens and activation probes&lt;/strong&gt; to decode what direction the fine-tune added, then &lt;strong&gt;activation steering&lt;/strong&gt; to test candidates causally.&lt;/li&gt;
+  &lt;li&gt;Only then, &lt;strong&gt;base-controlled behavioural sweeps&lt;/strong&gt;: always compared against the base model, sampled N times at temperature, with a replication gate.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Monte Carlo robustness&lt;/strong&gt;: 500 randomised prompts per candidate principal, with bootstrap confidence intervals.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2&gt;What the audit found&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Organism C was byte-for-byte identical to the base model&lt;/strong&gt; (0 of 339 tensors changed): no loyalty. That made it a free null control. My white-box methods returned exactly nothing on it, which is what validated them.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Organisms A and B were genuinely fine-tuned&lt;/strong&gt;, with changes confined to layers 19–26, rank 16, attention only (MLPs untouched). The fingerprints were identical, pointing to the same training recipe.&lt;/li&gt;
+  &lt;li&gt;A contrastive activation probe surfaced the same well-controlled &lt;strong&gt;internal candidate principal&lt;/strong&gt; in both A and B: an extremist ideology (z &amp;gt; +3, surviving norm and selectivity controls; Monte Carlo p &amp;lt; 0.0001, Cohen's d &amp;gt; 2.4). Because the behaviour stayed safety-masked at the access level available, I report it as a &lt;em&gt;candidate&lt;/em&gt;, not a confirmed loyalty.&lt;/li&gt;
+  &lt;li&gt;The loyalty was present in the weights, but its narrow trigger wasn't recoverable at that access level. That's consistent with the reference organisms' documented failure to activate out of distribution.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2&gt;The four false positives&lt;/h2&gt;
+&lt;p&gt;Along the way, four behavioural &quot;loyalty&quot; signals looked compelling, and all four were rejected once I controlled for the base model's own rates and required replication. That workflow, which makes a tempting signal survive a base-rate control and a replication before it counts, is the main contribution. In auditing, the expensive mistake is not missing a loyalty but confidently reporting one that isn't there.&lt;/p&gt;
+
+&lt;h2&gt;Responsible disclosure&lt;/h2&gt;
+&lt;p&gt;The public repository contains defensive auditing code only. Dual-use elicitation scripts and raw sensitive transcripts are deliberately excluded, following Apart Research's responsible-disclosure policy. The full write-up is included as a PDF report.&lt;/p&gt;&lt;p&gt;Source: &lt;a href=&quot;https://github.com/dukemawex/secret-loyalties-audit&quot;&gt;dukemawex/secret-loyalties-audit&lt;/a&gt;&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <title>SPD meets a real grokked transformer</title>
+    <id>https://duker.me/articles/spd-real-transformer/</id>
+    <link rel="alternate" type="text/html" href="https://duker.me/articles/spd-real-transformer/" />
+    <published>2026-10-08T00:00:00Z</published>
+    <updated>2026-10-08T00:00:00Z</updated>
+    <author><name>Emmanuel Effiom Duke</name><uri>https://duker.me/about/</uri></author>
+    <category term="AI safety" />
+    <category term="Mechanistic interpretability" />
+    <category term="Research" />
+    <summary>Applying Stochastic Parameter Decomposition to a transformer that grokked modular addition: the ground truth was verified, but the components never specialized.</summary>
+    <content type="html">&lt;p&gt;My &lt;a href=&quot;https://duker.me/articles/spd-mechanism-clustering/&quot;&gt;first SPD clustering pilot&lt;/a&gt; worked on a toy model, where gate co-activation recovered the true mechanisms with an adjusted Rand index of 0.53. Toy models are forgiving, though. The fifth experiment in the series asked the question that matters: does automated mechanism recovery survive contact with a &lt;strong&gt;real trained transformer&lt;/strong&gt;?&lt;/p&gt;
+
+&lt;h2&gt;A real model with a known answer&lt;/h2&gt;
+&lt;p&gt;I trained a small transformer (embedding, attention and MLP; d_model = 64) on &lt;strong&gt;(a + b) mod 53&lt;/strong&gt; with weight decay. It &lt;strong&gt;grokked to 100% test accuracy&lt;/strong&gt;, meaning it learned the actual algorithm rather than memorising. Grokked modular-addition models are known to represent numbers using a handful of Fourier frequencies (Nanda et al., 2023), which provides ground truth.&lt;/p&gt;
+&lt;p&gt;Crucially, I measured that ground truth &lt;em&gt;independently of SPD&lt;/em&gt;, directly from a Fourier transform of the embedding. The model uses about &lt;strong&gt;four key frequencies: 17, 11, 12 and 26&lt;/strong&gt;, and the top five frequencies hold 91% of the spectral power.&lt;/p&gt;
+
+&lt;h2&gt;Result: the components collapsed&lt;/h2&gt;
+&lt;p&gt;I applied SPD to the MLP up-projection and asked whether the decomposed components line up with those frequencies. They didn't:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;All components collapsed onto the single dominant frequency, 17.&lt;/li&gt;
+  &lt;li&gt;Clustering against the true frequencies scored an ARI of &lt;strong&gt;0&lt;/strong&gt;.&lt;/li&gt;
+  &lt;li&gt;The cause: the importance-minimality term stayed saturated (around 1.0), so the components &lt;strong&gt;never specialised&lt;/strong&gt; within the training budget on this larger layer.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;As a follow-up I ran a stronger, annealed SPD with more components (48) and a longer schedule. The model still scored 100%, but the components recovered only &lt;strong&gt;one of the four&lt;/strong&gt; true frequencies.&lt;/p&gt;
+
+&lt;h2&gt;The through-line&lt;/h2&gt;
+&lt;p&gt;Across the series (toy superposition models, a balanced variant, a compositional MLP and this real transformer), one finding held and got stronger with scale:&lt;/p&gt;
+&lt;blockquote&gt;&lt;p&gt;The binding constraint on automated mechanism recovery is SPD component &lt;strong&gt;specialization&lt;/strong&gt;, not the choice of clustering signal.&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;When components map cleanly to single mechanisms, simple co-activation works. As targets get realistic, components fail to specialise, and then &lt;em&gt;no&lt;/em&gt; clustering signal recovers the verified mechanisms, whether co-activation, attribution or causal double-ablation. The practical recommendation is to invest in specialization first: sharper L0 gates, longer or stronger sparsity schedules, and per-mechanism capacity. Clustering-signal design comes after that.&lt;/p&gt;
+&lt;p class=&quot;refs&quot;&gt;References: Bushnaq, Braun &amp;amp; Sharkey (2025), &lt;em&gt;Stochastic Parameter Decomposition&lt;/em&gt;, arXiv:2506.20790 · Nanda et al. (2023), &lt;em&gt;Progress measures for grokking via mechanistic interpretability&lt;/em&gt;, ICLR · Elhage et al. (2022), &lt;em&gt;Toy Models of Superposition&lt;/em&gt;.&lt;/p&gt;&lt;p&gt;Source: &lt;a href=&quot;https://github.com/dukemawex/spd-real-transformer&quot;&gt;dukemawex/spd-real-transformer&lt;/a&gt;&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <title>Clustering SPD components into mechanisms</title>
+    <id>https://duker.me/articles/spd-mechanism-clustering/</id>
+    <link rel="alternate" type="text/html" href="https://duker.me/articles/spd-mechanism-clustering/" />
+    <published>2026-10-08T00:00:00Z</published>
+    <updated>2026-10-08T00:00:00Z</updated>
+    <author><name>Emmanuel Effiom Duke</name><uri>https://duker.me/about/</uri></author>
+    <category term="AI safety" />
+    <category term="Mechanistic interpretability" />
+    <category term="Research" />
+    <summary>A CPU pilot showing SPD subcomponents can be grouped into ground-truth mechanisms automatically, and why specialization is the real bottleneck.</summary>
+    <content type="html">&lt;p&gt;Stochastic Parameter Decomposition (SPD) breaks a network's weights into many small subcomponents, each meant to capture a piece of the network's computation. That leaves an open problem the SPD authors flagged themselves: a real mechanism is usually spread across &lt;em&gt;several&lt;/em&gt; subcomponents, and grouping them by hand doesn't scale. This pilot, part of a seven-repository series I ran in July 2026, asks whether that grouping can be automated &lt;strong&gt;without being told the answer&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;h2&gt;A model where the answer is known&lt;/h2&gt;
+&lt;p&gt;To check any automatic clustering, you need ground truth. So the target is a Toy Model of Superposition (Elhage et al., 2022): five features squeezed into two hidden dimensions. Its true mechanisms are simply those five features.&lt;/p&gt;
+&lt;p&gt;I decomposed it with an SPD-style method that follows Bushnaq, Braun and Sharkey (2025). Each weight matrix becomes 20 rank-one subcomponents, each with a learned causal-importance gate. Training combines faithfulness, a stochastic-masking reconstruction loss and an importance-minimality penalty. It converges cleanly: faithfulness error around 10⁻¹⁵, and stochastic reconstruction error near zero.&lt;/p&gt;
+
+&lt;h2&gt;Two automatic signals&lt;/h2&gt;
+&lt;p&gt;I then clustered the subcomponents using two signals, without access to the labels, and only afterwards compared the clusters with the five real features:&lt;/p&gt;
+&lt;table&gt;
+  &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Clustering signal&lt;/th&gt;&lt;th&gt;ARI&lt;/th&gt;&lt;th&gt;NMI&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;&lt;td&gt;Gate co-activation&lt;/td&gt;&lt;td&gt;&lt;strong&gt;0.53&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;0.47&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;Attribution signature&lt;/td&gt;&lt;td&gt;0.46&lt;/td&gt;&lt;td&gt;0.38&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;Random baseline&lt;/td&gt;&lt;td&gt;0.00&lt;/td&gt;&lt;td&gt;0.00&lt;/td&gt;&lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Both signals recover real structure: an adjusted Rand index around 0.5, against 0.0 for random. SPD subcomponents &lt;em&gt;can&lt;/em&gt; be grouped into the true features automatically. The gap from a perfect 1.0 matters too. At this sparsity the components aren't cleanly one-feature-each.&lt;/p&gt;
+
+&lt;h2&gt;What went wrong, and what it taught&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Gate sparsity sits on a knife edge.&lt;/strong&gt; Too much importance penalty and every gate collapses to zero; too little and nothing specialises. That reproduces a known SPD training-stability issue and argues for annealed or adaptive importance weighting.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Co-activation beat attribution&lt;/strong&gt;, the opposite of what I expected, which suggests fusing the two signals rather than choosing one.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Sharper gates aren't the fix on their own.&lt;/strong&gt; As a follow-up I tried hard-concrete (L0) gates. They increased the number of specialised components (24 of 38), but ARI &lt;em&gt;fell&lt;/em&gt; to 0.28.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;That last result is the thread running through the series: how well components specialise, not which clustering signal you pick, is what limits recovery. I wrote it up as &lt;em&gt;Specialization Is the Bottleneck&lt;/em&gt;.&lt;/p&gt;
+
+&lt;h2&gt;Next&lt;/h2&gt;
+&lt;p&gt;The natural next steps are annealing the importance coefficient, adding a causal-interaction (double-ablation) signal fused with co-activation, and moving to cross-layer models, where mechanisms span layers and manual clustering stops being feasible. The series later tested this on &lt;a href=&quot;https://duker.me/articles/spd-real-transformer/&quot;&gt;a real grokked transformer&lt;/a&gt;. Everything in the pilot runs on a CPU in a few minutes, and the code is public.&lt;/p&gt;
+&lt;p class=&quot;refs&quot;&gt;References: Bushnaq, Braun &amp;amp; Sharkey (2025), &lt;em&gt;Stochastic Parameter Decomposition&lt;/em&gt;, arXiv:2506.20790 · Braun et al. (2025), &lt;em&gt;Attribution-based Parameter Decomposition&lt;/em&gt;, arXiv:2501.14926 · Elhage et al. (2022), &lt;em&gt;Toy Models of Superposition&lt;/em&gt;.&lt;/p&gt;&lt;p&gt;Source: &lt;a href=&quot;https://github.com/dukemawex/spd-mechanism-clustering&quot;&gt;dukemawex/spd-mechanism-clustering&lt;/a&gt;&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <title>Do models represent deception alike?</title>
+    <id>https://duker.me/articles/deception-feature-universality/</id>
+    <link rel="alternate" type="text/html" href="https://duker.me/articles/deception-feature-universality/" />
+    <published>2026-10-08T00:00:00Z</published>
+    <updated>2026-10-08T00:00:00Z</updated>
+    <author><name>Emmanuel Effiom Duke</name><uri>https://duker.me/about/</uri></author>
+    <category term="AI safety" />
+    <category term="Interpretability" />
+    <category term="Research" />
+    <summary>Do different architectures learn similar internal representations of deception cues? A toy-scale test, and why the first null was too weak to answer.</summary>
+    <content type="html">&lt;p&gt;If different models independently develop the same internal building blocks for deception (urgency, impersonation, false authority, trust manipulation), then a detector or an interpretability tool built on one model might transfer to others. That's the universality question, and this experiment is a small, concrete test of it. It also illustrates how easily a similarity score can look convincing when it isn't.&lt;/p&gt;
+
+&lt;h2&gt;Setup&lt;/h2&gt;
+&lt;p&gt;A toy &quot;deception detector&quot; sees four cue types projected into a shared input space, and labels an input as phishing if at least two cues are present. I trained three architectures (widths 32, 48 and 64; depths one and two), each with three seeds. All reach 100% accuracy. I then extracted a representation signature for each cue and compared models using linear CKA, with a permutation test as the null.&lt;/p&gt;
+
+&lt;h2&gt;First result: similar, but not significant&lt;/h2&gt;
+&lt;table&gt;
+  &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Comparison&lt;/th&gt;&lt;th&gt;CKA&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;&lt;td&gt;Within architecture (seed vs seed)&lt;/td&gt;&lt;td&gt;0.82–0.98&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;Across architectures&lt;/td&gt;&lt;td&gt;0.82–0.97&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;Architecture A vs B, real vs permutation null&lt;/td&gt;&lt;td&gt;0.88 vs 0.85 (p = 0.40)&lt;/td&gt;&lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Across different widths and depths, the models converge on very similar representations: cross-architecture similarity is about as high as same-architecture similarity. But the permutation null is &lt;em&gt;almost as high&lt;/em&gt; as the real value. With only four nearly orthogonal cues, nearly any alignment looks similar. So the stronger claim, that each cue is the &lt;em&gt;same&lt;/em&gt; building block in every model, wasn't demonstrated. Reporting 0.88 on its own would have been misleading.&lt;/p&gt;
+
+&lt;h2&gt;Making the null informative&lt;/h2&gt;
+&lt;p&gt;The fix was to make the task hard enough for the null to reject. I raised the number of cues to twelve and let them correlate. With twelve cues:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;cross-architecture CKA was &lt;strong&gt;0.56&lt;/strong&gt;&lt;/li&gt;
+  &lt;li&gt;the permutation null was &lt;strong&gt;0.26&lt;/strong&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;p = 0.024&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;That is statistically significant representational universality for deception cues across architectures, at toy scale.&lt;/p&gt;
+
+&lt;h2&gt;What it does and doesn't show&lt;/h2&gt;
+&lt;p&gt;This is evidence for the coarse universality claim, in small models on a synthetic task. The fine-grained &quot;same building block&quot; claim needs matched component signatures across models, for example using SPD components instead of layer-level CKA, and eventually a small real transformer on real phishing text. That connects this work to &lt;a href=&quot;https://duker.me/articles/designing-teger-ai/&quot;&gt;Teger AI&lt;/a&gt;, where the practical question is whether manipulation cues are represented consistently enough to detect reliably.&lt;/p&gt;&lt;p&gt;Source: &lt;a href=&quot;https://github.com/dukemawex/deception-feature-universality&quot;&gt;dukemawex/deception-feature-universality&lt;/a&gt;&lt;/p&gt;</content>
+  </entry>
+  <entry>
+    <title>The reward spread; the warning didn't</title>
+    <id>https://duker.me/articles/reward-generalization-early-warning/</id>
+    <link rel="alternate" type="text/html" href="https://duker.me/articles/reward-generalization-early-warning/" />
+    <published>2026-10-08T00:00:00Z</published>
+    <updated>2026-10-08T00:00:00Z</updated>
+    <author><name>Emmanuel Effiom Duke</name><uri>https://duker.me/about/</uri></author>
+    <category term="AI safety" />
+    <category term="Alignment" />
+    <category term="Negative result" />
+    <summary>Reproducing unintended reward generalization in an inspectable toy model, and a negative result: internal signals gave no early warning.</summary>
+    <content type="html">&lt;p&gt;OpenAI's &lt;em&gt;Where the Goblins Came From&lt;/em&gt; describes a reward that generalised beyond the context it was meant for. A natural safety follow-up is to ask whether you can see that spread coming &lt;strong&gt;inside&lt;/strong&gt; the model before it shows up in behaviour. I tested both halves in a model small enough to inspect completely.&lt;/p&gt;
+
+&lt;h2&gt;Setup&lt;/h2&gt;
+&lt;p&gt;A small MLP has two heads, a &quot;tic&quot; and a &quot;task&quot;, over six contexts. I rewarded a high tic &lt;strong&gt;only in context 0&lt;/strong&gt;, then measured two things: whether the tic spreads to contexts that were never rewarded, and whether an internal signal rises in those contexts &lt;em&gt;before&lt;/em&gt; the behavioural tic does.&lt;/p&gt;
+
+&lt;h2&gt;Result 1: reward generalization reproduced&lt;/h2&gt;
+&lt;p&gt;It does spread. Rewarding the tic in context 0 alone drives it to maximum in &lt;strong&gt;every&lt;/strong&gt; context, including those that were never rewarded. The goblin dynamic appears in a fully inspectable toy.&lt;/p&gt;
+
+&lt;h2&gt;Result 2: no early warning (a negative result)&lt;/h2&gt;
+&lt;p&gt;The early-warning hypothesis was &lt;strong&gt;not supported&lt;/strong&gt;. First-layer representation drift in the unrewarded contexts didn't reliably precede the output tic; the measured lead time was about zero, or slightly negative. In a small, tightly coupled network, the internal and behavioural signals move together.&lt;/p&gt;
+&lt;p&gt;I tried one more angle: tracking the projection onto the reward-linked component rather than raw activations. It still gave no lead time at this scale.&lt;/p&gt;
+
+&lt;h2&gt;Why a negative result is worth publishing&lt;/h2&gt;
+&lt;p&gt;The proposal's own failure criterion, stated in advance, was that the project fails if the spread only becomes detectable after it appears in outputs. At toy scale, that is what happened. Rather than refuting the idea, the result narrows down what an early-warning system would need:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;a deeper model, where the readout sits far from the mechanism, and/or&lt;/li&gt;
+  &lt;li&gt;a decomposition such as SPD that isolates the reward-linked mechanism from the readout. This connects to my &lt;a href=&quot;https://duker.me/articles/spd-mechanism-clustering/&quot;&gt;SPD clustering work&lt;/a&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The next experiment is a small real transformer with a lexical-reward fine-tune. Both scripts in the repository (reproduce the generalization; run the early-warning test) run on a CPU.&lt;/p&gt;
+&lt;p class=&quot;refs&quot;&gt;Reference: OpenAI (2026), &lt;em&gt;Where the Goblins Came From&lt;/em&gt;.&lt;/p&gt;&lt;p&gt;Source: &lt;a href=&quot;https://github.com/dukemawex/reward-generalization-earlywarning&quot;&gt;dukemawex/reward-generalization-earlywarning&lt;/a&gt;&lt;/p&gt;</content>
+  </entry>
+</feed>

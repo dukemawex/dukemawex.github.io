@@ -1,0 +1,44 @@
+# Tells IndexNow-enabled search engines (Bing, Yandex, Seznam, Naver…) about every URL in sitemap.xml
+# after a push to main. Google does not use IndexNow; for Google, sitemap.xml + feed.xml + Search Console.
+# The key is public by design: IndexNow verifies ownership by fetching https://duker.me/<key>.txt.
+name: IndexNow
+
+on:
+  push:
+    branches: [main]
+    paths: ['sitemap.xml', 'articles/**', 'index.html', 'about/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      HOST: duker.me
+      KEY: d5a6263fb4c1326cd4728640a17cc568
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Wait for GitHub Pages to serve this commit
+        run: |
+          # The key file and new pages must be live before submitting, or engines will reject/ignore them.
+          for i in $(seq 1 30); do
+            live_key=$(curl -fsS "https://$HOST/$KEY.txt" || true)
+            live_sitemap=$(curl -fsS "https://$HOST/sitemap.xml" || true)
+            if [ "$live_key" = "$KEY" ] && [ "$live_sitemap" = "$(cat sitemap.xml)" ]; then echo "live"; exit 0; fi
+            echo "waiting for deploy ($i/30)…"; sleep 30
+          done
+          echo "::error::duker.me did not serve the pushed sitemap/key within 15 minutes"; exit 1
+
+      - name: Submit sitemap URLs
+        run: |
+          urls=$(grep -o '<loc>[^<]*</loc>' sitemap.xml | sed -e 's/<loc>//' -e 's#</loc>##' | jq -R . | jq -s .)
+          echo "Submitting: $urls"
+          body=$(jq -n --arg host "$HOST" --arg key "$KEY" --argjson urls "$urls"             '{host: $host, key: $key, keyLocation: ("https://" + $host + "/" + $key + ".txt"), urlList: $urls}')
+          code=$(curl -sS -o response.txt -w '%{http_code}' -X POST https://api.indexnow.org/indexnow             -H 'Content-Type: application/json; charset=utf-8' --data "$body")
+          echo "IndexNow responded $code"; cat response.txt || true
+          # 200 = accepted, 202 = accepted while the key is being verified (first run)
+          case "$code" in 200|202) ;; *) echo "::error::IndexNow returned $code"; exit 1 ;; esac

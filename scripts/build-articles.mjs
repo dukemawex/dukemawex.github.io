@@ -138,6 +138,7 @@ ${extraMeta}<meta name="twitter:card" content="summary_large_image" />
 <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 <link rel="manifest" href="/site.webmanifest" />
+<link rel="alternate" type="application/atom+xml" title="Writing by ${FULL}" href="/feed.xml" />
 <meta name="theme-color" content="#f6f8fc" />
 
 <script type="application/ld+json">
@@ -307,6 +308,35 @@ ${entries.map((e) => `  <url>
   if (!re.test(llms)) throw new Error('llms.txt: missing article markers');
   const lines = [...articles.map((a) => `- [${a.headline}](${a.url}): ${a.description}`), ...elsewhere.map((a) => `- [${a.headline}](${a.external.url}) (${a.displayDate || a.date}, ${a.external.site}): ${a.description}`)];
   out.set('llms.txt', llms.replace(re, `<!--ARTICLES:START-->\n${lines.join('\n')}\n<!--ARTICLES:END-->`));
+}
+
+// Atom feed: full article content, absolute links. Google and Bing accept it as a sitemap (robots.txt lists it).
+{
+  const abs = (html) => html.replace(/(href|src)="\//g, `$1="${SITE}/`);
+  const updated = articles.map((a) => a.dateModified || a.date).sort().pop();
+  out.set('feed.xml', `<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+  <title>Writing by ${FULL}</title>
+  <subtitle>Articles on AI forecasting, AI security, model evaluation, interpretability and AI-safety research.</subtitle>
+  <id>${SITE}/articles/</id>
+  <link rel="self" type="application/atom+xml" href="${SITE}/feed.xml" />
+  <link rel="alternate" type="text/html" href="${SITE}/articles/" />
+  <updated>${updated}T00:00:00Z</updated>
+  <author><name>${FULL}</name><uri>${SITE}/</uri></author>
+  <icon>${SITE}/favicon.svg</icon>
+${articles.map((a) => `  <entry>
+    <title>${esc(a.headline)}</title>
+    <id>${a.url}</id>
+    <link rel="alternate" type="text/html" href="${a.url}" />
+    <published>${a.date}T00:00:00Z</published>
+    <updated>${a.dateModified || a.date}T00:00:00Z</updated>
+    <author><name>${FULL}</name><uri>${SITE}/about/</uri></author>
+${a.tags.map((t) => `    <category term="${esc(t)}" />`).join('\n')}
+    <summary>${esc(a.description)}</summary>
+    <content type="html">${esc(abs(a.body) + `<p>Source: <a href="${a.source.url}">${a.source.label}</a></p>`)}</content>
+  </entry>`).join('\n')}
+</feed>
+`);
 }
 
 // ---- Write or check ----

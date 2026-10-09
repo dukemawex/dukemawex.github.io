@@ -169,5 +169,25 @@ for (const i of man.icons) ok(existsSync(path.join(root, i.src.replace(/^\//, ''
 ok(/<meta name="robots" content="noindex/.test(read('404.html')), '404 must be noindex');
 ok(read('CNAME').trim() === 'duker.me', 'CNAME must be duker.me');
 
+// Atom feed: one entry per local article, absolute links, listed in robots.txt and linked from every page
+const feed = read('feed.xml');
+const articleUrls = PAGES.filter((p) => p.kind === 'article').map((p) => p.url);
+const entryIds = [...feed.matchAll(/<entry>[\s\S]*?<id>([^<]+)<\/id>/g)].map((m) => m[1]);
+ok(entryIds.length === articleUrls.length && articleUrls.every((u) => entryIds.includes(u)), `feed.xml must have one entry per article (${entryIds.length} vs ${articleUrls.length})`);
+ok(!/(href|src)=&quot;\//.test(feed), 'feed.xml content must use absolute links');
+ok(robots.includes('Sitemap: https://duker.me/feed.xml'), 'robots.txt must list feed.xml');
+for (const pg of PAGES) ok(read(pg.file).includes('<link rel="alternate" type="application/atom+xml"'), `${pg.file}: missing feed link`);
+
+// IndexNow: the key file served at the site root must match the workflow's key
+const wf = read('.github/workflows/indexnow.yml');
+const key = (wf.match(/KEY: ([0-9a-f]{32})/) || [])[1];
+ok(key && existsSync(path.join(root, `${key}.txt`)) && read(`${key}.txt`) === key, 'IndexNow key file must exist at /<key>.txt with the key as its only content');
+
+// rel="me" on visible links to every sameAs profile (home + about)
+for (const f of ['index.html', 'about/index.html']) {
+  const h = read(f);
+  for (const u of JSON.parse(persons[0]).sameAs) ok(new RegExp(`href="${u.split('?')[0].replace(/[.*+?^${}()|[\]\\/]/g, '\\$&')}[^"]*" rel="me"`).test(h), `${f}: profile link ${u} needs rel="me"`);
+}
+
 if (fails.length) { console.error(fails.map((f) => '✗ ' + f).join('\n')); process.exit(1); }
 console.log(`✓ static checks passed (${PAGES.length} pages, sitemap, robots, structured data, CSP)`);
