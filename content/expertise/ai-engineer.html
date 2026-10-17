@@ -1,0 +1,34 @@
+<!--meta
+{
+  "slug": "ai-engineer",
+  "role": "AI engineer",
+  "title": "AI Engineer | Emmanuel Effiom Duke",
+  "description": "Emmanuel Effiom Duke is an AI engineer who builds LLM products end to end: Teger AI for phishing defence, a Metaculus forecasting bot, and evaluation tools.",
+  "summary": "LLM products, agents and evaluation tooling, built end to end and shipped.",
+  "articles": ["designing-teger-ai", "metaculus-forecasting-bot", "llm-knowledge-cutoff-probe"],
+  "projects": [
+    {"name": "Teger AI", "url": "https://tegerai.tech/", "note": "Explainable social-engineering and phishing detection for Gmail and Slack: Chrome extension, FastAPI backend and React security console (MVP v0.2, private beta)."},
+    {"name": "oracledeckv1 forecasting bot", "url": "https://github.com/dukemawex/botduke--update", "note": "Multi-source research, a five-model LLM ensemble, critic and red-team passes, and an offline evaluation harness for Metaculus AI tournaments."},
+    {"name": "LLM knowledge-cutoff probe", "url": "https://github.com/dukemawex/llm-knowledge-cutoff-probe", "note": "Measures nine models' real training cutoffs by dated-event bisection."},
+    {"name": "AxiosPay", "url": "https://axioslast-web.vercel.app/", "note": "Cross-border FX for African travellers; 4th place, Interswitch × Enyata Developer Hackathon."},
+    {"name": "FarmVoice-AI", "url": "https://github.com/dukemawex/FarmVoice-AI", "note": "Agricultural extension AI agent for farmers."},
+    {"name": "Cropie", "url": "https://cropie.vercel.app/", "note": "Satellite-powered crop-disease early warning."},
+    {"name": "GeoDrill", "url": "https://github.com/dukemawex/Geodrill", "note": "AI drilling-probability scoring with a live risk heatmap."}
+  ]
+}
+-->
+<p>I build AI systems that have to work outside a notebook: products with real users, adversarial inputs, API budgets and failure modes that don't announce themselves. My approach is the same whether it's a security product or a forecasting pipeline. Separate what can be checked deterministically from what needs a model. Treat model output as something to validate, not trust. Measure before tuning.</p>
+
+<h2>What I build</h2>
+<ul>
+  <li><strong>LLM products.</strong> <a href="https://tegerai.tech/">Teger AI</a> pairs deterministic signal extraction (urgency, credential and payment requests, authority claims, URL shape) with AI forensic analysis. It validates every result against a typed schema and treats each message as attacker-controlled input.</li>
+  <li><strong>Agents and multi-model pipelines.</strong> My Metaculus forecasting bot runs parallel retrieval across several search providers, synthesises a research brief, and combines a weighted five-model ensemble with critic and red-team passes.</li>
+  <li><strong>Evaluation and reliability tooling.</strong> An offline harness that replays calibration variants against 190 resolved questions at zero token cost. A leak canary for date-bounded backtests. A probe that measures each model's real knowledge cutoff instead of trusting its self-report.</li>
+  <li><strong>Full-stack AI applications</strong> in fintech, agriculture and geospatial analysis, from backend APIs to the interface.</li>
+</ul>
+
+<h2>How I work</h2>
+<p>Most AI failures I've debugged were silent: a research provider failing without crashing, a quality signal stuck at its maximum, a calibration step biasing every forecast the same way. So I log what each component actually did, keep secrets server-side, rate-limit public endpoints, and build small, cheap evaluations before scaling anything. I write up the results, including the negative ones.</p>
+
+<h2>Tools</h2>
+<p>Python, TypeScript and JavaScript, FastAPI, React, Chrome extensions, OpenRouter and multiple model providers, retrieval and search APIs, Pydantic schemas, GitHub Actions CI, and PyTorch for research work.</p>

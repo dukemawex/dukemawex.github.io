@@ -20,7 +20,11 @@ const PAGES = [
   ...readdirSync(path.join(root, 'articles'), { withFileTypes: true }).filter((d) => d.isDirectory())
     .map((d) => ({ file: `articles/${d.name}/index.html`, url: `https://duker.me/articles/${d.name}/`, kind: 'article', title: null })),
 ];
+PAGES.push({ file: 'expertise/index.html', url: 'https://duker.me/expertise/', kind: 'hubindex', title: null },
+  ...readdirSync(path.join(root, 'expertise'), { withFileTypes: true }).filter((d) => d.isDirectory())
+    .map((d) => ({ file: `expertise/${d.name}/index.html`, url: `https://duker.me/expertise/${d.name}/`, kind: 'hub', title: null })));
 ok(PAGES.filter((p) => p.kind === 'article').length >= 1, 'expected at least one article');
+ok(PAGES.filter((p) => p.kind === 'hub').length >= 1, 'expected at least one expertise hub');
 const allIds = {};
 const persons = [];
 
@@ -33,7 +37,8 @@ for (const pg of PAGES) {
   // Title, description, canonical, robots
   const title = (html.match(/<title>([^<]*)<\/title>/) || [])[1] || '';
   if (pg.title) ok(title === pg.title, at(`title is "${title}", want "${pg.title}"`));
-  ok(title.includes(FULL) && title.length <= 65, at(`title must contain "${FULL}" and be ≤65 chars (${title.length})`));
+  const titleText = title.replace(/&amp;/g, '&').replace(/&[a-z]+;/g, ' ');
+  ok(title.includes(FULL) && titleText.length <= 65, at(`title must contain "${FULL}" and be ≤65 chars (${title.length})`));
   const desc = meta('description') || '';
   ok(desc.length >= 70 && desc.length <= 160, at(`meta description length ${desc.length} (want 70–160)`));
   if (pg.kind !== 'article') ok(desc.includes(FULL), at('meta description should name the person in full'));
@@ -63,7 +68,7 @@ for (const pg of PAGES) {
   let graph = [];
   try { graph = JSON.parse(ld[0][1])['@graph']; } catch (e) { fails.push(at('JSON-LD does not parse: ' + e.message)); }
   const types = graph.map((n) => n['@type']);
-  const KIND_TYPE = { profile: 'ProfilePage', collection: 'CollectionPage', article: 'BlogPosting' };
+  const KIND_TYPE = { profile: 'ProfilePage', collection: 'CollectionPage', article: 'BlogPosting', hub: 'WebPage', hubindex: 'CollectionPage' };
   for (const t of ['WebSite', 'Person', KIND_TYPE[pg.kind]]) ok(types.includes(t), at(`JSON-LD missing ${t}`));
   if (pg.file !== 'index.html') ok(types.includes('BreadcrumbList'), at('JSON-LD missing BreadcrumbList'));
   const ids = new Set(graph.map((n) => n['@id']));
@@ -81,6 +86,19 @@ for (const pg of PAGES) {
     ok(/^https:\/\/github\.com\/dukemawex\//.test(post.isBasedOn || ''), at('article must cite its source repository (isBasedOn)'));
     ok(html.includes(`href="${post.isBasedOn}"`), at('source repository must be linked visibly'));
     ok(existsSync(path.join(root, (post.image || '').replace('https://duker.me/', ''))), at('BlogPosting image must exist'));
+  }
+  if (pg.kind === 'hub') {
+    const wp = graph.find((n) => n['@type'] === 'WebPage') || {};
+    ok(wp.url === pg.url && wp.mainEntity?.['@id'] === 'https://duker.me/#person', at('hub WebPage must be canonical and about the Person'));
+    ok(/<h2 id="work-h">Selected work<\/h2>/.test(html), at('hub must list selected work'));
+    const prose = (html.match(/<div class="prose hub-prose">([\s\S]*?)<\/div>\s*<section/) || [])[1] || '';
+    ok(prose.replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length >= 250, at('hub page needs at least 250 words of its own prose'));
+  }
+  if (pg.kind === 'hubindex') {
+    const col = graph.find((n) => n['@type'] === 'CollectionPage') || {};
+    const listed = (col.mainEntity?.itemListElement || []).map((i) => i.url);
+    const expected = PAGES.filter((p) => p.kind === 'hub').map((p) => p.url);
+    ok(listed.length === expected.length && expected.every((u) => listed.includes(u)), at('expertise index must list every hub'));
   }
   if (pg.kind === 'collection') {
     const col = graph.find((n) => n['@type'] === 'CollectionPage') || {};
@@ -151,6 +169,7 @@ for (const pg of PAGES) {
 }
 ok(read('index.html').includes('href="/about/"'), 'homepage must link to the About page');
 ok(read('index.html').includes('href="/articles/"'), 'homepage must link to the articles index');
+ok(read('index.html').includes('href="/expertise/"'), 'homepage must link to the expertise index');
 for (const m of read('404.html').matchAll(/href="\/#([^"]+)"/g)) ok(allIds['https://duker.me/'].includes(m[1]), `404 links to missing anchor #${m[1]}`);
 ok(!/photoOk|photoMissing/.test(read('assets/js/site.js')), 'stale photo handlers referenced');
 

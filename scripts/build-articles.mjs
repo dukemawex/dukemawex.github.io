@@ -49,11 +49,26 @@ const articles = all.filter((a) => !a.external);
 for (const a of articles) if (!ORDER.includes(a.slug)) throw new Error(`add "${a.slug}" to ORDER`);
 articles.sort((a, b) => ORDER.indexOf(a.slug) - ORDER.indexOf(b.slug));
 
+// ---- Load expertise hubs (content/expertise/*.html) ----
+const HUB_ORDER = ['ai-engineer', 'ai-safety-researcher', 'ai-security', 'ai-forecasting', 'mechanical-engineer'];
+const hubs = readdirSync(path.join(root, 'content/expertise')).filter((f) => f.endsWith('.html')).map((f) => {
+  const m = read(`content/expertise/${f}`).match(/^<!--meta\n([\s\S]*?)\n-->\n([\s\S]*)$/);
+  if (!m) throw new Error(`expertise/${f}: missing <!--meta … --> header`);
+  const meta = JSON.parse(m[1]);
+  if (meta.slug + '.html' !== f) throw new Error(`expertise/${f}: slug must match the file name`);
+  for (const k of ['role', 'title', 'description', 'summary', 'projects']) if (!meta[k]) throw new Error(`expertise/${f}: missing ${k}`);
+  for (const s of meta.articles || []) if (!articles.find((a) => a.slug === s)) throw new Error(`expertise/${f}: unknown article ${s}`);
+  return { ...meta, articles: meta.articles || [], body: m[2].trim(), url: `${SITE}/expertise/${meta.slug}/`, path: `/expertise/${meta.slug}/` };
+});
+for (const h of hubs) if (!HUB_ORDER.includes(h.slug)) throw new Error(`add "${h.slug}" to HUB_ORDER`);
+hubs.sort((a, b) => HUB_ORDER.indexOf(a.slug) - HUB_ORDER.indexOf(b.slug));
+const hubsFor = (slug) => hubs.filter((h) => h.articles.includes(slug));
+
 // ---- Templates ----
 const ICON_SUN = '<svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
 const ICON_MOON = '<svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>';
 const nav = (current) => {
-  const items = [['/', 'Home'], ['/about/', 'About'], ['/articles/', 'Writing'], ['/#ventures', 'Ventures'], ['/#projects', 'Projects'], ['/#publications', 'Research'], ['#contact', 'Contact']];
+  const items = [['/', 'Home'], ['/about/', 'About'], ['/expertise/', 'Expertise'], ['/articles/', 'Writing'], ['/#ventures', 'Ventures'], ['/#projects', 'Projects'], ['#contact', 'Contact']];
   return `<nav aria-label="Primary">
   <div class="wrap">
     <a class="brand" href="/" aria-label="${FULL}, home">Emmanuel <span>Duke</span></a>
@@ -213,7 +228,7 @@ ${figure}
 ${a.body.split('\n').map((l) => (l ? '      ' + l : l)).join('\n')}
     </div>
 
-    <p class="source-box">Code, data and full results: <a href="${a.source.url}">${esc(a.source.label)}</a> on GitHub.</p>
+    <p class="source-box">Code, data and full results: <a href="${a.source.url}">${esc(a.source.label)}</a> on GitHub.${hubsFor(a.slug).length ? ` Related expertise: ${hubsFor(a.slug).map((h) => `<a href="${h.path}">${esc(h.role)}</a>`).join(', ')}.` : ''}</p>
 
     ${authorBox}
   </article>
@@ -270,6 +285,119 @@ ${a.body.split('\n').map((l) => (l ? '      ' + l : l)).join('\n')}
   }));
 }
 
+// Expertise hubs + index
+const hubCard = (h, level = 2) => `<article class="post-card">
+        <p class="tag">Expertise</p>
+        <h${level}><a href="${h.path}">${esc(h.role[0].toUpperCase() + h.role.slice(1))}</a></h${level}>
+        <p>${esc(h.summary)}</p>
+        <span class="go" aria-hidden="true">Explore →</span>
+      </article>`;
+for (const h of hubs) {
+  const trail = [['/', 'Home'], ['/expertise/', 'Expertise'], [h.path, h.role[0].toUpperCase() + h.role.slice(1)]];
+  const related = h.articles.map((s) => articles.find((a) => a.slug === s));
+  const others = hubs.filter((x) => x !== h);
+  const ld = [
+    {
+      '@type': 'WebPage', '@id': `${h.url}#page`, url: h.url, name: h.title, description: h.description,
+      isPartOf: { '@id': WEBSITE }, about: [{ '@id': PERSON }, { '@type': 'Thing', name: h.role }], mainEntity: { '@id': PERSON },
+      breadcrumb: { '@id': `${h.url}#breadcrumb` }, inLanguage: 'en', dateModified: UPDATED,
+      ...(related.length ? { hasPart: related.map((a) => ({ '@id': `${a.url}#article` })) } : {}),
+    },
+    ...related.map((a) => ({ '@type': 'BlogPosting', '@id': `${a.url}#article`, headline: a.headline, url: a.url, author: { '@id': PERSON }, datePublished: a.date })),
+    breadcrumbLd(h.url, trail),
+  ];
+  out.set(`expertise/${h.slug}/index.html`, page({
+    url: h.url, title: h.title, description: h.description, ogType: 'profile', graph: ld, current: '/expertise/',
+    body: `<main class="wrap bio">
+  ${crumbs(trail)}
+
+  <header class="bio-head single">
+    <div>
+      <h1><span class="eyebrow">${FULL}</span>${esc(h.role[0].toUpperCase() + h.role.slice(1))}</h1>
+      <p class="bio-lede">${esc(h.summary)}</p>
+    </div>
+  </header>
+
+  <div class="prose hub-prose">
+${h.body.split('\n').map((l) => (l ? '    ' + l : l)).join('\n')}
+  </div>
+
+  <section class="hub-work" aria-labelledby="work-h">
+    <h2 id="work-h">Selected work</h2>
+    <ul class="hub-list">
+      ${h.projects.map((p) => `<li><a href="${esc(p.url)}">${esc(p.name)}</a><span>${esc(p.note)}</span></li>`).join('\n      ')}
+    </ul>
+  </section>
+${related.length ? `
+  <section class="more-posts" aria-labelledby="writing-h">
+    <h2 id="writing-h">Related writing</h2>
+    <div class="posts">
+      ${related.map((a) => card(a)).join('\n      ')}
+    </div>
+  </section>
+` : ''}
+  <section class="more-posts" aria-labelledby="areas-h">
+    <h2 id="areas-h">Other areas</h2>
+    <div class="posts">
+      ${others.map((x) => hubCard(x, 3)).join('\n      ')}
+    </div>
+  </section>
+
+  <div class="post-article">
+    ${authorBox}
+  </div>
+</main>`,
+  }));
+}
+{
+  const url = `${SITE}/expertise/`, trail = [['/', 'Home'], ['/expertise/', 'Expertise']];
+  const title = `Expertise | ${FULL}: AI Engineering & Research`;
+  const description = `${FULL}'s areas of work: AI engineering, AI safety research, AI security, AI forecasting and LLM evaluation, and mechanical-engineering research.`;
+  const ld = [
+    {
+      '@type': 'CollectionPage', '@id': `${url}#page`, url, name: title, description, isPartOf: { '@id': WEBSITE }, about: { '@id': PERSON },
+      breadcrumb: { '@id': `${url}#breadcrumb` }, inLanguage: 'en', dateModified: UPDATED,
+      mainEntity: { '@type': 'ItemList', itemListElement: hubs.map((h, i) => ({ '@type': 'ListItem', position: i + 1, url: h.url, name: h.role })) },
+    },
+    breadcrumbLd(url, trail),
+  ];
+  out.set('expertise/index.html', page({
+    url, title, description, ogType: 'website', graph: ld, current: '/expertise/',
+    body: `<main class="wrap bio">
+  ${crumbs(trail)}
+
+  <header class="bio-head single">
+    <div>
+      <p class="kicker">Expertise</p>
+      <h1>Expertise of ${FULL}</h1>
+      <p class="bio-lede">I'm ${FULL}, an AI engineer, researcher and the founder of <a href="https://dukersltd.com/">Dukers LTD</a>. My work spans building AI products, AI safety and security research, forecasting and evaluation, and mechanical-engineering research. Associated initiatives: <a href="https://tegerai.tech/">Teger AI</a> and <a href="https://transly.software/">Transly</a>.</p>
+    </div>
+  </header>
+
+  <section class="post-index" aria-label="Areas of expertise">
+    <div class="posts">
+      ${hubs.map((h) => hubCard(h, 2)).join('\n      ')}
+    </div>
+  </section>
+
+  <section class="hub-work" aria-labelledby="collab-h">
+    <h2 id="collab-h">Work with me</h2>
+    <p class="bio-lede">I'm open to remote collaboration with research groups, startups and mission-driven organisations anywhere in the world: AI product engineering, AI safety and security research, forecasting and evaluation, and energy research. Email <a href="mailto:emmanuel.duke@dukersltd.com">emmanuel.duke@dukersltd.com</a>.</p>
+  </section>
+</main>`,
+  }));
+}
+
+// Homepage expertise links (between markers)
+let homeOut = home;
+{
+  const re = /<!--EXPERTISE:START[\s\S]*?<!--EXPERTISE:END-->/;
+  if (!re.test(home)) throw new Error('index.html: missing <!--EXPERTISE:START--> … <!--EXPERTISE:END--> markers');
+  homeOut = home.replace(re, `<!--EXPERTISE:START (generated by scripts/build-articles.mjs)-->
+    <p class="hub-links">Explore by area: ${hubs.map((h) => `<a href="${h.path}">${esc(h.role)}</a>`).join(' · ')} · <a href="/expertise/">all expertise</a></p>
+    <!--EXPERTISE:END-->`);
+}
+
 // Homepage list (between markers)
 {
   const block = `<!--ARTICLES:START (generated by scripts/build-articles.mjs)-->
@@ -279,7 +407,7 @@ ${a.body.split('\n').map((l) => (l ? '      ' + l : l)).join('\n')}
     <!--ARTICLES:END-->`;
   const re = /<!--ARTICLES:START[\s\S]*?<!--ARTICLES:END-->/;
   if (!re.test(home)) throw new Error('index.html: missing <!--ARTICLES:START--> … <!--ARTICLES:END--> markers');
-  out.set('index.html', home.replace(re, block));
+  out.set('index.html', homeOut.replace(re, block));
 }
 
 // Sitemap
@@ -287,6 +415,8 @@ ${a.body.split('\n').map((l) => (l ? '      ' + l : l)).join('\n')}
   const entries = [
     { loc: `${SITE}/`, image: `${SITE}/assets/photos/portrait.jpg` },
     { loc: `${SITE}/about/`, image: `${SITE}/assets/photos/headshot-960.jpg` },
+    { loc: `${SITE}/expertise/` },
+    ...hubs.map((h) => ({ loc: h.url })),
     { loc: `${SITE}/articles/` },
     ...articles.map((a) => ({ loc: a.url, lastmod: a.dateModified || a.date, image: a.image && SITE + a.image.src })),
   ];
@@ -307,7 +437,10 @@ ${entries.map((e) => `  <url>
   const re = /<!--ARTICLES:START-->[\s\S]*?<!--ARTICLES:END-->/;
   if (!re.test(llms)) throw new Error('llms.txt: missing article markers');
   const lines = [...articles.map((a) => `- [${a.headline}](${a.url}): ${a.description}`), ...elsewhere.map((a) => `- [${a.headline}](${a.external.url}) (${a.displayDate || a.date}, ${a.external.site}): ${a.description}`)];
-  out.set('llms.txt', llms.replace(re, `<!--ARTICLES:START-->\n${lines.join('\n')}\n<!--ARTICLES:END-->`));
+  const re2 = /<!--EXPERTISE:START-->[\s\S]*?<!--EXPERTISE:END-->/;
+  if (!re2.test(llms)) throw new Error('llms.txt: missing expertise markers');
+  out.set('llms.txt', llms.replace(re, `<!--ARTICLES:START-->\n${lines.join('\n')}\n<!--ARTICLES:END-->`)
+    .replace(re2, `<!--EXPERTISE:START-->\n${hubs.map((h) => `- [${h.role[0].toUpperCase() + h.role.slice(1)}](${h.url}): ${h.description}`).join('\n')}\n<!--EXPERTISE:END-->`));
 }
 
 // Atom feed: full article content, absolute links. Google and Bing accept it as a sitemap (robots.txt lists it).

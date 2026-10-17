@@ -1,0 +1,30 @@
+<!--meta
+{
+  "slug": "ai-safety-researcher",
+  "role": "AI safety researcher",
+  "title": "AI Safety Researcher | Emmanuel Effiom Duke",
+  "description": "Emmanuel Effiom Duke is an AI safety researcher working on mechanistic interpretability, SPD mechanism clustering, deception features and model auditing.",
+  "summary": "Mechanistic interpretability, model auditing and alignment experiments, with open code and honest negative results.",
+  "articles": ["spd-real-transformer", "spd-mechanism-clustering", "deception-feature-universality", "reward-generalization-early-warning", "secret-loyalties-audit"],
+  "projects": [
+    {"name": "SPD Mechanism Clustering", "url": "https://github.com/dukemawex/spd-mechanism-clustering", "note": "Automated clustering of Stochastic Parameter Decomposition components into mechanisms (ARI 0.53 vs 0.00 random on a toy model)."},
+    {"name": "SPD on a real grokked transformer", "url": "https://github.com/dukemawex/spd-real-transformer", "note": "Components collapsed onto one of four verified Fourier frequencies: specialization is the bottleneck."},
+    {"name": "Deception Feature Universality", "url": "https://github.com/dukemawex/deception-feature-universality", "note": "Cross-architecture CKA 0.56 vs a 0.26 null (p = 0.024) for deception cues."},
+    {"name": "Reward-Generalization Early Warning", "url": "https://github.com/dukemawex/reward-generalization-earlywarning", "note": "Reproduced unintended reward spread; internal early warning not supported at toy scale."},
+    {"name": "Secret Loyalties audit", "url": "https://github.com/dukemawex/secret-loyalties-audit", "note": "Weights-first audit of three model organisms; top half of 179 submissions at the Apart Research hackathon."},
+    {"name": "mechinterp-phishing-probe", "url": "https://github.com/dukemawex/mechinterp-phishing-probe", "note": "Probing for social-engineering circuits in language models."}
+  ]
+}
+-->
+<p>My AI safety research asks how we can tell what a model is actually doing, and how to catch it when that isn't what we intended. I work mostly in <strong>mechanistic interpretability</strong> and <strong>model auditing</strong>, in small, fully inspectable experiments. Every repository is public and reproducible, and the negative results are published alongside the positive ones.</p>
+
+<h2>Research threads</h2>
+<ul>
+  <li><strong>Automated mechanism discovery with SPD.</strong> A seven-repository series on clustering Stochastic Parameter Decomposition components into mechanisms. On toy models, gate co-activation recovers the true mechanisms. On a real transformer that grokked modular addition, components fail to specialise, and no clustering signal recovers the verified structure. The conclusion, <em>specialization is the bottleneck</em>, redirects effort toward component specialization before clustering design: sharper L0 gates, longer or stronger sparsity schedules, and per-mechanism capacity.</li>
+  <li><strong>Universality of deception features.</strong> Do different architectures represent manipulation cues the same way? With an informative null, cross-architecture similarity was statistically significant (p = 0.024). The first, weaker test was reported as inconclusive rather than oversold.</li>
+  <li><strong>Reward generalization.</strong> I reproduced a reward spreading to contexts it was never given in, then tested whether internal signals could warn before the behaviour appeared. At toy scale they couldn't, which sharpens what an early-warning system would need.</li>
+  <li><strong>Auditing hidden objectives.</strong> At Apart Research's Secret Loyalties Hackathon I audited three model organisms weights-first. I found which were fine-tuned and where, rejected four tempting false positives with base-rate controls, and placed in the top half of 179 submissions.</li>
+</ul>
+
+<h2>Training</h2>
+<p>AI Safety Hungary's AI Safety Fundamentals course and its Technical AI Safety / Alignment track.</p>

@@ -11,6 +11,30 @@
     <image:image><image:loc>https://duker.me/assets/photos/headshot-960.jpg</image:loc></image:image>
   </url>
   <url>
+    <loc>https://duker.me/expertise/</loc>
+    <lastmod>2026-10-08</lastmod>
+  </url>
+  <url>
+    <loc>https://duker.me/expertise/ai-engineer/</loc>
+    <lastmod>2026-10-08</lastmod>
+  </url>
+  <url>
+    <loc>https://duker.me/expertise/ai-safety-researcher/</loc>
+    <lastmod>2026-10-08</lastmod>
+  </url>
+  <url>
+    <loc>https://duker.me/expertise/ai-security/</loc>
+    <lastmod>2026-10-08</lastmod>
+  </url>
+  <url>
+    <loc>https://duker.me/expertise/ai-forecasting/</loc>
+    <lastmod>2026-10-08</lastmod>
+  </url>
+  <url>
+    <loc>https://duker.me/expertise/mechanical-engineer/</loc>
+    <lastmod>2026-10-08</lastmod>
+  </url>
+  <url>
     <loc>https://duker.me/articles/</loc>
     <lastmod>2026-10-08</lastmod>
   </url>

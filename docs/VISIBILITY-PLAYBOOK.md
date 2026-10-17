@@ -100,3 +100,41 @@ The full name "Emmanuel Effiom Duke" is far less contested, so it should rank fi
 - [ ] GitHub, Scholar, ORCID: same name + duker.me
 - [ ] Add reciprocal founder links on dukersltd.com, tegerai.tech, transly.software
 - [ ] Check the IndexNow run under GitHub → Actions after the next deploy
+
+## 9. Ranking for skills, not just your name (worldwide)
+
+**What the site now does.** Five expertise hubs (`/expertise/…`), each with its own title, description and `<h1>`
+built around a real skill area and backed by your projects and articles:
+
+| Hub | Aims at searches like |
+|---|---|
+| `/expertise/ai-engineer/` | "AI engineer" + LLM products, agents, evaluation; "AI engineer Nigeria/Africa" |
+| `/expertise/ai-safety-researcher/` | "AI safety researcher", "mechanistic interpretability", "stochastic parameter decomposition clustering" |
+| `/expertise/ai-security/` | "AI phishing detection", "social engineering detection", "prompt injection" design |
+| `/expertise/ai-forecasting/` | "AI forecasting bot", "Metaculus bot", "LLM knowledge cutoff", "LLM calibration" |
+| `/expertise/mechanical-engineer/` | "mechanical engineer energy research", "CFD feedwater heater fouling", "ML hotel energy optimisation" |
+
+Every article links back to its hubs, and the hubs link to each other, to `/about/` and to the homepage.
+
+**Be realistic.** Bare terms like "AI engineer" are dominated by job boards, LinkedIn and large companies,
+and no personal site ranks for them everywhere. Specific, technical searches are where duker.me can win, along
+with the name plus a skill ("Emmanuel Duke AI safety").
+
+**Worldwide.** Google already serves English pages in every country. Don't set a target country in Search
+Console (leave International Targeting empty). Reach outside English-speaking countries comes from links
+and mentions in those regions. Translated versions of the key pages are possible later.
+
+**What moves skill rankings most (only you can do these):**
+1. **Links from respected sites in your field.** Post research write-ups to LessWrong / the Alignment Forum and
+   to Apart Research's project pages, linking the duker.me article. Share forecasting work on the Metaculus
+   forums. Share tools on Hacker News ("Show HN") and relevant subreddits.
+2. **Preprints.** Put papers (the knowledge-cutoff paper, the SPD write-up "Specialization Is the Bottleneck",
+   your CFD and energy papers) on arXiv, SSRN or Zenodo with duker.me as your homepage. Scholarly indexes carry
+   a lot of weight for "researcher" searches and get you a DOI.
+3. **Cross-posts with canonical links.** Republish articles on dev.to, Hashnode or Medium using their
+   "canonical URL" setting pointed at duker.me, so the original keeps the credit.
+4. **Profiles.** ORCID, Google Scholar, GitHub and LinkedIn all linking to duker.me (sections 4–6).
+5. **Keep publishing.** One solid technical article a month on the same themes compounds faster than anything else.
+
+Request indexing in Search Console for the new hub URLs too (all are in `sitemap.xml`; IndexNow submits them to
+Bing automatically).

@@ -1,0 +1,36 @@
+<!--meta
+{
+  "slug": "ai-forecasting",
+  "role": "AI forecasting and LLM evaluation",
+  "title": "AI Forecasting & LLM Evaluation | Emmanuel Effiom Duke",
+  "description": "Emmanuel Effiom Duke builds AI forecasting systems and LLM evaluations: a Metaculus tournament bot, calibration research and a knowledge-cutoff probe.",
+  "summary": "Automated forecasting with LLM ensembles, calibration measured offline, and probes that test what models really know.",
+  "articles": ["metaculus-forecasting-bot", "llm-knowledge-cutoff-probe"],
+  "projects": [
+    {"name": "oracledeckv1 (botduke--update)", "url": "https://github.com/dukemawex/botduke--update", "note": "Forecasting bot for Metaculus AI tournaments, October 2025 – August 2026."},
+    {"name": "LLM knowledge-cutoff probe", "url": "https://github.com/dukemawex/llm-knowledge-cutoff-probe", "note": "Dated-event bisection across nine models, with a conference-style paper."}
+  ]
+}
+-->
+<p>Forecasting is one of the hardest honest tests of an AI system. Questions resolve, so there's nowhere to hide. Between October 2025 and August 2026 I built and ran a forecasting bot in Metaculus's AI tournaments, most recently as <strong>oracledeckv1</strong>, and built the evaluation tooling to improve it by measurement rather than intuition.</p>
+
+<h2>How the bot works</h2>
+<ol>
+  <li>Classify the question's domain (geopolitics, economics, science, tech, business, health, sports).</li>
+  <li>Turn it into up to three targeted search queries and run several providers in parallel (Exa, Perplexity Sonar, Nimble, plus You.com for finance and market questions).</li>
+  <li>Synthesise the results into one brief with a cross-source "signal strength" score.</li>
+  <li>Forecast with a weighted five-model ensemble (GPT-5.6 Luna, DeepSeek-V4-Pro, Kimi-K2.6, Claude Haiku 4.5, Perplexity Sonar Pro), then challenge the result with critic and red-team models.</li>
+  <li>Calibrate: shrink when models disagree or research is weak, decay toward uncertainty for distant close dates, and extremize only clear signals.</li>
+</ol>
+<p>It forecast in the Metaculus AI Benchmark seasonal tournament and Market Pulse. MiniBench ran on a separate single-model runner with a more conservative calibration profile.</p>
+
+<h2>What the work found</h2>
+<ul>
+  <li><strong>Base rates beat intuition.</strong> In 190 resolved binary questions, only 31.6% resolved YES, so the common habit of shrinking uncertain forecasts toward 50% is a systematic YES bias.</li>
+  <li><strong>Don't extremize toss-ups.</strong> Pushing near-50/50 ensembles toward confident answers produced confident-wrong forecasts, so the bot now leaves genuine toss-ups alone.</li>
+  <li><strong>Backtests leak.</strong> Unless search is date-bounded, retrieval surfaces coverage of the actual outcome and inflates any backtest score.</li>
+  <li><strong>Models misreport what they know.</strong> Every model that stated its own training cutoff was wrong by 8–15 months. Some confabulated answers to questions about events after their cutoff (42% for DeepSeek-V4-Pro, 50% for Kimi-K2.6), while GPT-5.6 and Claude Fable 5 always disclaimed.</li>
+</ul>
+
+<h2>Methods</h2>
+<p>LLM ensembles with weighted and median aggregation, critic and red-team passes, two-stage offline replay (expensive research cached once, calibration swept for free), log score and Brier scoring, date-bounded retrieval with leak canaries, and dated-event bisection for knowledge cutoffs.</p>

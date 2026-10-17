@@ -1,0 +1,36 @@
+<!--meta
+{
+  "slug": "ai-security",
+  "role": "AI security engineer",
+  "title": "AI Security & Phishing Detection | Emmanuel Effiom Duke",
+  "description": "Emmanuel Effiom Duke builds AI security: explainable social-engineering and phishing detection (Teger AI), prompt-injection-aware design and model audits.",
+  "summary": "Social-engineering and phishing detection, prompt-injection-aware LLM design, and auditing models for hidden behaviour.",
+  "articles": ["designing-teger-ai", "deception-feature-universality", "secret-loyalties-audit"],
+  "projects": [
+    {"name": "Teger AI", "url": "https://tegerai.tech/", "note": "Explainable social-engineering defence for suspicious email and chat messages (Gmail and Slack)."},
+    {"name": "Teger AI source and threat model", "url": "https://github.com/dukemawex/Teger-ai", "note": "Open-source extension, API and documented threat model."},
+    {"name": "mechinterp-phishing-probe", "url": "https://github.com/dukemawex/mechinterp-phishing-probe", "note": "Looking for social-engineering circuits inside language models."},
+    {"name": "Deception Feature Universality", "url": "https://github.com/dukemawex/deception-feature-universality", "note": "Do different models represent phishing cues alike?"},
+    {"name": "Secret Loyalties audit", "url": "https://github.com/dukemawex/secret-loyalties-audit", "note": "Detecting hidden allegiances in fine-tuned models."}
+  ]
+}
+-->
+<p>Social engineering works because it targets people, not systems: urgency, false authority, requests that bypass process. My security work applies AI to that problem while treating AI as an attack surface in its own right.</p>
+
+<h2>Defending people from manipulation</h2>
+<p><a href="https://tegerai.tech/">Teger AI</a> is the product side. It doesn't give an unexplained verdict. It shows the concrete cues behind each warning (credential requests, payment changes, authority claims, secrecy, suspicious links) and recommends a safe next action, so users learn to recognise the pattern themselves. It's in private beta as MVP v0.2.</p>
+
+<h2>How detection works</h2>
+<p>Each scan runs in two stages. Deterministic code first extracts signals that need no model: urgency, credential requests, financial requests, authority claims, secrecy or process-bypass requests, and the shape of any links. The AI analysis then reads the message alongside those signals. It returns a threat level, a confidence, the manipulation tactics it found from a shared taxonomy, the concrete cues behind them, its reasoning and a recommended action. The deterministic signals count as hints, not proof, and tactics outside the taxonomy are dropped.</p>
+
+<h2>Securing the AI itself</h2>
+<ul>
+  <li><strong>Prompt injection.</strong> Every analysed message is marked as untrusted, attacker-controlled data at the model boundary, and model output is validated against a fixed threat taxonomy.</li>
+  <li><strong>Credential and abuse protection.</strong> Provider keys never leave the server. Clients use HMAC-signed anonymous tokens, with rate limits per installation and per IP.</li>
+  <li><strong>Privacy by design.</strong> Users choose what gets scanned, and local history keeps metadata only.</li>
+  <li><strong>Honest limits.</strong> The threat model documents what the MVP doesn't yet do, such as attachment detonation and full URL reputation.</li>
+</ul>
+
+<h2>Looking inside models</h2>
+<p>On the research side I study how models internally represent deception cues, and how to audit fine-tuned models for hidden objectives without being fooled by false positives. See the <a href="/expertise/ai-safety-researcher/">AI safety research</a> page.</p>
+<p>Certification: Cisco IT Essentials (UNITeS Cisco Networking Academy).</p>

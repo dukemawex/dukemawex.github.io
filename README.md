@@ -28,7 +28,9 @@ based on (`source`), and the static checks enforce it.
 | `index.html` | Home: content, metadata, JSON-LD, CSP |
 | `articles/` | Generated article pages + index (don't edit by hand) |
 | `content/articles/` | Article sources (not published) |
-| `scripts/build-articles.mjs` | Article generator |
+| `expertise/` | Generated expertise hub pages + index (don't edit by hand) |
+| `content/expertise/` | Expertise hub sources (not published) |
+| `scripts/build-articles.mjs` | Generator for articles, expertise hubs, feed, sitemap and llms.txt |
 | `about/index.html` | Full biography, with BreadcrumbList JSON-LD. Its Person JSON-LD must stay identical to the homepage's (tests check) |
 | `assets/css/site.css` | Shared styles |
 | `assets/js/base.js` | Shared: theme toggle, mobile menu, footer year |

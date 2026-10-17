@@ -23,6 +23,16 @@ Canonical pages: https://duker.me/ (overview) and https://duker.me/about/ (full 
 - SciProfiles: https://sciprofiles.com/profile/EmmanuelDuke
 - X: https://x.com/starduke001
 
+## Expertise
+
+<!--EXPERTISE:START-->
+- [AI engineer](https://duker.me/expertise/ai-engineer/): Emmanuel Effiom Duke is an AI engineer who builds LLM products end to end: Teger AI for phishing defence, a Metaculus forecasting bot, and evaluation tools.
+- [AI safety researcher](https://duker.me/expertise/ai-safety-researcher/): Emmanuel Effiom Duke is an AI safety researcher working on mechanistic interpretability, SPD mechanism clustering, deception features and model auditing.
+- [AI security engineer](https://duker.me/expertise/ai-security/): Emmanuel Effiom Duke builds AI security: explainable social-engineering and phishing detection (Teger AI), prompt-injection-aware design and model audits.
+- [AI forecasting and LLM evaluation](https://duker.me/expertise/ai-forecasting/): Emmanuel Effiom Duke builds AI forecasting systems and LLM evaluations: a Metaculus tournament bot, calibration research and a knowledge-cutoff probe.
+- [Mechanical engineer and energy researcher](https://duker.me/expertise/mechanical-engineer/): Emmanuel Effiom Duke is a mechanical engineer (B.Eng., University of Nigeria, Nsukka) researching CFD, energy optimisation and air quality.
+<!--EXPERTISE:END-->
+
 ## Articles
 
 <!--ARTICLES:START-->
