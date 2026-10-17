@@ -6,7 +6,7 @@ name: IndexNow
 on:
   push:
     branches: [main]
-    paths: ['sitemap.xml', 'articles/**', 'index.html', 'about/**']
+    paths: ['sitemap.xml', 'articles/**', 'expertise/**', 'index.html', 'about/**']
   workflow_dispatch:
 
 permissions:

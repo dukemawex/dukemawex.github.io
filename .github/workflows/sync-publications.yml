@@ -1,0 +1,48 @@
+# Weekly: pull Emmanuel's works from his public ORCID record into content/publications.json, regenerate the pages
+# that list them, and redeploy if anything changed. (Google Scholar has no API and forbids scraping; ORCID carries
+# the same publications. Add a new paper to ORCID, or use Scholar's ORCID export, and it appears here within a week.)
+name: Sync publications from ORCID
+
+on:
+  schedule:
+    - cron: '17 6 * * 1'   # Mondays 06:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write   # commit the regenerated pages
+  pages: write      # request a Pages build (pushes by GITHUB_TOKEN don't trigger one on their own)
+  actions: write    # start the IndexNow workflow afterwards
+
+concurrency:
+  group: sync-publications
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Sync from ORCID and regenerate
+        run: |
+          node scripts/sync-publications.mjs
+          node scripts/build-articles.mjs
+          node tests/static-check.mjs
+
+      - name: Commit and redeploy if changed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --quiet; then echo "No publication changes."; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Sync publications from ORCID"
+          git push
+          gh api -X POST "repos/${{ github.repository }}/pages/builds" || echo "::warning::could not request a Pages build"
+          gh workflow run indexnow.yml --ref "${{ github.ref_name }}" || echo "::warning::could not start IndexNow"

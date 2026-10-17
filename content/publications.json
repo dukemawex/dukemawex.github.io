@@ -1,0 +1,54 @@
+{
+  "_comment": "Source of truth for publications. scripts/sync-publications.mjs fills blank fields (doi, venue, year, authors) and appends new works from ORCID; it never overwrites a non-empty field. Edit by hand freely, then run `npm run articles`.",
+  "orcid": "0009-0009-9311-2792",
+  "publications": [
+    {
+      "title": "The Quadaq Framework: A Multi-Level Partnership Model for Sustainable Air Quality Management",
+      "year": "2026",
+      "venue": "3rd International Conference on Future Challenges in Sustainable Urban Planning & Territorial Management (SUPTM 2026)",
+      "authors": "E. E. Duke",
+      "doi": "10.31428/10317/24316",
+      "topic": "Air quality"
+    },
+    {
+      "title": "Experimental Study of Fouling Effect on Feed Water Heaters: A CFD Modeling Approach in Steam Power Plants",
+      "year": "2025",
+      "venue": "10th Virtual International Conference on Science, Technology and Management",
+      "authors": "M. N. Eke, E. E. Duke, I. A. Agunbiade",
+      "doi": "10.5281/zenodo.14732519",
+      "topic": "CFD"
+    },
+    {
+      "title": "CFD Simulation of Fouling Effect on Feedwater Heater Outlet Temperature",
+      "year": "2025",
+      "venue": "2024 Annual European Rheology Conference",
+      "authors": "E. Duke",
+      "doi": "10.6084/m9.figshare.28280789.v1",
+      "topic": "CFD"
+    },
+    {
+      "title": "Mass Performance Analysis for Low-power Electric Vehicles in Urban Transportation",
+      "year": "2025",
+      "venue": "eNergetics 2025",
+      "authors": "F. O. C. Odunlami, E. E. Duke",
+      "doi": "10.5281/zenodo.18633459",
+      "topic": "Transport"
+    },
+    {
+      "title": "Machine Learning-driven Energy Optimization Framework for Hospitality Operations: A Case Study of a 130-Room Hotel",
+      "year": "2025",
+      "venue": "eNergetics 2025",
+      "authors": "E. E. Duke, M. N. Eke",
+      "doi": "10.5281/zenodo.18624282",
+      "topic": "Energy & ML"
+    },
+    {
+      "title": "Management of the Air For All Open Digital Platform for Community Needs in Citizen Science, Climate and Air Quality Activities",
+      "year": "",
+      "venue": "Air For All platform",
+      "authors": "E. E. Duke",
+      "doi": "",
+      "topic": "Air quality"
+    }
+  ]
+}

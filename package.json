@@ -10,7 +10,8 @@
     "check": "node tests/static-check.mjs",
     "validate": "html-validate \"**/*.html\"",
     "browser": "node tests/browser-check.mjs",
-    "images": "node scripts/make-images.mjs"
+    "images": "node scripts/make-images.mjs",
+    "sync:publications": "NODE_USE_ENV_PROXY=1 node scripts/sync-publications.mjs"
   },
   "devDependencies": {
     "axe-core": "^4.10.0",

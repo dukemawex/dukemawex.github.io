@@ -197,6 +197,17 @@ ok(!/(href|src)=&quot;\//.test(feed), 'feed.xml content must use absolute links'
 ok(robots.includes('Sitemap: https://duker.me/feed.xml'), 'robots.txt must list feed.xml');
 for (const pg of PAGES) ok(read(pg.file).includes('<link rel="alternate" type="application/atom+xml"'), `${pg.file}: missing feed link`);
 
+// Publications: every entry in content/publications.json is rendered on home + About, with matching JSON-LD
+{
+  const pubs = JSON.parse(read('content/publications.json')).publications;
+  const esc = (x) => x.replace(/&/g, '&amp;');
+  for (const f of ['index.html', 'about/index.html']) for (const p of pubs) ok(read(f).includes(esc(p.title)), `${f}: publication missing: ${p.title}`);
+  for (const p of pubs.filter((p) => p.doi)) ok(read('index.html').includes(`href="https://doi.org/${p.doi}"`), `index.html: DOI link missing for ${p.doi}`);
+  const g = JSON.parse(read('index.html').match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1])['@graph'];
+  ok(g.filter((n) => n['@type'] === 'ScholarlyArticle').length === pubs.length, 'homepage needs one ScholarlyArticle per publication');
+  ok(g.filter((n) => n['@type'] === 'ScholarlyArticle').every((n) => n.author.some((a) => a['@id'] === 'https://duker.me/#person')), 'every ScholarlyArticle must credit the Person');
+}
+
 // IndexNow: the key file served at the site root must match the workflow's key
 const wf = read('.github/workflows/indexnow.yml');
 const key = (wf.match(/KEY: ([0-9a-f]{32})/) || [])[1];
