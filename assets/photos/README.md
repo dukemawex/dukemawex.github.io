@@ -14,6 +14,7 @@ Every photo used on duker.me lives here. Images are self-hosted; nothing is hotl
 | `work-04.webp` / `.jpg` | 16:10 | 1080×675 | Featured card — AxiosPay | ✅ present (hero of the live app, mobile screenshot) |
 | `work-05.webp` / `.jpg` | 16:10 | 1080×675 | Featured card — Teger AI | ✅ present (hero of tegerai.tech, mobile screenshot) |
 | `work-06.webp` / `.jpg` | 16:10 | 976×610 | Featured card — Cropie | ✅ present (hero of cropie.vercel.app, mobile screenshot) |
+| `keynote-tcaf-01..03.webp` / `.jpg` | ~16:9 | ≤1600px long side | Speaking & Community — TCAF keynote (Nov 2026) | ✅ present |
 
 Each slot also accepts a same-named `.jpg` as the fallback for old browsers (optional; modern browsers only fetch the `.webp`).
 

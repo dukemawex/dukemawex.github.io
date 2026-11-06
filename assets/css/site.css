@@ -636,3 +636,13 @@ nav.crumbs{position:static;z-index:auto;background:none;border:0;-webkit-backdro
 .hub-list span{color:var(--dim);font-size:14.5px;line-height:1.55}
 .hub-links{margin:24px 0 0;color:var(--dim);font-size:15px;line-height:1.9}
 .hub-links a{text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(var(--acc-rgb),.5)}
+
+
+/* ---------- Talk / keynote media (Speaking & Community) ---------- */
+.talk-media{margin:14px 0 0;display:grid;gap:10px;max-width:680px}
+.talk-hero{margin:0}
+.talk-hero img{display:block;width:100%;height:auto;border-radius:14px;background:var(--elev);border:1px solid var(--line)}
+.talk-hero figcaption{margin-top:8px;font-size:13.5px;color:var(--faint);line-height:1.45}
+.talk-thumbs{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.talk-thumbs img{display:block;width:100%;height:auto;aspect-ratio:16/10;object-fit:cover;border-radius:12px;background:var(--elev);border:1px solid var(--line)}
+@media(max-width:520px){.talk-thumbs{grid-template-columns:1fr}}
