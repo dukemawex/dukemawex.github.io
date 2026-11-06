@@ -20,6 +20,7 @@ const PAGES = [
   ...readdirSync(path.join(root, 'articles'), { withFileTypes: true }).filter((d) => d.isDirectory())
     .map((d) => ({ file: `articles/${d.name}/index.html`, url: `https://duker.me/articles/${d.name}/`, kind: 'article', title: null })),
 ];
+PAGES.push({ file: 'talks/empowering-with-integrity/index.html', url: 'https://duker.me/talks/empowering-with-integrity/', kind: 'talk', title: 'Emmanuel Effiom Duke | AI ethics keynote speaker' });
 PAGES.push({ file: 'expertise/index.html', url: 'https://duker.me/expertise/', kind: 'hubindex', title: null },
   ...readdirSync(path.join(root, 'expertise'), { withFileTypes: true }).filter((d) => d.isDirectory())
     .map((d) => ({ file: `expertise/${d.name}/index.html`, url: `https://duker.me/expertise/${d.name}/`, kind: 'hub', title: null })));
@@ -68,7 +69,7 @@ for (const pg of PAGES) {
   let graph = [];
   try { graph = JSON.parse(ld[0][1])['@graph']; } catch (e) { fails.push(at('JSON-LD does not parse: ' + e.message)); }
   const types = graph.map((n) => n['@type']);
-  const KIND_TYPE = { profile: 'ProfilePage', collection: 'CollectionPage', article: 'BlogPosting', hub: 'WebPage', hubindex: 'CollectionPage' };
+  const KIND_TYPE = { profile: 'ProfilePage', collection: 'CollectionPage', article: 'BlogPosting', hub: 'WebPage', hubindex: 'CollectionPage', talk: 'WebPage' };
   for (const t of ['WebSite', 'Person', KIND_TYPE[pg.kind]]) ok(types.includes(t), at(`JSON-LD missing ${t}`));
   if (pg.file !== 'index.html') ok(types.includes('BreadcrumbList'), at('JSON-LD missing BreadcrumbList'));
   const ids = new Set(graph.map((n) => n['@id']));
@@ -100,6 +101,18 @@ for (const pg of PAGES) {
     const expected = PAGES.filter((p) => p.kind === 'hub').map((p) => p.url);
     ok(listed.length === expected.length && expected.every((u) => listed.includes(u)), at('expertise index must list every hub'));
   }
+
+  if (pg.kind === 'talk') {
+    const wp = graph.find((n) => n['@type'] === 'WebPage') || {};
+    ok(wp.url === pg.url, at('talk WebPage url must be canonical'));
+    ok(types.includes('Event'), at('talk page JSON-LD missing Event'));
+    ok(types.includes('PresentationDigitalDocument'), at('talk page JSON-LD missing PresentationDigitalDocument'));
+    const ev = graph.find((n) => n['@type'] === 'Event') || {};
+    ok(ev.startDate === '2026-11-04' && ev.performer?.['@id'] === 'https://duker.me/#person', at('Event startDate/performer'));
+    const doc = graph.find((n) => n['@type'] === 'PresentationDigitalDocument') || {};
+    ok(doc.encodingFormat === 'application/pdf' && doc.url && existsSync(path.join(root, doc.url.replace('https://duker.me/', ''))), at('PresentationDigitalDocument PDF must exist'));
+  }
+
   if (pg.kind === 'collection') {
     const col = graph.find((n) => n['@type'] === 'CollectionPage') || {};
     const listed = (col.mainEntity?.itemListElement || []).map((i) => i.url);
@@ -180,7 +193,10 @@ ok(robots.includes('Sitemap: https://duker.me/sitemap.xml'), 'robots.txt must re
 const sm = read('sitemap.xml');
 ok(/^<\?xml version="1.0" encoding="UTF-8"\?>/.test(sm) && sm.includes('xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"'), 'sitemap header/namespace');
 const locs = [...sm.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
-ok(locs.length === PAGES.length && PAGES.every((p) => locs.includes(p.url)), `sitemap URLs must equal the canonical pages (${locs.length} vs ${PAGES.length})`);
+ok(PAGES.every((p) => locs.includes(p.url)), `sitemap must include every canonical page (${PAGES.length} pages, ${locs.length} locs)`);
+const extraLocs = locs.filter((u) => !PAGES.some((p) => p.url === u));
+ok(extraLocs.every((u) => u.endsWith('.pdf') && existsSync(path.join(root, u.replace('https://duker.me/', '')))), `extra sitemap locs must be existing PDFs: ${extraLocs}`);
+ok(locs.includes('https://duker.me/speaking/emmanuel-duke-empowering-with-integrity-slides.pdf'), 'sitemap must include the keynote slides PDF');
 for (const m of sm.matchAll(/<lastmod>([^<]+)<\/lastmod>/g)) ok(/^\d{4}-\d{2}-\d{2}$/.test(m[1]), `bad lastmod ${m[1]}`);
 for (const m of sm.matchAll(/<image:loc>https:\/\/duker\.me\/([^<]+)<\/image:loc>/g)) ok(existsSync(path.join(root, m[1])), `sitemap image missing ${m[1]}`);
 const man = JSON.parse(read('site.webmanifest'));

@@ -13,6 +13,7 @@ Canonical pages: https://duker.me/ (overview) and https://duker.me/about/ (full 
 - [Research](https://duker.me/#publications): research interests and publications
 - [Writing](https://duker.me/articles/): articles and technical notes
 - [Community](https://duker.me/#leadership): mentoring and leadership
+- [Speaking](https://duker.me/talks/empowering-with-integrity/): keynote at the University of Ilorin (4 Nov 2026) — Empowering with Integrity; [slides PDF](https://duker.me/speaking/emmanuel-duke-empowering-with-integrity-slides.pdf)
 - [Contact](https://duker.me/#contact): emmanuel.duke@dukersltd.com
 
 ## Profiles
