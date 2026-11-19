@@ -37,7 +37,7 @@ Canonical pages: https://duker.me/ (overview) and https://duker.me/about/ (full 
 ## Articles
 
 <!--ARTICLES:START-->
-- [Tiny Aya Earth's Nigerian safety gap](https://duker.me/articles/tiny-aya-earth-nigerian-safety/): I audited Tiny Aya Earth on TukaBench in English, Hausa, Igbo and Yoruba, then cut harmful compliance from 45.6% to 28.1% with no retraining.
+- [AI Safety in Yoruba, Hausa, Igbo](https://duker.me/articles/tiny-aya-earth-nigerian-safety/): AI safety work on Tiny Aya Earth for Nigerian languages (Yoruba, Hausa, Igbo). Safety steering cut harmful compliance from 45.6% to 28.1%, no retraining.
 - [Building a Metaculus forecasting bot](https://duker.me/articles/metaculus-forecasting-bot/): Lessons from an LLM forecasting bot in Metaculus AI tournaments: silent research failures, extremized toss-ups, and replacing vibes-tuning with measurement.
 - [Ask the calendar, not the model](https://duker.me/articles/llm-knowledge-cutoff-probe/): Measuring nine language models' real knowledge cutoffs with dated-event bisection: every model that self-reported a cutoff was wrong, some by over a year.
 - [Designing Teger AI to explain phishing](https://duker.me/articles/designing-teger-ai/): How Teger AI, an explainable social-engineering defence for Gmail and Slack, pairs deterministic signals with AI analysis and treats every message as untrusted.

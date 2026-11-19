@@ -159,7 +159,12 @@ const card = (a, level = 3) => `<article class="post-card">
         <span class="go" aria-hidden="true">Read →</span>
       </article>`;
 
-const page = ({ url, title, description, ogType, extraMeta = '', graph, body, current }) => `<!doctype html>
+const page = ({ url, title, description, ogType, extraMeta = '', graph, body, current, og }) => {
+  const ogImg = (og && og.src) ? (og.src.startsWith('http') ? og.src : SITE + og.src) : `${SITE}/assets/og/og-default.jpg`;
+  const ogW = (og && og.width) || 1200;
+  const ogH = (og && og.height) || 630;
+  const ogAlt = (og && og.alt) || `${FULL} — AI Engineer, Researcher and Founder of Dukers LTD`;
+  return `<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
@@ -177,18 +182,18 @@ ${csp}
 <meta property="og:title" content="${esc(title)}" />
 <meta property="og:description" content="${esc(description)}" />
 <meta property="og:url" content="${url}" />
-<meta property="og:image" content="${SITE}/assets/og/og-default.jpg" />
-<meta property="og:image:width" content="1200" />
-<meta property="og:image:height" content="630" />
-<meta property="og:image:alt" content="${FULL} — AI Engineer, Researcher and Founder of Dukers LTD" />
+<meta property="og:image" content="${ogImg}" />
+<meta property="og:image:width" content="${ogW}" />
+<meta property="og:image:height" content="${ogH}" />
+<meta property="og:image:alt" content="${esc(ogAlt)}" />
 <meta property="og:locale" content="en_US" />
 ${extraMeta}<meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:site" content="@starduke001" />
 <meta name="twitter:creator" content="@starduke001" />
 <meta name="twitter:title" content="${esc(title)}" />
 <meta name="twitter:description" content="${esc(description)}" />
-<meta name="twitter:image" content="${SITE}/assets/og/og-default.jpg" />
-<meta name="twitter:image:alt" content="${FULL} — AI Engineer, Researcher and Founder of Dukers LTD" />
+<meta name="twitter:image" content="${ogImg}" />
+<meta name="twitter:image:alt" content="${esc(ogAlt)}" />
 
 <link rel="icon" href="/favicon.ico" sizes="32x32" />
 <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -220,6 +225,7 @@ ${footer}
 </body>
 </html>
 `;
+};
 
 // ---- Build ----
 const out = new Map(); // path -> contents
@@ -238,22 +244,55 @@ for (const a of articles) {
       </div>
       ${a.figcaption ? `<figcaption>${esc(a.figcaption)}</figcaption>` : ''}
     </figure>` : '';
-  const ld = [
-    {
+  const og = a.og || null;
+  const ogAbs = og ? SITE + og.src : (img ? SITE + img.src : `${SITE}/assets/og/og-default.jpg`);
+  const posting = {
       '@type': 'BlogPosting', '@id': `${a.url}#article`, headline: a.headline, description: a.description,
       url: a.url, mainEntityOfPage: a.url, datePublished: a.date, dateModified: a.dateModified || a.date,
-      author: { '@id': PERSON }, publisher: { '@id': PERSON }, isPartOf: { '@id': WEBSITE },
-      image: SITE + (img ? img.src : '/assets/og/og-default.jpg'), keywords: a.tags.join(', '),
+      author: {
+        '@id': PERSON,
+        '@type': 'Person',
+        name: FULL,
+        url: `${SITE}/`,
+        sameAs: [
+          'https://github.com/dukemawex',
+          'https://huggingface.co/duke01',
+          'https://x.com/starduke001',
+          'https://www.linkedin.com/in/emmanuel-duke-a5723320b/',
+        ],
+      },
+      publisher: { '@id': PERSON }, isPartOf: { '@id': WEBSITE },
+      image: ogAbs,
+      keywords: (a.keywords || a.tags).join(', '),
       isBasedOn: a.source.url, wordCount: a.words, inLanguage: 'en',
-    },
+    };
+  const faqBlock = (a.faq && a.faq.length) ? `
+    <section class="faq" id="faq" aria-labelledby="faq-h">
+      <h2 id="faq-h">Questions</h2>
+${a.faq.map((x, i) => `      <h3 id="faq-q${i + 1}">${esc(x.q)}</h3>
+      <p>${esc(x.a)}</p>`).join('\n')}
+    </section>` : '';
+  const ld = [
+    posting,
     breadcrumbLd(a.url, trail),
+    ...((a.faq && a.faq.length) ? [{
+      '@type': 'FAQPage',
+      '@id': `${a.url}#faq`,
+      url: `${a.url}#faq`,
+      mainEntity: a.faq.map((x, i) => ({
+        '@type': 'Question',
+        '@id': `${a.url}#faq-q${i + 1}`,
+        name: x.q,
+        acceptedAnswer: { '@type': 'Answer', text: x.a },
+      })),
+    }] : []),
   ];
   const extraMeta = `<meta property="article:published_time" content="${a.date}" />
 <meta property="article:author" content="${SITE}/about/" />
 ${a.tags.map((t) => `<meta property="article:tag" content="${esc(t)}" />`).join('\n')}
 `;
   out.set(`articles/${a.slug}/index.html`, page({
-    url: a.url, title: `${a.headline} | ${FULL}`, description: a.description, ogType: 'article', extraMeta, graph: ld, current: '/articles/',
+    url: a.url, title: `${a.headline} | ${FULL}`, description: a.description, ogType: 'article', extraMeta, graph: ld, current: '/articles/', og,
     body: `<main class="wrap bio post">
   ${crumbs(trail)}
 
@@ -267,6 +306,7 @@ ${a.tags.map((t) => `<meta property="article:tag" content="${esc(t)}" />`).join(
 ${figure}
     <div class="prose">
 ${a.body.split('\n').map((l) => (l ? '      ' + l : l)).join('\n')}
+${faqBlock}
     </div>
 
     <p class="source-box">Code, data and full results: <a href="${a.source.url}">${esc(a.source.label)}</a> on GitHub.${hubsFor(a.slug).length ? ` Related expertise: ${hubsFor(a.slug).map((h) => `<a href="${h.path}">${esc(h.role)}</a>`).join(', ')}.` : ''}</p>
