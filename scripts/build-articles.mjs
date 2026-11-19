@@ -175,6 +175,7 @@ const page = ({ url, title, description, ogType, extraMeta = '', graph, body, cu
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
 <link rel="canonical" href="${url}" />
 <meta name="referrer" content="strict-origin-when-cross-origin" />
+<meta name="google-site-verification" content="lE10BDYKiFZ8STzbZvydxXbBWUG9R9Ro71nIDRB_L50" />
 ${csp}
 
 <meta property="og:type" content="${ogType}" />
