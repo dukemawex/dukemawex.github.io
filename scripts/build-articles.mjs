@@ -11,9 +11,9 @@ import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SITE = 'https://duker.me';
 const FULL = 'Emmanuel Effiom Duke';
-const UPDATED = '2026-10-08'; // bump when page content changes meaningfully
+const UPDATED = '2026-11-19'; // bump when page content changes meaningfully
 // Display order on the homepage and the index (newest/most relevant first)
-const ORDER = ['metaculus-forecasting-bot', 'llm-knowledge-cutoff-probe', 'designing-teger-ai', 'secret-loyalties-audit', 'spd-real-transformer', 'spd-mechanism-clustering', 'deception-feature-universality', 'reward-generalization-early-warning'];
+const ORDER = ['tiny-aya-earth-nigerian-safety', 'metaculus-forecasting-bot', 'llm-knowledge-cutoff-probe', 'designing-teger-ai', 'secret-loyalties-audit', 'spd-real-transformer', 'spd-mechanism-clustering', 'deception-feature-universality', 'reward-generalization-early-warning'];
 const HOME_LIMIT = 3;
 
 const read = (f) => readFileSync(path.join(root, f), 'utf8');
@@ -463,6 +463,11 @@ out.set('about/index.html', replaceBetween(read('about/index.html'), 'PUBLICATIO
 
 // Sitemap
 {
+  const imgTags = (e) => {
+    const imgs = e.images || (e.image ? [e.image] : []);
+    return imgs.map((img) => `
+    <image:image><image:loc>${img}</image:loc></image:image>`).join('');
+  };
   const entries = [
     { loc: `${SITE}/`, image: `${SITE}/assets/photos/portrait.jpg` },
     { loc: `${SITE}/about/`, image: `${SITE}/assets/photos/headshot-960.jpg` },
@@ -470,13 +475,17 @@ out.set('about/index.html', replaceBetween(read('about/index.html'), 'PUBLICATIO
     ...hubs.map((h) => ({ loc: h.url })),
     { loc: `${SITE}/articles/` },
     ...articles.map((a) => ({ loc: a.url, lastmod: a.dateModified || a.date, image: a.image && SITE + a.image.src })),
+    { loc: `${SITE}/talks/empowering-with-integrity/`, lastmod: '2026-11-06', images: [
+      `${SITE}/assets/photos/keynote-ilorin-01.jpg`,
+      `${SITE}/assets/talks/empowering-with-integrity/slide-01.jpg`,
+    ] },
+    { loc: `${SITE}/speaking/emmanuel-duke-empowering-with-integrity-slides.pdf`, lastmod: '2026-11-06' },
   ];
   out.set('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 ${entries.map((e) => `  <url>
     <loc>${e.loc}</loc>
-    <lastmod>${e.lastmod || UPDATED}</lastmod>${e.image ? `
-    <image:image><image:loc>${e.image}</image:loc></image:image>` : ''}
+    <lastmod>${e.lastmod || UPDATED}</lastmod>${imgTags(e)}
   </url>`).join('\n')}
 </urlset>
 `);

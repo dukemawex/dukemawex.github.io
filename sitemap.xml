@@ -2,41 +2,46 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://duker.me/</loc>
-    <lastmod>2026-10-08</lastmod>
+    <lastmod>2026-11-19</lastmod>
     <image:image><image:loc>https://duker.me/assets/photos/portrait.jpg</image:loc></image:image>
   </url>
   <url>
     <loc>https://duker.me/about/</loc>
-    <lastmod>2026-10-08</lastmod>
+    <lastmod>2026-11-19</lastmod>
     <image:image><image:loc>https://duker.me/assets/photos/headshot-960.jpg</image:loc></image:image>
   </url>
   <url>
     <loc>https://duker.me/expertise/</loc>
-    <lastmod>2026-10-08</lastmod>
+    <lastmod>2026-11-19</lastmod>
   </url>
   <url>
     <loc>https://duker.me/expertise/ai-engineer/</loc>
-    <lastmod>2026-10-08</lastmod>
+    <lastmod>2026-11-19</lastmod>
   </url>
   <url>
     <loc>https://duker.me/expertise/ai-safety-researcher/</loc>
-    <lastmod>2026-10-08</lastmod>
+    <lastmod>2026-11-19</lastmod>
   </url>
   <url>
     <loc>https://duker.me/expertise/ai-security/</loc>
-    <lastmod>2026-10-08</lastmod>
+    <lastmod>2026-11-19</lastmod>
   </url>
   <url>
     <loc>https://duker.me/expertise/ai-forecasting/</loc>
-    <lastmod>2026-10-08</lastmod>
+    <lastmod>2026-11-19</lastmod>
   </url>
   <url>
     <loc>https://duker.me/expertise/mechanical-engineer/</loc>
-    <lastmod>2026-10-08</lastmod>
+    <lastmod>2026-11-19</lastmod>
   </url>
   <url>
     <loc>https://duker.me/articles/</loc>
-    <lastmod>2026-10-08</lastmod>
+    <lastmod>2026-11-19</lastmod>
+  </url>
+  <url>
+    <loc>https://duker.me/articles/tiny-aya-earth-nigerian-safety/</loc>
+    <lastmod>2026-11-19</lastmod>
+    <image:image><image:loc>https://duker.me/assets/articles/lexsi-before-after.png</image:loc></image:image>
   </url>
   <url>
     <loc>https://duker.me/articles/metaculus-forecasting-bot/</loc>

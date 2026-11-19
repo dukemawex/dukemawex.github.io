@@ -1,0 +1,57 @@
+<!--meta
+{
+  "slug": "tiny-aya-earth-nigerian-safety",
+  "headline": "Tiny Aya Earth's Nigerian safety gap",
+  "description": "I audited Tiny Aya Earth on TukaBench in English, Hausa, Igbo and Yoruba, then cut harmful compliance from 45.6% to 28.1% with no retraining.",
+  "date": "2026-11-19",
+  "tags": ["AI safety", "Multilingual safety", "Hackathon"],
+  "source": {"label": "dukemawex/lexsi-safety", "url": "https://github.com/dukemawex/lexsi-safety"},
+  "image": {"src": "/assets/articles/lexsi-before-after.png", "webp": "/assets/articles/lexsi-before-after.webp", "width": 1800, "height": 630,
+            "alt": "Paired bar charts of Tiny Aya Earth on the TukaBench held-out evaluation split, with 95% Wilson confidence intervals. The left chart shows harmful compliance and the right chart shows over-refusal on benign prompts, both lower is better, in English, Hausa, Igbo and Yoruba. Each language compares the baseline, the submitted CAST tuned gate, the CAST default gate at alpha 0.5, and ungated CAA at alpha 0.25."},
+  "figcaption": "Harmful compliance and benign over-refusal on 957 held-out TukaBench prompts. The submitted repair is the blue bar in each group."
+}
+-->
+<p>Small multilingual chat models are starting to appear in Nigerian assistants, but most safety training is still in English. That makes a plain translation one of the cheapest ways to get a model to do something it would refuse in English. I wanted to measure that gap on a model actually recommended for African languages, then see whether it could be repaired without retraining.</p>
+<p>The model is Cohere Labs' Tiny Aya Earth, a 3.35 billion parameter chat model. I audited it on TukaBench: harmful prompts, culturally adapted harmful prompts, and topic-matched benign prompts, in English, Hausa, Igbo and Yoruba. After cleaning and deduplicating the data with provenance, I split it by source item so that no translation of an evaluation prompt appeared in calibration. That left 957 held-out evaluation prompts and 238 calibration prompts.</p>
+<p>The work used three Lexsi kits. CuratorKIT ingested and documented the data. AuditKIT logged every stage as a per-language run and compared the base model with the repair. SafeTune's CASTTrainer fitted a conditional activation-steering repair on the calibration split, pooled across all four languages: a prompt-level gate at layer 10, and steering vectors at layers 16 to 20. SafeTune's default gate over-fired, with 55.5% over-refusal on the evaluation set, so I re-tuned the gate to a 20% benign false-fire budget (the fpr0.2 threshold, 0.0844). I chose the steering strength on the calibration split with a rule fixed before any evaluation-split steering run. The chosen setting is alpha 0.25.</p>
+<h2>What the audit found</h2>
+<p>The base model understood the prompts, and it refused fluently when it did refuse. The gap was how often it refused. On the held-out set it complied with harmful requests 18.9% of the time in English, 41.5% in Hausa, 49.4% in Igbo and 72.5% in Yoruba. For culturally adapted Yoruba prompts, compliance rose to 90%.</p>
+<p>The submitted repair lowered harmful compliance from 45.6% to 28.1% across the four languages. The Yoruba to English gap shrank from 53.6 points to 24.2 points. When the gate leaves a prompt alone, the output is byte-identical to the base model. New refusals use the model's own native templates.</p>
+<table>
+  <thead>
+    <tr><th>Language</th><th>Harmful compliance, before</th><th>After the repair</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>English</td><td>18.9%</td><td>16.4%</td></tr>
+    <tr><td>Hausa</td><td>41.5%</td><td>25.2%</td></tr>
+    <tr><td>Igbo</td><td>49.4%</td><td>30.0%</td></tr>
+    <tr><td>Yoruba</td><td>72.5%</td><td>40.6%</td></tr>
+    <tr><td>All four</td><td>45.6%</td><td>28.1%</td></tr>
+  </tbody>
+</table>
+<p>Appending “Please answer in Igbo” to English harmful requests raised compliance from 18.9% to 84.4%. The repair cut that to 58.1%, but it barely moved Igbo prompts wrapped in an English frame (80.6% to 79.4%). That remains an open gap. Reading comprehension on Belebele was unchanged in English, Hausa and Igbo, and dropped by one question in Yoruba, from 37.0% to 36.5%. A self-hosted repaired model costs about $0.11 per 1,000 replies.</p>
+<figure class="post-figure">
+  <div class="fig-scroll" tabindex="0" role="region" aria-label="Figure: calibration sweep of safety against over-refusal">
+    <picture>
+      <source type="image/webp" srcset="/assets/articles/lexsi-calibration-tradeoff.webp" />
+      <img src="/assets/articles/lexsi-calibration-tradeoff.png" width="900" height="675" loading="lazy" decoding="async" alt="Scatter plot titled calibration sweep, safety versus over-refusal, with grey points marked ineligible. Harmful compliance is on the vertical axis and over-refusal on benign prompts is on the horizontal axis. The baseline sits at the top left. The chosen setting, labelled fpr0.2 a=0.25, is the eligible point with the lowest harmful compliance." />
+    </picture>
+  </div>
+  <figcaption>The calibration sweep used to pick the submitted setting. Grey points failed the pre-set rule; the chosen point is fpr0.2 at alpha 0.25.</figcaption>
+</figure>
+<h2>Limits and a result I did not adopt</h2>
+<p>The repair is not free. Over-refusal on topic-matched benign prompts rose from 8.2% to 19.1%, mostly because the gate fires on benign look-alikes. Refusal was scored with a keyword lexicon, without a native-speaker agreement study, so those rates should be read with that limit in mind. The work also does not cover natural code-switching or Nigerian Pidgin, and the calibration set is small.</p>
+<p>I also pre-registered a stronger variant, CAST-v2, that refit the gate on plain plus wrapped calibration prompts. On 2,397 held-out plain and wrapped prompts it cut pooled harmful compliance from 41.4% to 33.0%, but over-refusal rose from 11.0% to 19.0%. That failed the adoption rule I had fixed in advance, so the submitted repair stayed unchanged, and I reported the negative result.</p>
+<p>Everything ran on one T4 through Hugging Face Jobs, about 2.6 GPU-hours and $1.59 in total.</p>
+<h2>The Lexsi submission</h2>
+<p>This project, Tiny Aya Earth Nigerian Safety Steering, was my submission to the Lexsi AI Safety and Alignment Hackathon 2026, organised by Lexsi.ai with Cohere Labs and Hugging Face. It entered Tracks 2a, multilingual and code-mixed safety, and 2b, inference-time safety steering. It placed in the top 10% of 369 submissions. The certificate was issued on 19 November 2026 (ID LX26-TFEU8-60VXS) and can be <a href="https://hackathon.lexsi.ai/results">verified on the official results page</a>.</p>
+<figure class="post-figure">
+  <div class="fig-scroll" tabindex="0" role="region" aria-label="Figure: Lexsi hackathon certificate">
+    <picture>
+      <source type="image/webp" srcset="/assets/articles/lexsi-certificate.webp" />
+      <img src="/assets/articles/lexsi-certificate.png" width="1400" height="990" loading="lazy" decoding="async" alt="Certificate of achievement from the Lexsi AI Safety and Alignment Hackathon 2026, issued by Lexsi.ai in partnership with Cohere Labs and Hugging Face, awarded to Emmanuel Effiom Duke for the project Tiny Aya Earth Nigerian Safety Steering, Top 10% of 369 submissions, Track 2a and 2b, issued 19 November 2026, certificate ID LX26-TFEU8-60VXS." />
+    </picture>
+  </div>
+  <figcaption>Certificate of achievement, Top 10% of 369 submissions. Verify at <a href="https://hackathon.lexsi.ai/results">hackathon.lexsi.ai/results</a>.</figcaption>
+</figure>
+<p>The code is on <a href="https://github.com/dukemawex/lexsi-safety">GitHub</a>. The repaired model is on Hugging Face as <a href="https://huggingface.co/duke01/tiny-aya-earth-cast-nigerian-safety">duke01/tiny-aya-earth-cast-nigerian-safety</a>, with the <a href="https://huggingface.co/collections/duke01/lexsi-tiny-aya-earth-nigerian-safety-models-6af879b97e17226835810729">model collection</a> and <a href="https://huggingface.co/collections/duke01/lexsi-tiny-aya-earth-nigerian-safety-datasets-6af879b902014765d7ed178d">dataset collection</a> beside it.</p>

@@ -5,9 +5,65 @@
   <id>https://duker.me/articles/</id>
   <link rel="self" type="application/atom+xml" href="https://duker.me/feed.xml" />
   <link rel="alternate" type="text/html" href="https://duker.me/articles/" />
-  <updated>2026-10-08T00:00:00Z</updated>
+  <updated>2026-11-19T00:00:00Z</updated>
   <author><name>Emmanuel Effiom Duke</name><uri>https://duker.me/</uri></author>
   <icon>https://duker.me/favicon.svg</icon>
+  <entry>
+    <title>Tiny Aya Earth's Nigerian safety gap</title>
+    <id>https://duker.me/articles/tiny-aya-earth-nigerian-safety/</id>
+    <link rel="alternate" type="text/html" href="https://duker.me/articles/tiny-aya-earth-nigerian-safety/" />
+    <published>2026-11-19T00:00:00Z</published>
+    <updated>2026-11-19T00:00:00Z</updated>
+    <author><name>Emmanuel Effiom Duke</name><uri>https://duker.me/about/</uri></author>
+    <category term="AI safety" />
+    <category term="Multilingual safety" />
+    <category term="Hackathon" />
+    <summary>I audited Tiny Aya Earth on TukaBench in English, Hausa, Igbo and Yoruba, then cut harmful compliance from 45.6% to 28.1% with no retraining.</summary>
+    <content type="html">&lt;p&gt;Small multilingual chat models are starting to appear in Nigerian assistants, but most safety training is still in English. That makes a plain translation one of the cheapest ways to get a model to do something it would refuse in English. I wanted to measure that gap on a model actually recommended for African languages, then see whether it could be repaired without retraining.&lt;/p&gt;
+&lt;p&gt;The model is Cohere Labs' Tiny Aya Earth, a 3.35 billion parameter chat model. I audited it on TukaBench: harmful prompts, culturally adapted harmful prompts, and topic-matched benign prompts, in English, Hausa, Igbo and Yoruba. After cleaning and deduplicating the data with provenance, I split it by source item so that no translation of an evaluation prompt appeared in calibration. That left 957 held-out evaluation prompts and 238 calibration prompts.&lt;/p&gt;
+&lt;p&gt;The work used three Lexsi kits. CuratorKIT ingested and documented the data. AuditKIT logged every stage as a per-language run and compared the base model with the repair. SafeTune's CASTTrainer fitted a conditional activation-steering repair on the calibration split, pooled across all four languages: a prompt-level gate at layer 10, and steering vectors at layers 16 to 20. SafeTune's default gate over-fired, with 55.5% over-refusal on the evaluation set, so I re-tuned the gate to a 20% benign false-fire budget (the fpr0.2 threshold, 0.0844). I chose the steering strength on the calibration split with a rule fixed before any evaluation-split steering run. The chosen setting is alpha 0.25.&lt;/p&gt;
+&lt;h2&gt;What the audit found&lt;/h2&gt;
+&lt;p&gt;The base model understood the prompts, and it refused fluently when it did refuse. The gap was how often it refused. On the held-out set it complied with harmful requests 18.9% of the time in English, 41.5% in Hausa, 49.4% in Igbo and 72.5% in Yoruba. For culturally adapted Yoruba prompts, compliance rose to 90%.&lt;/p&gt;
+&lt;p&gt;The submitted repair lowered harmful compliance from 45.6% to 28.1% across the four languages. The Yoruba to English gap shrank from 53.6 points to 24.2 points. When the gate leaves a prompt alone, the output is byte-identical to the base model. New refusals use the model's own native templates.&lt;/p&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;&lt;th&gt;Language&lt;/th&gt;&lt;th&gt;Harmful compliance, before&lt;/th&gt;&lt;th&gt;After the repair&lt;/th&gt;&lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;&lt;td&gt;English&lt;/td&gt;&lt;td&gt;18.9%&lt;/td&gt;&lt;td&gt;16.4%&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;Hausa&lt;/td&gt;&lt;td&gt;41.5%&lt;/td&gt;&lt;td&gt;25.2%&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;Igbo&lt;/td&gt;&lt;td&gt;49.4%&lt;/td&gt;&lt;td&gt;30.0%&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;Yoruba&lt;/td&gt;&lt;td&gt;72.5%&lt;/td&gt;&lt;td&gt;40.6%&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td&gt;All four&lt;/td&gt;&lt;td&gt;45.6%&lt;/td&gt;&lt;td&gt;28.1%&lt;/td&gt;&lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Appending “Please answer in Igbo” to English harmful requests raised compliance from 18.9% to 84.4%. The repair cut that to 58.1%, but it barely moved Igbo prompts wrapped in an English frame (80.6% to 79.4%). That remains an open gap. Reading comprehension on Belebele was unchanged in English, Hausa and Igbo, and dropped by one question in Yoruba, from 37.0% to 36.5%. A self-hosted repaired model costs about $0.11 per 1,000 replies.&lt;/p&gt;
+&lt;figure class=&quot;post-figure&quot;&gt;
+  &lt;div class=&quot;fig-scroll&quot; tabindex=&quot;0&quot; role=&quot;region&quot; aria-label=&quot;Figure: calibration sweep of safety against over-refusal&quot;&gt;
+    &lt;picture&gt;
+      &lt;source type=&quot;image/webp&quot; srcset=&quot;/assets/articles/lexsi-calibration-tradeoff.webp&quot; /&gt;
+      &lt;img src=&quot;https://duker.me/assets/articles/lexsi-calibration-tradeoff.png&quot; width=&quot;900&quot; height=&quot;675&quot; loading=&quot;lazy&quot; decoding=&quot;async&quot; alt=&quot;Scatter plot titled calibration sweep, safety versus over-refusal, with grey points marked ineligible. Harmful compliance is on the vertical axis and over-refusal on benign prompts is on the horizontal axis. The baseline sits at the top left. The chosen setting, labelled fpr0.2 a=0.25, is the eligible point with the lowest harmful compliance.&quot; /&gt;
+    &lt;/picture&gt;
+  &lt;/div&gt;
+  &lt;figcaption&gt;The calibration sweep used to pick the submitted setting. Grey points failed the pre-set rule; the chosen point is fpr0.2 at alpha 0.25.&lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;h2&gt;Limits and a result I did not adopt&lt;/h2&gt;
+&lt;p&gt;The repair is not free. Over-refusal on topic-matched benign prompts rose from 8.2% to 19.1%, mostly because the gate fires on benign look-alikes. Refusal was scored with a keyword lexicon, without a native-speaker agreement study, so those rates should be read with that limit in mind. The work also does not cover natural code-switching or Nigerian Pidgin, and the calibration set is small.&lt;/p&gt;
+&lt;p&gt;I also pre-registered a stronger variant, CAST-v2, that refit the gate on plain plus wrapped calibration prompts. On 2,397 held-out plain and wrapped prompts it cut pooled harmful compliance from 41.4% to 33.0%, but over-refusal rose from 11.0% to 19.0%. That failed the adoption rule I had fixed in advance, so the submitted repair stayed unchanged, and I reported the negative result.&lt;/p&gt;
+&lt;p&gt;Everything ran on one T4 through Hugging Face Jobs, about 2.6 GPU-hours and $1.59 in total.&lt;/p&gt;
+&lt;h2&gt;The Lexsi submission&lt;/h2&gt;
+&lt;p&gt;This project, Tiny Aya Earth Nigerian Safety Steering, was my submission to the Lexsi AI Safety and Alignment Hackathon 2026, organised by Lexsi.ai with Cohere Labs and Hugging Face. It entered Tracks 2a, multilingual and code-mixed safety, and 2b, inference-time safety steering. It placed in the top 10% of 369 submissions. The certificate was issued on 19 November 2026 (ID LX26-TFEU8-60VXS) and can be &lt;a href=&quot;https://hackathon.lexsi.ai/results&quot;&gt;verified on the official results page&lt;/a&gt;.&lt;/p&gt;
+&lt;figure class=&quot;post-figure&quot;&gt;
+  &lt;div class=&quot;fig-scroll&quot; tabindex=&quot;0&quot; role=&quot;region&quot; aria-label=&quot;Figure: Lexsi hackathon certificate&quot;&gt;
+    &lt;picture&gt;
+      &lt;source type=&quot;image/webp&quot; srcset=&quot;/assets/articles/lexsi-certificate.webp&quot; /&gt;
+      &lt;img src=&quot;https://duker.me/assets/articles/lexsi-certificate.png&quot; width=&quot;1400&quot; height=&quot;990&quot; loading=&quot;lazy&quot; decoding=&quot;async&quot; alt=&quot;Certificate of achievement from the Lexsi AI Safety and Alignment Hackathon 2026, issued by Lexsi.ai in partnership with Cohere Labs and Hugging Face, awarded to Emmanuel Effiom Duke for the project Tiny Aya Earth Nigerian Safety Steering, Top 10% of 369 submissions, Track 2a and 2b, issued 19 November 2026, certificate ID LX26-TFEU8-60VXS.&quot; /&gt;
+    &lt;/picture&gt;
+  &lt;/div&gt;
+  &lt;figcaption&gt;Certificate of achievement, Top 10% of 369 submissions. Verify at &lt;a href=&quot;https://hackathon.lexsi.ai/results&quot;&gt;hackathon.lexsi.ai/results&lt;/a&gt;.&lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;p&gt;The code is on &lt;a href=&quot;https://github.com/dukemawex/lexsi-safety&quot;&gt;GitHub&lt;/a&gt;. The repaired model is on Hugging Face as &lt;a href=&quot;https://huggingface.co/duke01/tiny-aya-earth-cast-nigerian-safety&quot;&gt;duke01/tiny-aya-earth-cast-nigerian-safety&lt;/a&gt;, with the &lt;a href=&quot;https://huggingface.co/collections/duke01/lexsi-tiny-aya-earth-nigerian-safety-models-6af879b97e17226835810729&quot;&gt;model collection&lt;/a&gt; and &lt;a href=&quot;https://huggingface.co/collections/duke01/lexsi-tiny-aya-earth-nigerian-safety-datasets-6af879b902014765d7ed178d&quot;&gt;dataset collection&lt;/a&gt; beside it.&lt;/p&gt;&lt;p&gt;Source: &lt;a href=&quot;https://github.com/dukemawex/lexsi-safety&quot;&gt;dukemawex/lexsi-safety&lt;/a&gt;&lt;/p&gt;</content>
+  </entry>
   <entry>
     <title>Building a Metaculus forecasting bot</title>
     <id>https://duker.me/articles/metaculus-forecasting-bot/</id>

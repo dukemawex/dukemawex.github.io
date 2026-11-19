@@ -5,8 +5,9 @@
   "title": "AI Safety Researcher | Emmanuel Effiom Duke",
   "description": "Emmanuel Effiom Duke is an AI safety researcher working on mechanistic interpretability, SPD mechanism clustering, deception features and model auditing.",
   "summary": "Mechanistic interpretability, model auditing and alignment experiments, with open code and honest negative results.",
-  "articles": ["spd-real-transformer", "spd-mechanism-clustering", "deception-feature-universality", "reward-generalization-early-warning", "secret-loyalties-audit"],
+  "articles": ["tiny-aya-earth-nigerian-safety", "spd-real-transformer", "spd-mechanism-clustering", "deception-feature-universality", "reward-generalization-early-warning", "secret-loyalties-audit"],
   "projects": [
+    {"name": "Tiny Aya Earth Nigerian Safety Steering", "url": "https://github.com/dukemawex/lexsi-safety", "note": "Inference-time CAST steering of Tiny Aya Earth on TukaBench in English, Hausa, Igbo and Yoruba: harmful compliance 45.6% to 28.1%, no retraining. Top 10% of 369 submissions at the Lexsi hackathon."},
     {"name": "SPD Mechanism Clustering", "url": "https://github.com/dukemawex/spd-mechanism-clustering", "note": "Automated clustering of Stochastic Parameter Decomposition components into mechanisms (ARI 0.53 vs 0.00 random on a toy model)."},
     {"name": "SPD on a real grokked transformer", "url": "https://github.com/dukemawex/spd-real-transformer", "note": "Components collapsed onto one of four verified Fourier frequencies: specialization is the bottleneck."},
     {"name": "Deception Feature Universality", "url": "https://github.com/dukemawex/deception-feature-universality", "note": "Cross-architecture CKA 0.56 vs a 0.26 null (p = 0.024) for deception cues."},
@@ -23,6 +24,7 @@
   <li><strong>Automated mechanism discovery with SPD.</strong> A seven-repository series on clustering Stochastic Parameter Decomposition components into mechanisms. On toy models, gate co-activation recovers the true mechanisms. On a real transformer that grokked modular addition, components fail to specialise, and no clustering signal recovers the verified structure. The conclusion, <em>specialization is the bottleneck</em>, redirects effort toward component specialization before clustering design: sharper L0 gates, longer or stronger sparsity schedules, and per-mechanism capacity.</li>
   <li><strong>Universality of deception features.</strong> Do different architectures represent manipulation cues the same way? With an informative null, cross-architecture similarity was statistically significant (p = 0.024). The first, weaker test was reported as inconclusive rather than oversold.</li>
   <li><strong>Reward generalization.</strong> I reproduced a reward spreading to contexts it was never given in, then tested whether internal signals could warn before the behaviour appeared. At toy scale they couldn't, which sharpens what an early-warning system would need.</li>
+  <li><strong>Multilingual safety steering.</strong> At the Lexsi AI Safety and Alignment Hackathon I audited Cohere Labs' Tiny Aya Earth on TukaBench in English, Hausa, Igbo and Yoruba, then applied inference-time conditional steering with no retraining. Harmful compliance fell from 45.6% to 28.1%. The submission placed in the top 10% of 369 entries.</li>
   <li><strong>Auditing hidden objectives.</strong> At Apart Research's Secret Loyalties Hackathon I audited three model organisms weights-first. I found which were fine-tuned and where, rejected four tempting false positives with base-rate controls, and placed in the top half of 179 submissions.</li>
 </ul>
 
