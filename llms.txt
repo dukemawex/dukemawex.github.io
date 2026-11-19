@@ -37,7 +37,7 @@ Canonical pages: https://duker.me/ (overview) and https://duker.me/about/ (full 
 ## Articles
 
 <!--ARTICLES:START-->
-- [Building AI shaped my JetBrains forecasts](https://duker.me/articles/ai-outlook-jetbrains/): 7th of 292 in Metaculus's AI Outlook With JetBrains ($164 prize). Running an LLM forecasting bot and building AI products shaped how I forecast, luck included.
+- [Building AI shaped my JetBrains forecasts](https://duker.me/articles/ai-outlook-jetbrains/): 7th of 292 in Metaculus's AI Outlook With JetBrains. Running an LLM forecasting bot and building AI products shaped how I forecast, luck included.
 - [AI Safety in Yoruba, Hausa, Igbo](https://duker.me/articles/tiny-aya-earth-nigerian-safety/): AI safety work on Tiny Aya Earth for Nigerian languages (Yoruba, Hausa, Igbo). Safety steering cut harmful compliance from 45.6% to 28.1%, no retraining.
 - [Building a Metaculus forecasting bot](https://duker.me/articles/metaculus-forecasting-bot/): Lessons from an LLM forecasting bot in Metaculus AI tournaments: silent research failures, extremized toss-ups, and replacing vibes-tuning with measurement.
 - [Ask the calendar, not the model](https://duker.me/articles/llm-knowledge-cutoff-probe/): Measuring nine language models' real knowledge cutoffs with dated-event bisection: every model that self-reported a cutoff was wrong, some by over a year.
