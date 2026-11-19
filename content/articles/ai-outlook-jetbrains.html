@@ -1,0 +1,39 @@
+<!--meta
+{
+  "slug": "ai-outlook-jetbrains",
+  "headline": "Building AI shaped my JetBrains forecasts",
+  "description": "7th of 292 in Metaculus's AI Outlook With JetBrains ($164 prize). Running an LLM forecasting bot and building AI products shaped how I forecast, luck included.",
+  "date": "2026-11-19",
+  "dateModified": "2026-11-19",
+  "tags": ["Forecasting", "Metaculus", "AI products"],
+  "keywords": ["AI Outlook With JetBrains", "Metaculus", "stardukeza", "oracledeckv1", "AI forecasting", "JetBrains", "LLM forecasting bot"],
+  "og": {"src": "/assets/og/jetbrains-ai-outlook.jpg", "width": 1200, "height": 630,
+         "alt": "Open Graph card for Emmanuel Effiom Duke's article: 7th of 292 in Metaculus's AI Outlook With JetBrains, total score 470, $164 prize."},
+  "faq": [
+    {"q": "What was your result in AI Outlook With JetBrains?",
+     "a": "On the final Metaculus leaderboard I finished 7th of 292 ranked forecasters, with a total score of 470 and a listed prize of $164. The 95% confidence interval on that rank is 1 to 44. The tournament is closed. Winners were announced in November 2026."},
+    {"q": "Were these forecasts made by your bot?",
+     "a": "No. Bots were not eligible for this contest, so I forecast manually under the username stardukeza. The bot, oracledeckv1, ran in other Metaculus AI forecasting tournaments from October 2025 to August 2026."},
+    {"q": "How can I verify the result?",
+     "a": "The official tournament and leaderboard are at https://www.metaculus.com/tournament/jetbrains/. My Metaculus profile is https://www.metaculus.com/accounts/profile/stardukeza/."}
+  ],
+  "source": {"label": "dukemawex/botduke--update", "url": "https://github.com/dukemawex/botduke--update"},
+  "image": {"src": "/assets/articles/jetbrains-leaderboard.png", "webp": "/assets/articles/jetbrains-leaderboard.webp", "width": 780, "height": 1000,
+            "alt": "Final Metaculus leaderboard for AI Outlook With JetBrains, recorded 19 November 2026, showing stardukeza in 7th place with a total score of 470, a listed prize of $164, and a 95% confidence interval on rank of 1 to 44. Prize pool $3,000."},
+  "figcaption": "Final leaderboard for AI Outlook With JetBrains on Metaculus, recorded 19 November 2026 while signed out. stardukeza is 7th, with a total score of 470 and a listed prize of $164. The 95% confidence interval on that rank is 1 to 44."
+}
+-->
+<p>In November 2026, Metaculus announced the winners of <a href="https://www.metaculus.com/tournament/jetbrains/">AI Outlook With JetBrains</a>, a tournament on developer and AI trends. On the final leaderboard I finished 7th of 292 ranked forecasters, with a total score of 470 and a listed prize of $164. I forecast under the username <a href="https://www.metaculus.com/accounts/profile/stardukeza/">stardukeza</a>. The official 95% confidence interval on that rank runs from 1 to 44, which is a wide band. Seventh place is the point estimate, not a precise claim that I was clearly the seventh-best person in the field.</p>
+<p>The tournament is closed. Questions closed on 1 June 2026, and the page later marked the questions resolved and the winners announced, on 13 and 14 November. There were seven question groups, drawn from the JetBrains developer survey and from AI benchmarks. The themes included developer adoption of generative AI, job security, and benchmark progress. I am not going to recap my individual forecasts here. What I want to write about is how I arrived at them.</p>
+<p>Bots were not eligible for this contest, so these were my own manual forecasts. That matters, because for most of the previous year I had been building and running an automated LLM forecasting bot.</p>
+<h2>What the bot taught me</h2>
+<p>From October 2025 to August 2026 I built that bot for Metaculus's AI forecasting tournaments, most recently under the name oracledeckv1. I have already <a href="/articles/metaculus-forecasting-bot/">written about the engineering</a>: silent research failures, a calibration curve that made toss-ups look like confident answers, and an offline harness that replaced vibes-tuning with measurement. The habits that stayed with me, when I sat down to forecast this tournament by hand, were simpler than the pipeline.</p>
+<p>The first was base rates. On a set of 190 resolved binary Metaculus questions, only about a third resolved YES. Shrinking an uncertain forecast toward 50% feels cautious, but on a set like that it is a systematic lean toward YES. When a new capability claim or a dramatic survey finding appeared in this tournament, I tried to start from how often similar claims actually land, not from how loud the announcement was.</p>
+<p>The second was calibration, especially around toss-ups. The bot taught me, the hard way, not to dress up "I don't know" as a sharp number. If the evidence was thin, I left more probability in the middle. If a signal was clear, I was willing to be more concentrated. That sounds obvious. It is surprisingly easy to forget when a question is about the industry you work in, and you feel you ought to have a strong view.</p>
+<p>The third was skepticism about hype, including my own. Language models <a href="/articles/llm-knowledge-cutoff-probe/">misreport what they know</a>. Release blogs get ahead of what users can actually do. I had already watched research tools fail quietly while still producing a fluent answer. So I treated "the model can do X" and "developers will rely on X" as different claims.</p>
+<h2>A builder's view of how AI is adopted</h2>
+<p>Building products pulled in the other direction: it gave me a closer view of how developers actually adopt AI, which is slower and more uneven than a benchmark chart. I have been doing hands-on applied AI work since late 2025. I build <a href="https://tegerai.tech/">Teger AI</a>, an explainable phishing and social-engineering detector for Gmail and Slack, still in private beta as MVP v0.2. I have also done AI safety work, including a <a href="/articles/tiny-aya-earth-nigerian-safety/">Lexsi hackathon project</a> on multilingual safety for Nigerian languages that placed in the top 10% of 369 submissions, and I have co-authored a paper on machine-learning energy optimisation. None of that tells you what a specific benchmark will score next year. It does tell you something about release cycles, about the gap between a demo and a default tool, and about how cautious people are when a system might touch their job or their inbox.</p>
+<p>That builder's view was useful on questions about whether developers feel secure in their jobs, and about how far they are ready to hand work to a model. I tried not to confuse my own enthusiasm, or the pace of the tools I use every day, with the average developer in a large survey. I also tried not to be so conservative that I ignored genuine progress on benchmarks. The work is to hold both at once.</p>
+<h2>Luck, and a wide interval</h2>
+<p>I should be honest about luck. On 7 November 2026, before the last questions resolved, I was listed first on the provisional leaderboard, with 493 points. That lead did not survive the final resolutions. My score settled at 470, and six people finished ahead of me. A 95% interval from 1 to 44 means the same record is compatible with a much wider range of ranks than "7th" suggests. Scoring on a small set of question groups is noisy. I would not hang a professional identity on a single tournament, and I would not want a reader to.</p>
+<p>What I will take forward is the method. Measure base rates. Do not extremize a toss-up. Do not trust a fluent story, from a model or a vendor, without asking what would have to be true in the working life of a developer. Forecast by hand when the rules say so, and let the bot stay a tool I can inspect rather than a substitute for judgment.</p>

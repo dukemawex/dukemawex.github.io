@@ -30,13 +30,14 @@ Canonical pages: https://duker.me/ (overview) and https://duker.me/about/ (full 
 - [AI engineer](https://duker.me/expertise/ai-engineer/): Emmanuel Effiom Duke is an AI engineer who builds LLM products end to end: Teger AI for phishing defence, a Metaculus forecasting bot, and evaluation tools.
 - [AI safety researcher](https://duker.me/expertise/ai-safety-researcher/): Emmanuel Effiom Duke is an AI safety researcher working on mechanistic interpretability, SPD mechanism clustering, deception features and model auditing.
 - [AI security engineer](https://duker.me/expertise/ai-security/): Emmanuel Effiom Duke builds AI security: explainable social-engineering and phishing detection (Teger AI), prompt-injection-aware design and model audits.
-- [AI forecasting and LLM evaluation](https://duker.me/expertise/ai-forecasting/): Emmanuel Effiom Duke builds AI forecasting systems and LLM evaluations: a Metaculus tournament bot, calibration research and a knowledge-cutoff probe.
+- [AI forecasting and LLM evaluation](https://duker.me/expertise/ai-forecasting/): Emmanuel Effiom Duke builds AI forecasting systems and LLM evaluations: a Metaculus bot, 7th place in AI Outlook With JetBrains, and a knowledge-cutoff probe.
 - [Mechanical engineer and energy researcher](https://duker.me/expertise/mechanical-engineer/): Emmanuel Effiom Duke is a mechanical engineer (B.Eng., University of Nigeria, Nsukka) researching CFD, energy optimisation and air quality.
 <!--EXPERTISE:END-->
 
 ## Articles
 
 <!--ARTICLES:START-->
+- [Building AI shaped my JetBrains forecasts](https://duker.me/articles/ai-outlook-jetbrains/): 7th of 292 in Metaculus's AI Outlook With JetBrains ($164 prize). Running an LLM forecasting bot and building AI products shaped how I forecast, luck included.
 - [AI Safety in Yoruba, Hausa, Igbo](https://duker.me/articles/tiny-aya-earth-nigerian-safety/): AI safety work on Tiny Aya Earth for Nigerian languages (Yoruba, Hausa, Igbo). Safety steering cut harmful compliance from 45.6% to 28.1%, no retraining.
 - [Building a Metaculus forecasting bot](https://duker.me/articles/metaculus-forecasting-bot/): Lessons from an LLM forecasting bot in Metaculus AI tournaments: silent research failures, extremized toss-ups, and replacing vibes-tuning with measurement.
 - [Ask the calendar, not the model](https://duker.me/articles/llm-knowledge-cutoff-probe/): Measuring nine language models' real knowledge cutoffs with dated-event bisection: every model that self-reported a cutoff was wrong, some by over a year.

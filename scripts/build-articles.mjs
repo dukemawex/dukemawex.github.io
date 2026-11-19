@@ -13,7 +13,7 @@ const SITE = 'https://duker.me';
 const FULL = 'Emmanuel Effiom Duke';
 const UPDATED = '2026-11-19'; // bump when page content changes meaningfully
 // Display order on the homepage and the index (newest/most relevant first)
-const ORDER = ['tiny-aya-earth-nigerian-safety', 'metaculus-forecasting-bot', 'llm-knowledge-cutoff-probe', 'designing-teger-ai', 'secret-loyalties-audit', 'spd-real-transformer', 'spd-mechanism-clustering', 'deception-feature-universality', 'reward-generalization-early-warning'];
+const ORDER = ['ai-outlook-jetbrains', 'tiny-aya-earth-nigerian-safety', 'metaculus-forecasting-bot', 'llm-knowledge-cutoff-probe', 'designing-teger-ai', 'secret-loyalties-audit', 'spd-real-transformer', 'spd-mechanism-clustering', 'deception-feature-universality', 'reward-generalization-early-warning'];
 const HOME_LIMIT = 3;
 
 const read = (f) => readFileSync(path.join(root, f), 'utf8');
