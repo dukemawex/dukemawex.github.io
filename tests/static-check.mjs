@@ -82,7 +82,8 @@ for (const pg of PAGES) {
     const post = graph.find((n) => n['@type'] === 'BlogPosting') || {};
     ok(post.url === pg.url && post.mainEntityOfPage === pg.url, at('BlogPosting url/mainEntityOfPage must be canonical'));
     ok(post.author?.['@id'] === 'https://duker.me/#person', at('BlogPosting author must be the Person'));
-    ok(/^\d{4}-\d{2}-\d{2}$/.test(post.datePublished || ''), at('BlogPosting datePublished'));
+    ok(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{2}:\d{2}$/.test(post.datePublished || ''), at('BlogPosting datePublished must be an ISO 8601 datetime with timezone'));
+    ok(!post.dateModified || /T\d{2}:\d{2}:\d{2}[+-]\d{2}:\d{2}$/.test(post.dateModified), at('BlogPosting dateModified must be an ISO 8601 datetime'));
     ok(post.headline && post.headline.length <= 110, at('BlogPosting headline missing or too long'));
     ok(/^https:\/\/github\.com\/dukemawex\//.test(post.isBasedOn || ''), at('article must cite its source repository (isBasedOn)'));
     ok(html.includes(`href="${post.isBasedOn}"`), at('source repository must be linked visibly'));

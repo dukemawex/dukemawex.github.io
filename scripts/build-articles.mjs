@@ -19,6 +19,7 @@ const HOME_LIMIT = 3;
 const read = (f) => readFileSync(path.join(root, f), 'utf8');
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const one = (re, s, what) => { const m = s.match(re); if (!m) throw new Error(`index.html: could not find ${what}`); return m[1] ?? m[0]; };
+const dt = (d) => (/^\d{4}-\d{2}-\d{2}$/.test(d) ? `${d}T09:00:00+01:00` : d); // ISO 8601 datetime for JSON-LD
 const fmtDate = (d) => new Date(d + 'T00:00:00Z').toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
 
 // ---- Shared pieces taken from the homepage so every page stays in sync ----
@@ -249,7 +250,7 @@ for (const a of articles) {
   const ogAbs = og ? SITE + og.src : (img ? SITE + img.src : `${SITE}/assets/og/og-default.jpg`);
   const posting = {
       '@type': 'BlogPosting', '@id': `${a.url}#article`, headline: a.headline, description: a.description,
-      url: a.url, mainEntityOfPage: a.url, datePublished: a.date, dateModified: a.dateModified || a.date,
+      url: a.url, mainEntityOfPage: a.url, datePublished: dt(a.date), dateModified: dt(a.dateModified || a.date),
       author: {
         '@id': PERSON,
         '@type': 'Person',
@@ -333,7 +334,7 @@ ${faqBlock}
   const ld = [
     {
       '@type': 'CollectionPage', '@id': `${url}#page`, url, name: title, description, isPartOf: { '@id': WEBSITE },
-      author: { '@id': PERSON }, breadcrumb: { '@id': `${url}#breadcrumb` }, inLanguage: 'en', dateModified: UPDATED,
+      author: { '@id': PERSON }, breadcrumb: { '@id': `${url}#breadcrumb` }, inLanguage: 'en', dateModified: dt(UPDATED),
       mainEntity: { '@type': 'ItemList', itemListElement: articles.map((a, i) => ({ '@type': 'ListItem', position: i + 1, url: a.url, name: a.headline })) },
     },
     breadcrumbLd(url, trail),
@@ -382,10 +383,10 @@ for (const h of hubs) {
     {
       '@type': 'WebPage', '@id': `${h.url}#page`, url: h.url, name: h.title, description: h.description,
       isPartOf: { '@id': WEBSITE }, about: [{ '@id': PERSON }, { '@type': 'Thing', name: h.role }], mainEntity: { '@id': PERSON },
-      breadcrumb: { '@id': `${h.url}#breadcrumb` }, inLanguage: 'en', dateModified: UPDATED,
+      breadcrumb: { '@id': `${h.url}#breadcrumb` }, inLanguage: 'en', dateModified: dt(UPDATED),
       ...(related.length ? { hasPart: related.map((a) => ({ '@id': `${a.url}#article` })) } : {}),
     },
-    ...related.map((a) => ({ '@type': 'BlogPosting', '@id': `${a.url}#article`, headline: a.headline, url: a.url, author: { '@id': PERSON }, datePublished: a.date })),
+    ...related.map((a) => ({ '@type': 'BlogPosting', '@id': `${a.url}#article`, headline: a.headline, url: a.url, author: { '@id': PERSON }, datePublished: dt(a.date) })),
     ...(h.publications ? scholarlyLd : []),
     breadcrumbLd(h.url, trail),
   ];
@@ -439,7 +440,7 @@ ${related.length ? `
   const ld = [
     {
       '@type': 'CollectionPage', '@id': `${url}#page`, url, name: title, description, isPartOf: { '@id': WEBSITE }, about: { '@id': PERSON },
-      breadcrumb: { '@id': `${url}#breadcrumb` }, inLanguage: 'en', dateModified: UPDATED,
+      breadcrumb: { '@id': `${url}#breadcrumb` }, inLanguage: 'en', dateModified: dt(UPDATED),
       mainEntity: { '@type': 'ItemList', itemListElement: hubs.map((h, i) => ({ '@type': 'ListItem', position: i + 1, url: h.url, name: h.role })) },
     },
     breadcrumbLd(url, trail),
